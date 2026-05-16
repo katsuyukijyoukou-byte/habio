@@ -947,6 +947,79 @@ footer{
 .mb-sp{height:90px;display:block;}
 @media(min-width:780px){.mb-sp{display:none;}}
 
+/* ================================================================
+   PRODUCT CARDS (PR)
+   ================================================================ */
+.product-sec{padding:72px 0;background:#F2EEE8;}
+.product-sec-hd{text-align:center;margin-bottom:36px;}
+.product-sec-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#E8F5EE;color:#4A9A6A;
+  font-size:12px;font-weight:700;letter-spacing:.08em;
+  padding:5px 16px;border-radius:9999px;margin-bottom:16px;
+}
+.product-sec-title{font-size:clamp(18px,4.5vw,26px);font-weight:700;color:#3A3A3A;line-height:1.55;}
+.product-sec-sub{font-size:14px;color:#686868;margin-top:10px;line-height:1.9;}
+.product-sec-note{
+  font-size:11px;color:#A0A0A0;margin-top:8px;
+}
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
+@media(min-width:680px){
+  .product-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(min-width:960px){
+  .product-grid{grid-template-columns:repeat(5,1fr);}
+}
+
+.product-card{
+  background:#fff;border-radius:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,.10);}
+.product-card-img{
+  width:100%;aspect-ratio:1/1;
+  background:linear-gradient(135deg,#E8F5EE,#D5E9F5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;overflow:hidden;flex-shrink:0;
+}
+.product-card-img img{width:100%;height:100%;object-fit:cover;}
+.product-card-body{padding:14px 14px 16px;flex:1;display:flex;flex-direction:column;}
+.product-card-cat{
+  font-size:10px;font-weight:700;letter-spacing:.08em;color:#72B994;
+  margin-bottom:6px;
+}
+.product-card-name{
+  font-size:13px;font-weight:700;color:#3A3A3A;
+  line-height:1.55;margin-bottom:6px;flex:1;
+}
+.product-card-desc{
+  font-size:11px;color:#686868;line-height:1.8;margin-bottom:12px;
+}
+.product-card-cta{
+  display:block;text-align:center;
+  background:linear-gradient(135deg,#72B994,#5AA47E);
+  color:#fff;font-size:12px;font-weight:700;
+  padding:9px 12px;border-radius:9999px;
+  text-decoration:none;
+  transition:opacity .2s ease;
+}
+.product-card-cta:hover{opacity:.88;}
+.product-card-cta.todo{
+  background:#D0D0D0;color:#888;cursor:not-allowed;
+  pointer-events:none;
+}
+.product-footer-note{
+  text-align:center;font-size:11px;color:#A0A0A0;
+  margin-top:20px;line-height:1.9;
+}
+
   </style>
 </head>
 <body>
@@ -1538,6 +1611,88 @@ footer{
       </div>
 
     </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  PRODUCT RECOMMENDATIONS (PR)
+  ============================================================ -->
+<section class="product-sec" id="recommend">
+  <div class="ww">
+
+    <div class="product-sec-hd rv">
+      <div class="product-sec-tag">🌿 PR・習慣改善サポートアイテム</div>
+      <h2 class="product-sec-title">あなたの習慣を、もう少し整えるために</h2>
+      <p class="product-sec-sub">Habio と一緒に使いたい方へ、選択肢のひとつとしてご紹介します。<br>売り込みではありません。気になるものだけ、ご参考にどうぞ。</p>
+      <p class="product-sec-note">※ 以下は楽天アフィリエイトを利用した広告リンクです（PR）</p>
+    </div>
+
+    <div class="product-grid rv">
+
+      <!-- ① キラーバーナー2 ／ URL未設定・後で差し替え -->
+      <div class="product-card">
+        <div class="product-card-img">🔥</div>
+        <div class="product-card-body">
+          <div class="product-card-cat">代謝サポート</div>
+          <h3 class="product-card-name">倖田來未監修 キラーバーナー2（機能性表示食品）</h3>
+          <p class="product-card-desc">毎日の生活習慣の補助として取り入れやすいサプリメントです。</p>
+          <a class="product-card-cta todo" href="#" rel="nofollow sponsored" aria-disabled="true">準備中</a>
+        </div>
+      </div>
+
+      <!-- ② 筋膜リリースガン ／ URL未設定・後で差し替え -->
+      <div class="product-card">
+        <div class="product-card-img">💆</div>
+        <div class="product-card-body">
+          <div class="product-card-cat">リカバリー</div>
+          <h3 class="product-card-name">筋膜リリースガン（コンパクトモデル）</h3>
+          <p class="product-card-desc">運動後や疲れた日に。コンパクトで持ち運びしやすいモデルです。</p>
+          <a class="product-card-cta todo" href="#" rel="nofollow sponsored" aria-disabled="true">準備中</a>
+        </div>
+      </div>
+
+      <!-- ③ 活力サポートサプリ ／ URL未設定・後で差し替え -->
+      <div class="product-card">
+        <div class="product-card-img">⚡</div>
+        <div class="product-card-body">
+          <div class="product-card-cat">活力サポート</div>
+          <h3 class="product-card-name">活力サポートサプリ（シトルリン・マカ配合）</h3>
+          <p class="product-card-desc">日々の活力維持を補助したい方向けのサプリメントです。</p>
+          <a class="product-card-cta todo" href="#" rel="nofollow sponsored" aria-disabled="true">準備中</a>
+        </div>
+      </div>
+
+      <!-- ④ C COFFEE ／ URL設定済み -->
+      <div class="product-card">
+        <div class="product-card-img">☕</div>
+        <div class="product-card-body">
+          <div class="product-card-cat">習慣改善</div>
+          <h3 class="product-card-name">C COFFEE（ダイエットコーヒー）</h3>
+          <p class="product-card-desc">コーヒー習慣に取り入れやすい、毎日の生活改善補助アイテムです。</p>
+          <a class="product-card-cta" href="https://a.r10.to/hkvUAU" target="_blank" rel="nofollow sponsored">楽天で詳細を見る</a>
+        </div>
+      </div>
+
+      <!-- ⑤ 発汗サウナベルト ／ URL未設定・後で差し替え -->
+      <div class="product-card">
+        <div class="product-card-img">🌡️</div>
+        <div class="product-card-body">
+          <div class="product-card-cat">発汗・温活</div>
+          <h3 class="product-card-name">発汗サウナベルト（温活サポート）</h3>
+          <p class="product-card-desc">体を温める習慣をサポートするベルトタイプの温活アイテムです。</p>
+          <a class="product-card-cta todo" href="#" rel="nofollow sponsored" aria-disabled="true">準備中</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+
+    <p class="product-footer-note rv">
+      【PR・広告】楽天アフィリエイトを利用しています<br>
+      ※ 上記リンクは楽天市場の商品ページへ移動します<br>
+      ※ 健康食品は医薬品ではありません。効果には個人差があります
+    </p>
+
   </div>
 </section>
 
