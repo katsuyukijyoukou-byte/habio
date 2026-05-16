@@ -1,0 +1,2908 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Habio — 今日を少し整える場所</title>
+  <meta name="description" content="責めない。比べない。あなたのペースで続けられる健康習慣サポート。AIが毎日やさしく寄り添います。">
+  <meta name="theme-color" content="#72B994">
+  <!-- OGP -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Habio — 今日を少し整える場所">
+  <meta property="og:description" content="気合いじゃなくていい。責めないAIが毎日そっと寄り添う、健康習慣アプリ。">
+  <meta property="og:image" content="https://habio.app/og-image.png">
+  <meta property="og:url" content="https://habio.app/app">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- iPhone home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Habio">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','YuGothic',sans-serif;
+  background:#DEDAD4;
+  -webkit-font-smoothing:antialiased;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;
+  transition:background .8s ease;
+}
+button{border:none;background:none;cursor:pointer;font-family:inherit;}
+input,textarea{font-family:inherit;}
+
+/* ── TOKENS ── */
+:root{
+  --g:#72B994; --g-d:#59A07E; --g-l:#B8DCC8;
+  --g-p:#E6F3EC; --g-pp:#F0F8F3;
+  --blue-p:#D3E8F4; --beige:#F0E6D8; --beige-l:#FAF5EE;
+  --bg:#F6F6F4; --bg-w:#FDFCFA; --card:#FFFFFF;
+  --t:#383838; --t-m:#686868; --t-l:#AAAAAA; --t-g:#3E8E60;
+  --border:rgba(0,0,0,.06);
+  --sh1:0 2px 12px rgba(0,0,0,.06);
+  --sh2:0 6px 24px rgba(0,0,0,.08);
+  --sh3:0 16px 48px rgba(0,0,0,.10);
+  --r-s:12px;--r-m:20px;--r-l:28px;--r-xl:40px;--r-f:9999px;
+  --pulse-dur:2s; --tdot-dur:1.3s; --fade-dur:.35s; --trans-dur:.22s;
+}
+#app.night{
+  --g:#5E9878; --g-d:#4D8266; --g-l:#A0C4B0;
+  --g-p:#DCF0E4; --g-pp:#E6F3EB; --blue-p:#C8DFF0;
+  --beige:#EDE0D2; --beige-l:#F7F2EB;
+  --bg:#F0EDE8; --bg-w:#F5F2ED; --card:#FAF8F5;
+  --t:#3A3834; --t-m:#706860; --t-l:#A8A298; --t-g:#3A7A58;
+  --border:rgba(0,0,0,.05);
+  --pulse-dur:3.5s; --tdot-dur:2.1s; --fade-dur:.6s; --trans-dur:.4s;
+}
+body.night-bg{background:#C8C3BB;}
+
+/* ── APP SHELL ── */
+#app{
+  width:100vw;height:100vh;
+  max-width:390px;max-height:844px;
+  background:var(--bg);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:background var(--trans-dur),color var(--trans-dur);
+}
+@media(min-width:500px){
+  #app{
+    border-radius:54px;
+    box-shadow:0 0 0 11px #242424,0 0 0 13px #3A3A3A,
+               0 60px 100px rgba(0,0,0,.4),0 20px 40px rgba(0,0,0,.2);
+  }
+}
+
+/* ── STATUS BAR ── */
+#statusbar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;font-size:13px;font-weight:600;color:var(--t);
+  background:var(--bg);position:relative;z-index:10;
+  transition:background var(--trans-dur);
+}
+.sb-r{display:flex;align-items:center;gap:6px;}
+
+#night-banner{
+  display:none;
+  background:linear-gradient(135deg,#2A3A30,#1E2E28);
+  color:rgba(255,255,255,.75);
+  font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-align:center;padding:6px;flex-shrink:0;
+}
+#night-banner.show{display:block;}
+
+/* ── SCREENS ── */
+#screens{flex:1;overflow:hidden;position:relative;}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--trans-dur) ease;
+}
+.screen::-webkit-scrollbar{display:none;}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* ── TAB BAR ── */
+#tabbar{
+  height:64px;flex-shrink:0;background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom,0);
+  z-index:10;transition:background var(--trans-dur);
+}
+.tab{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  color:var(--t-l);padding:6px 2px;
+  transition:color var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.tab.active{color:var(--g);}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.tab.active svg{stroke-width:2.2;}
+.tab-lbl{font-size:10px;font-weight:600;letter-spacing:.03em;}
+
+/* ── SHARED ── */
+.sec-lbl{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t-l);
+  text-transform:uppercase;padding:0 22px;margin-bottom:10px;margin-top:22px;
+}
+.card{background:var(--card);border-radius:var(--r-l);box-shadow:var(--sh1);}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  padding:4px 12px;border-radius:var(--r-f);
+}
+.mb8{margin-bottom:8px;} .mb14{margin-bottom:14px;}
+.mb20{margin-bottom:20px;} .mb28{margin-bottom:28px;}
+
+/* ── HOME HERO ── */
+.home-hero{
+  padding:14px 22px 20px;
+  background:linear-gradient(160deg,var(--bg-w) 0%,var(--g-pp) 100%);
+  transition:background var(--trans-dur);
+}
+#app.night .home-hero{background:linear-gradient(160deg,var(--bg-w) 0%,#E8EBE6 100%);}
+
+.home-hero-inner{display:flex;align-items:flex-start;gap:14px;}
+.home-left{flex:1;min-width:0;}
+.home-date{font-size:12px;color:var(--t-l);margin-bottom:5px;}
+.home-greet{font-size:22px;font-weight:700;line-height:1.4;color:var(--t);}
+.home-greet small{display:block;font-size:13px;font-weight:400;color:var(--t-m);margin-top:4px;line-height:1.8;}
+
+/* Progress Ring */
+.progress-ring-wrap{
+  flex-shrink:0;display:flex;flex-direction:column;
+  align-items:center;gap:3px;
+}
+.ring-svg{width:72px;height:72px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--g-p);stroke-width:7;}
+.ring-fg{fill:none;stroke:var(--g);stroke-width:7;stroke-linecap:round;
+  stroke-dasharray:0 201;transition:stroke-dasharray 1s ease;}
+.ring-inner{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.ring-wrap-rel{position:relative;width:72px;height:72px;}
+.ring-num{font-size:15px;font-weight:700;color:var(--t);}
+.ring-sub{font-size:9px;color:var(--t-l);font-weight:600;letter-spacing:.04em;}
+.streak-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:var(--r-f);
+  white-space:nowrap;
+}
+
+/* Habio Card */
+.habio-card{
+  margin:0 22px;background:var(--card);border-radius:var(--r-l);
+  padding:20px;box-shadow:var(--sh2);
+  display:flex;gap:14px;align-items:flex-start;
+  border-left:4px solid var(--g);transition:all var(--trans-dur);
+}
+.habio-av{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--blue-p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.habio-from{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:6px;}
+.habio-msg{font-size:14px;color:var(--t);line-height:1.9;}
+
+/* Mood */
+.mood-card{
+  margin:0 22px;background:var(--card);border-radius:var(--r-l);
+  padding:18px 20px;box-shadow:var(--sh1);transition:background var(--trans-dur);
+}
+.mood-label{font-size:13px;font-weight:600;color:var(--t);margin-bottom:14px;}
+.mood-btns{display:flex;gap:6px;}
+.mood-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:4px;padding:10px 2px;border-radius:var(--r-m);
+  border:1.5px solid transparent;transition:all var(--trans-dur);
+  font-size:20px;-webkit-tap-highlight-color:transparent;cursor:pointer;
+}
+.mood-btn:active{transform:scale(.88);}
+.mood-btn.selected{border-color:var(--g);background:var(--g-p);}
+.mood-btn-lbl{font-size:9px;color:var(--t-l);font-weight:500;}
+.mood-reply{
+  font-size:13px;color:var(--t-g);font-weight:500;
+  margin-top:12px;padding:10px 14px;background:var(--g-p);
+  border-radius:var(--r-m);display:none;line-height:1.7;
+}
+.mood-reply.show{display:block;}
+
+/* Step Card */
+.step-card{
+  margin:0 22px;
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-l);padding:20px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:14px;transition:all var(--trans-dur);
+}
+.step-em{font-size:30px;flex-shrink:0;}
+.step-body{flex:1;}
+.step-tag{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:4px;}
+.step-name{font-size:15px;font-weight:700;color:var(--t);}
+.step-note{font-size:12px;color:var(--t-m);margin-top:2px;}
+.step-btn{
+  background:var(--g);color:#fff;font-size:13px;font-weight:700;
+  padding:10px 14px;border-radius:var(--r-f);flex-shrink:0;
+  transition:transform var(--trans-dur),background var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;min-width:62px;
+}
+.step-btn:active{transform:scale(.92);}
+.step-btn.done{background:var(--g-l);color:var(--t-g);}
+
+/* Home Wins */
+.win-preview{
+  margin:0 22px;background:var(--card);
+  border-radius:var(--r-l);padding:18px 20px;box-shadow:var(--sh1);
+  transition:background var(--trans-dur);
+}
+.win-preview-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.win-preview-title{font-size:13px;font-weight:700;}
+.win-preview-link{font-size:12px;color:var(--g);font-weight:600;cursor:pointer;}
+.win-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.win-row:last-child{border-bottom:none;}
+.win-ck{
+  width:22px;height:22px;border-radius:50%;background:var(--g);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;
+}
+.win-tx{font-size:13px;color:var(--t);}
+
+/* Chat shortcut */
+.chat-shortcut{
+  margin:0 22px;background:var(--card);border-radius:var(--r-l);
+  padding:16px 20px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform var(--trans-dur),background var(--trans-dur);
+}
+.chat-shortcut:active{transform:scale(.97);}
+.cs-av{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--blue-p));
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.cs-main{font-size:13px;font-weight:600;color:var(--t);}
+.cs-sub{font-size:12px;color:var(--t-l);}
+.cs-arr{font-size:18px;color:var(--t-l);margin-left:auto;}
+
+/* ── CHAT SCREEN ── */
+#scr-chat{display:flex;flex-direction:column;}
+.chat-hd{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:14px 20px;display:flex;align-items:center;gap:12px;
+  flex-shrink:0;transition:background var(--trans-dur);
+}
+.chat-hd-av{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--blue-p));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.chat-hd-name{font-size:15px;font-weight:700;}
+.chat-hd-status{font-size:12px;color:var(--g);display:flex;align-items:center;gap:4px;margin-top:1px;}
+.chat-dot{
+  width:6px;height:6px;background:var(--g);border-radius:50%;
+  animation:pulse var(--pulse-dur) ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+.chat-msgs{
+  flex:1;padding:16px 16px 8px;
+  display:flex;flex-direction:column;gap:12px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;min-height:0;
+}
+.chat-msgs::-webkit-scrollbar{display:none;}
+.mrow{display:flex;align-items:flex-end;gap:8px;}
+.mrow.me{flex-direction:row-reverse;}
+.m-av-sm{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--blue-p));
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+}
+.bbl{
+  background:var(--g-p);border-radius:6px 20px 20px 20px;
+  padding:12px 16px;font-size:14px;line-height:1.8;
+  max-width:230px;word-break:break-word;transition:background var(--trans-dur);
+}
+.mrow.me .bbl{background:var(--beige);border-radius:20px 6px 20px 20px;}
+.bbl-meta{font-size:10px;color:var(--t-l);margin-top:4px;display:flex;gap:6px;}
+.mrow.me .bbl-meta{justify-content:flex-end;}
+.bbl-read{color:var(--g);}
+
+.date-sep{
+  text-align:center;font-size:11px;color:var(--t-l);
+  padding:4px 0;font-weight:500;margin:10px 0 6px;letter-spacing:.04em;
+}
+
+.typing-row{display:flex;align-items:flex-end;gap:8px;}
+.typing-bbl{
+  background:var(--g-p);border-radius:6px 20px 20px 20px;
+  padding:14px 18px;display:inline-flex;gap:5px;align-items:center;
+}
+.tdot{
+  width:7px;height:7px;border-radius:50%;background:var(--g-l);
+  animation:tdot var(--tdot-dur) ease-in-out infinite;
+}
+.tdot:nth-child(2){animation-delay:.18s;}
+.tdot:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{
+  0%,80%,100%{opacity:.3;transform:scale(.85);}
+  40%{opacity:1;transform:scale(1.15);}
+}
+
+.chips-row{
+  padding:8px 16px;display:flex;gap:8px;
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.chips-row::-webkit-scrollbar{display:none;}
+.chip{
+  background:var(--card);border:1.5px solid var(--g-l);
+  color:var(--t-m);font-size:13px;font-weight:500;
+  padding:8px 14px;border-radius:var(--r-f);white-space:nowrap;
+  cursor:pointer;transition:all var(--trans-dur);flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.chip:active{background:var(--g-p);border-color:var(--g);color:var(--t-g);}
+
+.chat-input-area{
+  padding:10px 16px 12px;background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex;gap:10px;align-items:flex-end;flex-shrink:0;
+  transition:background var(--trans-dur);
+}
+.chat-input{
+  flex:1;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r-xl);padding:12px 18px;
+  font-size:15px;color:var(--t);resize:none;outline:none;
+  min-height:46px;max-height:120px;line-height:1.5;
+  transition:border-color var(--trans-dur),background var(--trans-dur);
+}
+.chat-input:focus{border-color:var(--g-l);}
+.chat-input::placeholder{color:var(--t-l);}
+.send-btn{
+  width:44px;height:44px;border-radius:50%;background:var(--g);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:transform var(--trans-dur),background var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;
+}
+.send-btn:active{transform:scale(.9);}
+.send-btn:disabled{background:var(--g-l);}
+.send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
+
+/* ── HABITS SCREEN ── */
+.habits-hd{
+  padding:20px 22px 16px;
+  background:linear-gradient(160deg,var(--bg-w),var(--g-pp));
+  transition:background var(--trans-dur);
+}
+#app.night .habits-hd{background:linear-gradient(160deg,var(--bg-w),#E8EBE4);}
+.habits-title{font-size:20px;font-weight:700;}
+.habits-date{font-size:13px;color:var(--t-m);margin-top:4px;}
+
+.streak-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:12px;
+}
+.streak-info{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border-radius:var(--r-m);
+  padding:10px 16px;box-shadow:var(--sh1);flex:1;
+}
+.streak-num{font-size:22px;font-weight:700;color:var(--g);}
+.streak-txt{font-size:12px;color:var(--t-m);line-height:1.5;}
+
+.habits-prog-wrap{
+  margin:0 22px 0;
+  background:var(--card);border-radius:var(--r-m);
+  padding:14px 18px;box-shadow:var(--sh1);
+}
+.habits-prog-hd{display:flex;justify-content:space-between;margin-bottom:8px;}
+.habits-prog-lbl{font-size:12px;font-weight:600;color:var(--t);}
+.habits-prog-num{font-size:12px;color:var(--t-g);font-weight:700;}
+.prog-bar-bg{height:6px;background:var(--g-p);border-radius:var(--r-f);}
+.prog-bar-fg{height:6px;background:linear-gradient(90deg,var(--g),var(--g-d));border-radius:var(--r-f);width:0%;transition:width .8s ease;}
+
+.habit-list{display:flex;flex-direction:column;gap:10px;padding:0 22px;}
+.habit-item{
+  background:var(--card);border-radius:var(--r-l);
+  padding:18px 20px;display:flex;align-items:center;gap:14px;
+  border:1.5px solid transparent;box-shadow:var(--sh1);
+  cursor:pointer;user-select:none;
+  -webkit-tap-highlight-color:transparent;transition:all var(--trans-dur);
+}
+.habit-item.done{background:linear-gradient(135deg,var(--card),var(--g-p));border-color:var(--g-l);}
+.habit-item:active{transform:scale(.97);}
+.habit-em{font-size:26px;flex-shrink:0;}
+.habit-info{flex:1;}
+.habit-name{font-size:15px;font-weight:600;color:var(--t);}
+.habit-note-txt{font-size:12px;color:var(--t-l);margin-top:2px;transition:color var(--trans-dur);}
+.habit-item.done .habit-note-txt{color:var(--t-g);}
+.habit-chk{
+  width:28px;height:28px;border-radius:50%;border:2px solid var(--t-l);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-left:auto;font-size:13px;transition:all var(--trans-dur);
+}
+.habit-item.done .habit-chk{background:var(--g);border-color:var(--g);color:#fff;}
+
+.habit-enc{
+  margin:20px 22px;background:var(--g-p);border-radius:var(--r-l);
+  padding:22px;text-align:center;display:none;transition:background var(--trans-dur);
+}
+.habit-enc.show{display:block;}
+.habit-enc-em{font-size:32px;margin-bottom:10px;}
+.habit-enc-t{font-size:15px;font-weight:700;color:var(--t);}
+.habit-enc-s{font-size:13px;color:var(--t-m);margin-top:6px;line-height:1.85;}
+
+/* ── FOOD SCREEN ── */
+.food-hd{
+  padding:20px 22px 16px;
+  background:linear-gradient(160deg,var(--bg-w),var(--beige-l));
+  transition:background var(--trans-dur);
+}
+.food-title{font-size:20px;font-weight:700;}
+.food-date{font-size:13px;color:var(--t-m);margin-top:4px;}
+.food-note{
+  font-size:13px;color:var(--t-m);font-weight:500;
+  margin-top:10px;background:var(--beige);
+  padding:10px 14px;border-radius:var(--r-m);display:inline-block;
+  line-height:1.7;
+}
+
+.meal-section{padding:0 22px;margin-bottom:4px;}
+.meal-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.meal-hd-left{display:flex;align-items:center;gap:8px;}
+.meal-time-em{font-size:18px;}
+.meal-time-name{font-size:14px;font-weight:700;color:var(--t);}
+.meal-add-btn{
+  background:var(--g-p);color:var(--t-g);border:1.5px solid var(--g-l);
+  font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--r-f);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:all var(--trans-dur);
+}
+.meal-add-btn:active{background:var(--g);color:#fff;}
+
+.meal-items{display:flex;flex-direction:column;gap:8px;min-height:36px;}
+.meal-empty{font-size:13px;color:var(--t-l);padding:4px 0;}
+.food-log-item{
+  background:var(--card);border-radius:var(--r-m);
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--sh1);transition:all var(--trans-dur);
+}
+.food-log-em{font-size:22px;flex-shrink:0;}
+.food-log-name{font-size:14px;font-weight:500;color:var(--t);flex:1;}
+.food-log-time{font-size:11px;color:var(--t-l);}
+.food-log-del{
+  font-size:16px;color:var(--t-l);cursor:pointer;padding:4px;
+  -webkit-tap-highlight-color:transparent;transition:color var(--trans-dur);
+}
+.food-log-del:active{color:#E07070;}
+
+/* Quick add sheet */
+.food-sheet-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.35);
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+}
+.food-sheet-overlay.show{opacity:1;pointer-events:all;}
+.food-sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:0 0 32px;
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.32,.72,0,1);
+}
+.food-sheet-overlay.show .food-sheet{transform:translateY(0);}
+.food-sheet-handle{
+  width:36px;height:4px;border-radius:var(--r-f);
+  background:var(--border);margin:12px auto 0;
+}
+.food-sheet-title{
+  font-size:15px;font-weight:700;color:var(--t);
+  padding:14px 22px 10px;text-align:center;
+}
+.food-quick-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  padding:0 22px;
+}
+.food-quick-btn{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  background:var(--bg);border-radius:var(--r-m);padding:14px 6px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  border:1.5px solid transparent;transition:all var(--trans-dur);
+}
+.food-quick-btn:active{background:var(--g-p);border-color:var(--g);}
+.food-quick-em{font-size:26px;}
+.food-quick-name{font-size:10px;font-weight:600;color:var(--t-m);text-align:center;line-height:1.4;}
+
+.food-ai-card{
+  margin:0 22px;background:var(--card);border-radius:var(--r-l);
+  padding:20px;box-shadow:var(--sh1);
+  display:flex;gap:14px;align-items:flex-start;
+  border-left:4px solid var(--beige);
+  transition:all var(--trans-dur);
+}
+
+/* ── SETTINGS SCREEN ── */
+.settings-profile{
+  background:linear-gradient(160deg,var(--bg-w),var(--g-pp));
+  padding:24px 22px 20px;text-align:center;transition:background var(--trans-dur);
+}
+#app.night .settings-profile{background:linear-gradient(160deg,var(--bg-w),#E6EBE4);}
+.profile-av{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--blue-p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 14px;
+  box-shadow:0 4px 16px rgba(114,185,148,.3);
+}
+.profile-name{font-size:18px;font-weight:700;}
+.profile-meta{font-size:12px;color:var(--t-l);margin-top:4px;}
+.profile-plan{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  padding:4px 14px;border-radius:var(--r-f);margin-top:12px;
+}
+
+.upgrade-banner{
+  margin:0 22px;background:linear-gradient(135deg,var(--g),var(--g-d));
+  border-radius:var(--r-l);padding:20px;box-shadow:0 8px 24px rgba(114,185,148,.35);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform var(--trans-dur),box-shadow var(--trans-dur);
+}
+.upgrade-banner:active{transform:scale(.97);}
+.upgrade-banner-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.upgrade-em{font-size:24px;}
+.upgrade-title{font-size:15px;font-weight:700;color:#fff;}
+.upgrade-sub{font-size:12px;color:rgba(255,255,255,.8);}
+.upgrade-cta{
+  background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4);
+  border-radius:var(--r-f);padding:9px 20px;font-size:13px;font-weight:700;
+  width:100%;transition:background var(--trans-dur);
+}
+.upgrade-cta:active{background:rgba(255,255,255,.35);}
+
+.st-group{
+  margin:0 22px 16px;background:var(--card);
+  border-radius:var(--r-l);overflow:hidden;box-shadow:var(--sh1);
+  transition:background var(--trans-dur);
+}
+.st-group-lbl{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t-l);
+  text-transform:uppercase;padding:12px 20px 0;
+}
+.st-row{
+  display:flex;align-items:center;gap:14px;padding:16px 20px;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background var(--trans-dur);
+}
+.st-row:last-child{border-bottom:none;}
+.st-row:active{background:var(--bg);}
+.st-em{font-size:22px;flex-shrink:0;width:32px;text-align:center;}
+.st-info{flex:1;}
+.st-name{font-size:14px;font-weight:500;color:var(--t);}
+.st-note{font-size:12px;color:var(--t-l);margin-top:2px;}
+.st-r{font-size:13px;color:var(--t-l);display:flex;align-items:center;gap:8px;}
+.st-val{font-size:13px;color:var(--t-m);font-weight:500;}
+.st-arr{font-size:16px;color:var(--t-l);}
+
+.toggle{
+  width:46px;height:27px;border-radius:var(--r-f);
+  background:var(--g-l);position:relative;
+  cursor:pointer;transition:background var(--trans-dur);flex-shrink:0;
+}
+.toggle.on{background:var(--g);}
+.toggle::after{
+  content:'';position:absolute;
+  width:21px;height:21px;background:#fff;border-radius:50%;
+  top:3px;left:3px;
+  transition:transform var(--trans-dur);
+  box-shadow:0 2px 4px rgba(0,0,0,.18);
+}
+.toggle.on::after{transform:translateX(19px);}
+
+.theme-swatches{display:flex;gap:10px;padding:12px 20px 16px;}
+.swatch{
+  width:32px;height:32px;border-radius:50%;
+  cursor:pointer;border:3px solid transparent;
+  transition:border-color var(--trans-dur),transform var(--trans-dur);
+}
+.swatch.sel{border-color:var(--t);}
+.swatch:active{transform:scale(.88);}
+.st-ver{text-align:center;padding:20px 22px 28px;font-size:12px;color:var(--t-l);line-height:1.9;}
+
+/* ── UPGRADE MODAL ── */
+.modal-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);
+  z-index:500;opacity:0;pointer-events:none;
+  transition:opacity .3s ease;display:flex;align-items:flex-end;
+}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.upgrade-modal{
+  background:var(--card);width:100%;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:0 0 36px;
+  transform:translateY(100%);
+  transition:transform .4s cubic-bezier(.32,.72,0,1);
+  max-height:90vh;overflow-y:auto;
+}
+.modal-overlay.show .upgrade-modal{transform:translateY(0);}
+.modal-handle{
+  width:36px;height:4px;border-radius:var(--r-f);
+  background:var(--border);margin:14px auto;
+}
+.modal-hero{
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  padding:24px 28px;text-align:center;margin:0 22px;
+  border-radius:var(--r-l);margin-bottom:24px;
+}
+.modal-em{font-size:44px;margin-bottom:12px;}
+.modal-title{font-size:22px;font-weight:700;color:var(--t);line-height:1.4;}
+.modal-sub{font-size:14px;color:var(--t-m);margin-top:8px;line-height:1.8;}
+.modal-features{
+  display:flex;flex-direction:column;gap:14px;padding:0 28px;margin-bottom:24px;
+}
+.modal-feat{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--bg);border-radius:var(--r-m);padding:14px 16px;
+}
+.modal-feat-em{font-size:22px;flex-shrink:0;}
+.modal-feat-name{font-size:14px;font-weight:600;color:var(--t);margin-bottom:3px;}
+.modal-feat-desc{font-size:12px;color:var(--t-m);line-height:1.7;}
+.modal-price{
+  text-align:center;padding:0 28px;margin-bottom:20px;
+}
+.modal-price-num{font-size:36px;font-weight:700;color:var(--t);}
+.modal-price-per{font-size:14px;color:var(--t-m);}
+.modal-price-trial{
+  display:inline-block;background:var(--g-p);color:var(--t-g);
+  font-size:12px;font-weight:700;padding:5px 18px;
+  border-radius:var(--r-f);margin-top:10px;
+}
+.modal-cta-wrap{padding:0 28px;}
+.modal-cta{
+  width:100%;background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:16px;font-weight:700;
+  padding:18px;border-radius:var(--r-f);
+  box-shadow:0 8px 24px rgba(114,185,148,.4);
+  transition:transform var(--trans-dur),box-shadow var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;
+}
+.modal-cta:active{transform:scale(.97);}
+.modal-foot{
+  text-align:center;font-size:12px;color:var(--t-l);
+  margin-top:14px;padding:0 28px;line-height:1.9;
+}
+.modal-close-btn{
+  position:absolute;top:14px;right:20px;
+  font-size:22px;color:var(--t-l);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;padding:4px;
+}
+
+/* ── LOADING SCREEN ── */
+#loading{
+  position:absolute;inset:0;z-index:999;
+  background:var(--bg-w);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1);
+}
+#loading.ld-out{opacity:0;pointer-events:none;}
+.ld-inner{text-align:center;display:flex;flex-direction:column;align-items:center;}
+.ld-logo{font-size:52px;animation:ldBreath 2.8s ease-in-out infinite;margin-bottom:14px;}
+.ld-name{font-size:20px;font-weight:700;color:var(--t);letter-spacing:.12em;}
+.ld-sub{font-size:13px;color:var(--t-m);margin-top:10px;opacity:0;animation:ldRise .8s ease .5s both;}
+@keyframes ldBreath{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+@keyframes ldRise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TOAST ── */
+.toast{
+  position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#2D2D2D;color:#fff;border-radius:var(--r-f);
+  padding:11px 22px;font-size:13px;font-weight:500;
+  white-space:nowrap;z-index:900;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease,transform .3s ease;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── REDUCED MOTION ── */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  .particle{display:none!important;}
+  #loading .ld-logo{animation:none!important;}
+}
+
+/* ── iPHONE SE (375px) ── */
+@media(max-width:375px){
+  .onb-option{padding:13px 16px;}
+  .profile-stats{gap:0;}
+  .profile-stat{padding:10px 4px;}
+  .cal-dot{width:22px;height:22px;}
+  .cal-dot.is-today{width:28px;height:28px;}
+  .modal-price-num{font-size:30px;}
+}
+
+/* ── WINS SCREEN (minimal, kept for reference from home) ── */
+.wins-hd{padding:20px 22px 16px;background:linear-gradient(160deg,var(--bg-w),var(--beige-l));transition:background var(--trans-dur);}
+.wins-title{font-size:20px;font-weight:700;}
+.wins-date{font-size:13px;color:var(--t-m);margin-top:4px;}
+#today-wins-list,#week-wins-list{display:flex;flex-direction:column;gap:10px;padding:0 22px;}
+.win-card{
+  background:var(--card);border-radius:var(--r-l);padding:18px 20px;box-shadow:var(--sh1);
+  display:flex;align-items:flex-start;gap:14px;border-left:3px solid var(--g-l);
+  transition:background var(--trans-dur);
+}
+.win-card-em{font-size:22px;flex-shrink:0;line-height:1;margin-top:2px;}
+.win-card-t{font-size:14px;font-weight:600;color:var(--t);}
+.win-card-s{font-size:12px;color:var(--t-l);margin-top:3px;}
+.win-card-done{
+  margin-left:auto;flex-shrink:0;width:24px;height:24px;border-radius:50%;
+  background:var(--g-p);color:var(--g);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+}
+.wins-empty{text-align:center;padding:28px 22px;font-size:14px;color:var(--t-l);line-height:2;}
+.wins-close{
+  margin:24px 22px;background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-xl);padding:32px 24px;text-align:center;
+  transition:background var(--trans-dur);
+}
+.wins-close-em{font-size:38px;margin-bottom:14px;}
+.wins-close-t{font-size:19px;font-weight:700;color:var(--t);line-height:1.55;}
+.wins-close-s{font-size:14px;color:var(--t-m);margin-top:10px;line-height:1.9;}
+.habio-win{
+  margin:0 22px 20px;background:var(--card);border-radius:var(--r-l);
+  padding:20px;box-shadow:var(--sh1);display:flex;gap:12px;align-items:flex-start;
+  transition:background var(--trans-dur);
+}
+
+/* ── NAME INPUT ── */
+.onb-name-wrap{margin:0 0 20px;width:100%;}
+.onb-name-input{
+  width:100%;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:var(--r-l);
+  padding:16px 20px;font-size:16px;color:var(--t);
+  text-align:center;outline:none;
+  transition:border-color var(--trans-dur),background var(--trans-dur);
+}
+.onb-name-input:focus{border-color:var(--g-l);background:var(--bg-w);}
+.onb-name-input::placeholder{color:var(--t-l);}
+
+/* ── PROFILE STATS ── */
+.profile-stats{
+  display:flex;margin-top:14px;width:100%;
+  background:var(--bg);border-radius:var(--r-m);
+  overflow:hidden;transition:background var(--trans-dur);
+}
+.profile-stat{
+  flex:1;padding:11px 6px;text-align:center;
+  border-right:1px solid var(--border);
+}
+.profile-stat:last-child{border-right:none;}
+.profile-stat-num{font-size:16px;font-weight:700;color:var(--t);line-height:1;}
+.profile-stat-lbl{font-size:9px;color:var(--t-l);font-weight:500;margin-top:3px;letter-spacing:.03em;}
+.profile-stat.accent .profile-stat-num{color:var(--g);}
+
+/* ── SOFT PAYWALL ── */
+.prem-preview-wrap{
+  margin:0 22px;border-radius:var(--r-l);
+  overflow:hidden;position:relative;box-shadow:var(--sh1);
+}
+.prem-preview-inner{
+  background:var(--card);
+  filter:blur(1.5px);pointer-events:none;user-select:none;
+}
+.prem-preview-lock{
+  position:absolute;inset:0;
+  background:rgba(253,252,250,.82);
+  backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:5px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background var(--trans-dur);
+}
+.prem-preview-lock:active{background:rgba(240,248,243,.9);}
+.prem-lock-em{font-size:18px;}
+.prem-lock-t{font-size:13px;font-weight:700;color:var(--t);}
+.prem-lock-s{font-size:11px;color:var(--t-m);}
+
+/* ── HABIT CALENDAR ── */
+.cal-wrap{
+  margin:0 22px 14px;
+  background:var(--card);border-radius:var(--r-l);
+  box-shadow:var(--sh1);padding:14px 6px 12px;
+  transition:background var(--trans-dur);
+}
+.cal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;margin-bottom:10px;
+}
+.cal-title{font-size:12px;font-weight:700;color:var(--t);letter-spacing:.04em;}
+.cal-streak-lbl{font-size:11px;color:var(--t-g);font-weight:600;}
+.cal-days{display:flex;align-items:flex-start;}
+.cal-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.cal-day-lbl{font-size:10px;font-weight:700;color:var(--t-l);letter-spacing:.02em;}
+.cal-dot-area{
+  width:100%;display:flex;align-items:center;
+  justify-content:center;position:relative;height:34px;
+}
+.cal-line-l,.cal-line-r{
+  position:absolute;height:2px;top:50%;transform:translateY(-50%);
+  width:50%;background:var(--g-l);opacity:0;transition:opacity .5s ease;
+}
+.cal-line-l{left:0;}
+.cal-line-r{right:0;}
+.cal-line-l.show,.cal-line-r.show{opacity:1;}
+.cal-dot{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid var(--border);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .45s cubic-bezier(.34,1.56,.64,1);
+  position:relative;z-index:1;
+}
+.cal-dot.partial{border-color:var(--g-l);background:var(--g-p);}
+.cal-dot.full{border-color:var(--g);background:var(--g);box-shadow:0 2px 8px rgba(114,185,148,.38);}
+.cal-dot.is-today{width:32px;height:32px;border-color:var(--g);box-shadow:0 0 0 3px rgba(114,185,148,.14);}
+.cal-dot.is-today.full{box-shadow:0 0 0 3px rgba(114,185,148,.2),0 4px 12px rgba(114,185,148,.38);}
+.cal-dot-inner{width:8px;height:8px;border-radius:50%;background:#fff;opacity:0;transition:opacity .3s;}
+.cal-dot.full .cal-dot-inner{opacity:1;}
+.cal-dot.partial .cal-dot-inner{background:var(--g);opacity:.4;width:7px;height:7px;}
+.cal-dot.is-today:not(.full) .cal-dot-inner{background:var(--g);opacity:.55;width:7px;height:7px;}
+.cal-date-num{font-size:10px;font-weight:500;color:var(--t-l);transition:color var(--trans-dur);}
+.cal-col.is-today .cal-date-num{color:var(--t-g);font-weight:700;}
+.cal-today-lbl{
+  font-size:8px;font-weight:700;color:var(--g);letter-spacing:.05em;
+  height:0;overflow:hidden;opacity:0;transition:opacity .3s ease;
+}
+.cal-col.is-today .cal-today-lbl{opacity:1;height:12px;}
+
+/* ── WEEKLY REVIEW ── */
+.weekly-overlay{
+  position:absolute;inset:0;
+  background:rgba(28,28,28,.52);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  z-index:650;opacity:0;pointer-events:none;
+  transition:opacity .36s ease;
+  display:flex;align-items:flex-end;
+}
+.weekly-overlay.show{opacity:1;pointer-events:all;}
+.weekly-modal{
+  background:var(--card);width:100%;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  transform:translateY(100%);
+  transition:transform .46s cubic-bezier(.32,.72,0,1);
+  max-height:88vh;overflow-y:auto;
+  scrollbar-width:none;padding-bottom:36px;
+}
+.weekly-modal::-webkit-scrollbar{display:none;}
+.weekly-overlay.show .weekly-modal{transform:translateY(0);}
+.wk-handle{width:36px;height:4px;border-radius:var(--r-f);background:var(--border);margin:14px auto 16px;}
+.wk-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:4px 14px;border-radius:var(--r-f);margin:0 24px 14px;
+}
+.wk-title{font-size:21px;font-weight:700;color:var(--t);padding:0 24px;line-height:1.5;margin-bottom:6px;}
+.wk-sub{font-size:13px;color:var(--t-m);padding:0 24px;line-height:1.9;margin-bottom:20px;}
+.wk-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 24px;margin-bottom:16px;}
+.wk-stat{background:var(--bg);border-radius:var(--r-l);padding:14px 14px;transition:background var(--trans-dur);}
+.wk-stat-num{font-size:26px;font-weight:700;color:var(--t);line-height:1;margin-bottom:4px;}
+.wk-stat-lbl{font-size:11px;color:var(--t-l);font-weight:500;}
+.wk-stat.accent .wk-stat-num{color:var(--g);}
+.wk-best{
+  margin:0 24px 16px;
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-l);padding:15px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.wk-best-em{font-size:24px;flex-shrink:0;}
+.wk-best-lbl{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:3px;}
+.wk-best-name{font-size:14px;font-weight:700;color:var(--t);}
+.wk-best-sub{font-size:12px;color:var(--t-m);margin-top:2px;}
+.wk-compare{
+  margin:0 24px 16px;background:var(--bg);
+  border-radius:var(--r-l);padding:16px 16px;
+  transition:background var(--trans-dur);
+}
+.wk-compare-lbl{
+  font-size:11px;color:var(--t-l);font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;
+}
+.wk-cmp-row{margin-bottom:10px;}
+.wk-cmp-row:last-child{margin-bottom:0;}
+.wk-cmp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:12px;color:var(--t-m);}
+.wk-delta{font-size:11px;font-weight:700;padding:2px 9px;border-radius:var(--r-f);}
+.wk-delta.up{background:var(--g-p);color:var(--t-g);}
+.wk-delta.flat{background:var(--beige);color:var(--t-m);}
+.wk-delta.down{background:#FDEAEA;color:#B85050;}
+.wk-bar-bg{height:5px;background:rgba(0,0,0,.05);border-radius:var(--r-f);overflow:hidden;}
+.wk-bar{height:5px;border-radius:var(--r-f);background:linear-gradient(90deg,var(--g-l),var(--g));width:0;transition:width 1s ease .35s;}
+.wk-bar.dim{background:var(--g-l);opacity:.5;}
+.wk-habio{
+  margin:0 24px 18px;background:var(--card);
+  border-radius:var(--r-l);padding:16px 16px;
+  box-shadow:var(--sh1);display:flex;gap:12px;
+  align-items:flex-start;border-left:4px solid var(--g);
+}
+.wk-close{
+  display:block;width:calc(100% - 48px);margin:0 24px;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:15px;font-weight:700;padding:16px;
+  border-radius:var(--r-f);text-align:center;
+  box-shadow:0 8px 20px rgba(114,185,148,.28);
+  transition:transform var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;cursor:pointer;
+}
+.wk-close:active{transform:scale(.97);}
+
+/* ── ONBOARDING ── */
+.onb-overlay{
+  position:absolute;inset:0;background:var(--bg-w);z-index:800;
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:opacity .5s ease;
+}
+.onb-overlay.done{opacity:0;pointer-events:none;}
+.onb-progress{
+  display:flex;gap:6px;padding:58px 28px 14px;flex-shrink:0;
+}
+.onb-dot{
+  height:3px;flex:1;border-radius:var(--r-f);
+  background:var(--g-l);transition:background .4s ease;
+}
+.onb-dot.active{background:var(--g);}
+.onb-screens-wrap{
+  flex:1;overflow:hidden;position:relative;
+}
+.onb-screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;transform:translateX(28px);pointer-events:none;
+  transition:opacity .32s ease,transform .32s ease;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.onb-screen::-webkit-scrollbar{display:none;}
+.onb-screen.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.onb-screen.exit{opacity:0;transform:translateX(-28px);}
+.onb-inner{
+  flex:1;padding:8px 28px 28px;
+  display:flex;flex-direction:column;
+}
+.onb-em{font-size:50px;text-align:center;margin:20px 0 14px;}
+.onb-title{
+  font-size:22px;font-weight:700;color:var(--t);
+  line-height:1.5;text-align:center;margin-bottom:10px;
+}
+.onb-sub{
+  font-size:14px;color:var(--t-m);line-height:1.9;
+  text-align:center;margin-bottom:24px;
+}
+.onb-options{display:flex;flex-direction:column;gap:10px;}
+.onb-option{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:var(--r-l);padding:15px 18px;
+  font-size:14px;font-weight:500;color:var(--t);
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:all var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;box-shadow:var(--sh1);
+}
+.onb-option:active{transform:scale(.97);}
+.onb-option.selected{border-color:var(--g);background:var(--g-p);color:var(--t-g);}
+.onb-option-em{font-size:22px;flex-shrink:0;line-height:1;}
+.onb-spacer{flex:1;min-height:16px;}
+.onb-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:16px;font-weight:700;
+  padding:18px;border-radius:var(--r-f);
+  box-shadow:0 8px 20px rgba(114,185,148,.3);
+  transition:transform var(--trans-dur),opacity var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;
+  margin-top:14px;flex-shrink:0;
+}
+.onb-btn:active{transform:scale(.97);}
+.onb-btn:disabled{opacity:.32;}
+.onb-skip{
+  text-align:center;font-size:13px;color:var(--t-l);
+  padding:14px 0 4px;cursor:pointer;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── STREAK MODAL ── */
+.streak-modal-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.55);
+  z-index:700;opacity:0;pointer-events:none;
+  transition:opacity .4s ease;
+  display:flex;align-items:center;justify-content:center;padding:0 20px;
+}
+.streak-modal-overlay.show{opacity:1;pointer-events:all;}
+.streak-modal{
+  background:var(--card);border-radius:var(--r-xl);
+  padding:40px 28px 32px;text-align:center;
+  transform:scale(.78) translateY(24px);
+  transition:transform .52s cubic-bezier(.17,.89,.32,1.28),opacity .4s ease;
+  opacity:0;position:relative;overflow:hidden;width:100%;
+}
+.streak-modal-overlay.show .streak-modal{transform:scale(1) translateY(0);opacity:1;}
+.streak-modal-num{
+  font-size:76px;font-weight:700;line-height:1;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:2px;
+}
+.streak-modal-unit{font-size:16px;font-weight:700;color:var(--g-d);margin-bottom:18px;}
+.streak-modal-title{font-size:20px;font-weight:700;color:var(--t);line-height:1.5;margin-bottom:10px;}
+.streak-modal-msg{font-size:14px;color:var(--t-m);line-height:1.9;margin-bottom:28px;}
+.streak-modal-btn{
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:15px;font-weight:700;
+  padding:15px 44px;border-radius:var(--r-f);
+  box-shadow:0 8px 20px rgba(114,185,148,.35);
+  transition:transform var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;
+}
+.streak-modal-btn:active{transform:scale(.95);}
+.particle{
+  position:absolute;pointer-events:none;font-size:18px;opacity:0;
+  animation:particleFly var(--p-dur,2.5s) ease-out var(--p-delay,0s) both;
+}
+@keyframes particleFly{
+  0%{opacity:0;transform:translateY(0) scale(.5) rotate(0deg);}
+  18%{opacity:.88;}
+  100%{opacity:0;transform:translateY(-190px) scale(1.1) rotate(var(--p-rot,30deg));}
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.fade-in{animation:fadeInUp var(--fade-dur) ease both;}
+
+@keyframes popIn{
+  0%{transform:scale(.7);opacity:0;}
+  70%{transform:scale(1.12);}
+  100%{transform:scale(1);opacity:1;}
+}
+.pop-in{animation:popIn .35s ease both;}
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- LOADING SCREEN -->
+  <div id="loading" role="status" aria-live="polite">
+    <div class="ld-inner">
+      <div class="ld-logo">🌿</div>
+      <div class="ld-name">Habio</div>
+      <div class="ld-sub" id="ldSub">今日も、おかえりなさい。</div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="statusbar">
+    <span id="sbTime">9:41</span>
+    <div class="sb-r">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--t)">
+        <rect x="0" y="4" width="3" height="8" rx="1" opacity=".35"/>
+        <rect x="4.5" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/>
+        <rect x="9" y="1" width="3" height="11" rx="1" opacity=".8"/>
+        <rect x="13.5" y="0" width="2.5" height="12" rx="1"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="var(--t)" stroke-opacity=".3"/>
+        <rect x="2" y="2" width="15" height="8" rx="2" fill="var(--t)"/>
+        <path d="M23 4.5V7.5" stroke="var(--t)" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="night-banner">🌙 おやすみモード — ゆっくり休んでください</div>
+
+  <div id="screens">
+
+  <!-- ====== HOME ====== -->
+  <div class="screen active" id="scr-home">
+    <div class="home-hero">
+      <div class="home-hero-inner">
+        <div class="home-left">
+          <div class="home-date" id="homeDate"></div>
+          <div class="home-greet" id="homeGreet">
+            おはようございます
+            <small id="homeGreetSub">今日も無理せず、一緒に小さな一歩を。</small>
+          </div>
+        </div>
+        <div class="progress-ring-wrap">
+          <div class="ring-wrap-rel">
+            <svg class="ring-svg" viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="32"/>
+              <circle class="ring-fg" id="homeRing" cx="50" cy="50" r="32"/>
+            </svg>
+            <div class="ring-inner" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div class="ring-num" id="ringNum">0</div>
+              <div class="ring-sub">/ <span id="ringTotal">6</span></div>
+            </div>
+          </div>
+          <div class="streak-badge" id="streakBadge">🔥 0日</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">Habio より</p>
+    <div class="habio-card mb14">
+      <div class="habio-av">🌱</div>
+      <div>
+        <div class="habio-from">TODAY'S MESSAGE</div>
+        <div class="habio-msg" id="habitoMsg">今日は水分を少し意識してみましょう。それだけで、体は喜びます。</div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">今の気分は？</p>
+    <div class="mood-card mb14">
+      <div class="mood-label">Habio に教えてください</div>
+      <div class="mood-btns">
+        <button class="mood-btn" data-mood="つかれた" onclick="selectMood(this)">😴<span class="mood-btn-lbl">つかれた</span></button>
+        <button class="mood-btn" data-mood="まあまあ" onclick="selectMood(this)">😐<span class="mood-btn-lbl">まあまあ</span></button>
+        <button class="mood-btn" data-mood="ふつう"   onclick="selectMood(this)">🙂<span class="mood-btn-lbl">ふつう</span></button>
+        <button class="mood-btn" data-mood="いい感じ" onclick="selectMood(this)">😊<span class="mood-btn-lbl">いい感じ</span></button>
+        <button class="mood-btn" data-mood="とても良い" onclick="selectMood(this)">✨<span class="mood-btn-lbl">最高</span></button>
+      </div>
+      <div class="mood-reply" id="moodReply"></div>
+    </div>
+
+    <p class="sec-lbl">今日の一歩</p>
+    <div class="step-card mb14" id="stepCard">
+      <div class="step-em" id="stepEm">💧</div>
+      <div class="step-body">
+        <div class="step-tag">今日のおすすめ</div>
+        <div class="step-name" id="stepName">水を1杯飲む</div>
+        <div class="step-note">これだけでOKです</div>
+      </div>
+      <button class="step-btn" id="stepBtn" onclick="doStep()">できた</button>
+    </div>
+
+    <p class="sec-lbl">今日のできた</p>
+    <div class="win-preview mb14">
+      <div class="win-preview-hd">
+        <span class="win-preview-title">小さな記録</span>
+        <span class="win-preview-link" onclick="goTab('wins')">すべて見る →</span>
+      </div>
+      <div id="homeWinList"><div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>何か一つ試してみましょう 🌿</div></div>
+    </div>
+
+    <p class="sec-lbl">Habio に話しかける</p>
+    <div class="chat-shortcut mb28" onclick="goTab('chat')">
+      <div class="cs-av">🌱</div>
+      <div>
+        <div class="cs-main">何でも話しかけてください</div>
+        <div class="cs-sub">疲れた日も、うれしい日も</div>
+      </div>
+      <span class="cs-arr">›</span>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+
+
+  <!-- ====== CHAT ====== -->
+  <div class="screen" id="scr-chat" style="display:flex;flex-direction:column;">
+    <div class="chat-hd">
+      <div class="chat-hd-av">🌱</div>
+      <div>
+        <div class="chat-hd-name">Habio</div>
+        <div class="chat-hd-status"><span class="chat-dot"></span> いつでも話しかけてください</div>
+      </div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chips-row">
+      <button class="chip" onclick="quickChat('今日は疲れました')">😮‍💨 疲れた</button>
+      <button class="chip" onclick="quickChat('食事について相談したい')">🥗 食事の相談</button>
+      <button class="chip" onclick="quickChat('運動ができなかった')">🚶 運動できなかった</button>
+      <button class="chip" onclick="quickChat('よく眠れなかった')">🌙 眠れなかった</button>
+      <button class="chip" onclick="quickChat('今日がんばったことを聞いてほしい')">✨ 聞いてほしい</button>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Habio に話しかける…" rows="1" oninput="onInputChange(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()" disabled>
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/></svg>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ====== HABITS ====== -->
+  <div class="screen" id="scr-habits">
+    <div class="habits-hd">
+      <div class="habits-title">今日の小さな一歩</div>
+      <div class="habits-date" id="habitsDate"></div>
+      <div class="streak-row">
+        <div class="streak-info">
+          <div class="streak-num" id="habitStreakNum">0</div>
+          <div class="streak-txt">日間<br>継続中 🔥</div>
+        </div>
+        <div style="flex:1;background:var(--card);border-radius:var(--r-m);padding:10px 14px;box-shadow:var(--sh1);">
+          <div style="font-size:11px;color:var(--t-l);margin-bottom:6px;">今日の達成率</div>
+          <div class="prog-bar-bg"><div class="prog-bar-fg" id="habitProgBar"></div></div>
+          <div style="font-size:11px;color:var(--t-g);margin-top:5px;font-weight:700;" id="habitProgTxt">0 / 6 完了</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+    <div class="cal-wrap" id="habitCal">
+      <div class="cal-header">
+        <div class="cal-title">今週の記録</div>
+        <div class="cal-streak-lbl" id="calStreakLbl"></div>
+      </div>
+      <div class="cal-days" id="calDays"></div>
+    </div>
+    <div class="habit-list" id="habitList"></div>
+    <div class="habit-enc" id="habitEnc">
+      <div class="habit-enc-em">🌱</div>
+      <div class="habit-enc-t" id="habitEncT">いい調子です。</div>
+      <div class="habit-enc-s" id="habitEncS">続けようとしていること、それ自体が前進です。</div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+
+
+  <!-- ====== FOOD ====== -->
+  <div class="screen" id="scr-food">
+    <div class="food-hd">
+      <div class="food-title">今日の食事</div>
+      <div class="food-date" id="foodDate"></div>
+      <div class="food-note">カロリーより、バランス。<br>食べたものを記録して、少しずつ整えましょう。</div>
+    </div>
+
+    <p class="sec-lbl">Habio より</p>
+    <div class="food-ai-card mb14">
+      <div class="habio-av">🌱</div>
+      <div>
+        <div class="habio-from">TODAY'S FOOD TIP</div>
+        <div class="habio-msg" id="foodAiMsg">野菜を1品増やすだけで、体の調子が変わります。コンビニのサラダでもOKですよ。</div>
+      </div>
+    </div>
+
+    <div class="meal-section mb14">
+      <div class="meal-hd">
+        <div class="meal-hd-left"><span class="meal-time-em">🌅</span><span class="meal-time-name">朝食</span></div>
+        <button class="meal-add-btn" onclick="openFoodSheet('morning')">＋ 記録する</button>
+      </div>
+      <div class="meal-items" id="meal-morning"><div class="meal-empty">まだ記録がありません</div></div>
+    </div>
+
+    <div class="meal-section mb14">
+      <div class="meal-hd">
+        <div class="meal-hd-left"><span class="meal-time-em">☀️</span><span class="meal-time-name">昼食</span></div>
+        <button class="meal-add-btn" onclick="openFoodSheet('noon')">＋ 記録する</button>
+      </div>
+      <div class="meal-items" id="meal-noon"><div class="meal-empty">まだ記録がありません</div></div>
+    </div>
+
+    <div class="meal-section mb14">
+      <div class="meal-hd">
+        <div class="meal-hd-left"><span class="meal-time-em">🌙</span><span class="meal-time-name">夕食</span></div>
+        <button class="meal-add-btn" onclick="openFoodSheet('night')">＋ 記録する</button>
+      </div>
+      <div class="meal-items" id="meal-night"><div class="meal-empty">まだ記録がありません</div></div>
+    </div>
+
+    <div style="height:24px;"></div>
+
+    <!-- Food sheet overlay -->
+    <div class="food-sheet-overlay" id="foodSheetOverlay" onclick="closeFoodSheet(event)">
+      <div class="food-sheet">
+        <div class="food-sheet-handle"></div>
+        <div class="food-sheet-title" id="foodSheetTitle">何を食べましたか？</div>
+        <div class="food-quick-grid" id="foodQuickGrid"></div>
+        <div style="height:20px;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====== WINS ====== -->
+  <div class="screen" id="scr-wins">
+    <div class="wins-hd">
+      <div class="wins-title">小さな「できた」</div>
+      <div class="wins-date" id="winsDate"></div>
+    </div>
+    <p class="sec-lbl">今日</p>
+    <div id="today-wins-list"></div>
+    <div class="wins-close">
+      <div class="wins-close-em">🌱</div>
+      <div class="wins-close-t" id="winsCloseT">今日も少し、<br>整いました。</div>
+      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それ自体が答えです。</div>
+    </div>
+    <p class="sec-lbl">今週</p>
+    <div id="week-wins-list"></div>
+    <div class="habio-win">
+      <div class="habio-av" style="width:38px;height:38px;flex-shrink:0;font-size:18px;">🌱</div>
+      <div>
+        <div class="habio-from">Habio より</div>
+        <div class="habio-msg" id="winsHabioMsg" style="font-size:14px;line-height:1.9;margin-top:4px;">少しずつ、着実に前進しています。焦らなくていい。今のペースで大丈夫です。</div>
+      </div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+
+
+  <!-- ====== SETTINGS ====== -->
+  <div class="screen" id="scr-settings">
+    <div class="settings-profile">
+      <div class="profile-av">🌿</div>
+      <div class="profile-name" id="profileName">こんにちは</div>
+      <div class="profile-meta" id="profileMeta">Habio を使いはじめて 1日目</div>
+      <div class="profile-plan">🌱 無料プラン</div>
+      <div class="profile-stats">
+        <div class="profile-stat accent">
+          <div class="profile-stat-num" id="statTotalWins">0</div>
+          <div class="profile-stat-lbl">合計できた</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num" id="statWeekRate">0%</div>
+          <div class="profile-stat-lbl">今週の継続率</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num" id="statStreak">0日</div>
+          <div class="profile-stat-lbl">現在のStreak</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">プレミアムプラン</p>
+    <div class="upgrade-banner mb14" onclick="showUpgradeModal()">
+      <div class="upgrade-banner-top">
+        <div class="upgrade-em">💎</div>
+        <div>
+          <div class="upgrade-title">もっと寄り添ってほしい方へ</div>
+          <div class="upgrade-sub">7日間、無料でお試しできます</div>
+        </div>
+      </div>
+      <button class="upgrade-cta">プレミアムを試してみる →</button>
+    </div>
+
+    <p class="sec-lbl">お知らせ</p>
+    <div class="st-group">
+      <div class="st-row">
+        <div class="st-em">🔔</div>
+        <div class="st-info"><div class="st-name">Habio からの声かけ</div><div class="st-note">朝・昼・夜にやさしくお知らせ</div></div>
+        <div class="toggle on" id="tog-notif" onclick="toggleToggle(this,'notif')"></div>
+      </div>
+      <div class="st-row">
+        <div class="st-em">🌙</div>
+        <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
+        <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">習慣の設定</p>
+    <div class="st-group">
+      <div class="st-row">
+        <div class="st-em">✏️</div>
+        <div class="st-info"><div class="st-name">習慣をカスタマイズ</div><div class="st-note">自分に合った習慣を選べます</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
+      <div class="st-row">
+        <div class="st-em">⏱️</div>
+        <div class="st-info"><div class="st-name">睡眠の目標時間</div><div class="st-note">体内時計を整えます</div></div>
+        <div class="st-r"><span class="st-val">7時間</span><span class="st-arr">›</span></div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">Habio の話し方</p>
+    <div class="st-group">
+      <div class="st-row">
+        <div class="st-em">💬</div>
+        <div class="st-info"><div class="st-name">話し方のスタイル</div><div class="st-note">いまより優しく or 少し明るく</div></div>
+        <div class="st-r"><span class="st-val">やさしめ</span><span class="st-arr">›</span></div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">プレミアムで見えること</p>
+    <div class="prem-preview-wrap mb14">
+      <div class="prem-preview-inner">
+        <div class="st-row" style="border-bottom:1px solid var(--border);">
+          <div class="st-em">📊</div>
+          <div class="st-info"><div class="st-name">過去30日の習慣グラフ</div><div class="st-note">継続パターンが一目でわかります</div></div>
+          <div class="st-r"><span class="st-arr">›</span></div>
+        </div>
+        <div class="st-row" style="border-bottom:1px solid var(--border);">
+          <div class="st-em">🧠</div>
+          <div class="st-info"><div class="st-name">睡眠 × 気分の関連分析</div><div class="st-note">あなたのパターンを可視化します</div></div>
+          <div class="st-r"><span class="st-arr">›</span></div>
+        </div>
+        <div class="st-row">
+          <div class="st-em">✨</div>
+          <div class="st-info"><div class="st-name">AI週次コーチングレポート</div><div class="st-note">もっと深く、振り返れます</div></div>
+          <div class="st-r"><span class="st-arr">›</span></div>
+        </div>
+      </div>
+      <div class="prem-preview-lock" onclick="showUpgradeModal()">
+        <div class="prem-lock-em">🔒</div>
+        <div class="prem-lock-t">プレミアムで解放されます</div>
+        <div class="prem-lock-s">より深く振り返れます</div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">テーマカラー</p>
+    <div class="st-group">
+      <div class="st-row" style="cursor:default;">
+        <div class="st-em">🎨</div>
+        <div class="st-info"><div class="st-name">カラーテーマ</div><div class="st-note">お好みの色を選んでください</div></div>
+      </div>
+      <div class="theme-swatches" id="themeSwatches">
+        <div class="swatch" data-color="#72B994" style="background:#72B994;"></div>
+        <div class="swatch" data-color="#7AB0D4" style="background:#7AB0D4;"></div>
+        <div class="swatch" data-color="#B49CD4" style="background:#B49CD4;"></div>
+        <div class="swatch" data-color="#D4956C" style="background:#D4956C;"></div>
+        <div class="swatch" data-color="#9AB89A" style="background:#9AB89A;"></div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">アカウント</p>
+    <div class="st-group">
+      <div class="st-row" onclick="window.location.href='index.html'">
+        <div class="st-em">🌐</div>
+        <div class="st-info"><div class="st-name">サービスサイトへ戻る</div><div class="st-note">Habio のランディングページ</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
+      <div class="st-row" onclick="resetData()">
+        <div class="st-em">🗑️</div>
+        <div class="st-info"><div class="st-name">データをリセット</div><div class="st-note">習慣・チャット履歴を削除</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
+    </div>
+
+    <div class="st-ver">
+      Habio v1.0<br>
+      あなたのペースで、ゆっくりと。<br>
+      <span style="opacity:.6;">ご意見・ご要望はいつでもどうぞ。</span>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+
+  </div><!-- /screens -->
+
+
+  <!-- TAB BAR -->
+  <nav id="tabbar">
+    <button class="tab active" data-scr="home" onclick="goTab('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z"/></svg>
+      <span class="tab-lbl">ホーム</span>
+    </button>
+    <button class="tab" data-scr="chat" onclick="goTab('chat')">
+      <svg viewBox="0 0 24 24"><path d="M21 15C21 16.1 20.1 17 19 17H7L3 21V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5V15Z"/></svg>
+      <span class="tab-lbl">話す</span>
+    </button>
+    <button class="tab" data-scr="habits" onclick="goTab('habits')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8.5 12 11 14.5 16 9"/></svg>
+      <span class="tab-lbl">習慣</span>
+    </button>
+    <button class="tab" data-scr="food" onclick="goTab('food')">
+      <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="tab-lbl">食事</span>
+    </button>
+    <button class="tab" data-scr="settings" onclick="goTab('settings')">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="16" cy="6" r="2.2" fill="var(--bg)" stroke-width="1.6"/><circle cx="8" cy="12" r="2.2" fill="var(--bg)" stroke-width="1.6"/><circle cx="15" cy="18" r="2.2" fill="var(--bg)" stroke-width="1.6"/></svg>
+      <span class="tab-lbl">設定</span>
+    </button>
+  </nav>
+
+  <!-- WEEKLY REVIEW MODAL -->
+  <div class="weekly-overlay" id="weeklyOverlay" onclick="onWeeklyOverlayClick(event)">
+    <div class="weekly-modal">
+      <div class="wk-handle"></div>
+      <div class="wk-pill">📊 今週のふりかえり</div>
+      <div class="wk-title" id="wkTitle">今週は、どうでしたか？</div>
+      <div class="wk-sub" id="wkSub">7日間の記録を一緒に見てみましょう。</div>
+      <div class="wk-stats">
+        <div class="wk-stat accent">
+          <div class="wk-stat-num" id="wkActiveDays">—</div>
+          <div class="wk-stat-lbl">記録した日数</div>
+        </div>
+        <div class="wk-stat">
+          <div class="wk-stat-num" id="wkPct">—</div>
+          <div class="wk-stat-lbl">今週の達成率</div>
+        </div>
+      </div>
+      <div class="wk-best" id="wkBestRow">
+        <div class="wk-best-em" id="wkBestEm">🌿</div>
+        <div>
+          <div class="wk-best-lbl">一番続いた習慣</div>
+          <div class="wk-best-name" id="wkBestName">—</div>
+          <div class="wk-best-sub" id="wkBestSub"></div>
+        </div>
+      </div>
+      <div class="wk-compare">
+        <div class="wk-compare-lbl">前週との比較</div>
+        <div class="wk-cmp-row">
+          <div class="wk-cmp-top">
+            <span>今週</span>
+            <span class="wk-delta flat" id="wkDelta">→</span>
+          </div>
+          <div class="wk-bar-bg"><div class="wk-bar" id="wkBarThis"></div></div>
+        </div>
+        <div class="wk-cmp-row">
+          <div class="wk-cmp-top"><span>先週</span></div>
+          <div class="wk-bar-bg"><div class="wk-bar dim" id="wkBarLast"></div></div>
+        </div>
+      </div>
+      <div class="wk-habio">
+        <div class="habio-av" style="width:36px;height:36px;font-size:18px;flex-shrink:0;">🌱</div>
+        <div>
+          <div class="habio-from">Habio より</div>
+          <div class="habio-msg" id="wkHabioMsg" style="font-size:13px;line-height:1.9;margin-top:4px;"></div>
+        </div>
+      </div>
+      <button class="wk-close" onclick="closeWeeklyReview()">続けていきましょう 🌿</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING OVERLAY -->
+  <div class="onb-overlay" id="onbOverlay">
+    <div class="onb-progress" id="onbProgress">
+      <div class="onb-dot active" id="onbDot0"></div>
+      <div class="onb-dot" id="onbDot1"></div>
+      <div class="onb-dot" id="onbDot2"></div>
+      <div class="onb-dot" id="onbDot3"></div>
+    </div>
+    <div class="onb-screens-wrap">
+
+      <!-- Step 0: Welcome -->
+      <div class="onb-screen active" id="onb-s0">
+        <div class="onb-inner" style="align-items:center;text-align:center;">
+          <div class="onb-em">🌱</div>
+          <div class="onb-title">Habio へようこそ</div>
+          <div class="onb-sub">「頑張るためのアプリ」ではありません。<br>あなたの隣で、ただそっと寄り添います。</div>
+          <div class="onb-name-wrap">
+            <input type="text" class="onb-name-input" id="onbNameInput"
+              placeholder="お名前（任意・後で変更できます）"
+              maxlength="20" oninput="Store.set('user_name',this.value.trim())">
+          </div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" onclick="onbNext()">はじめる →</button>
+          <div class="onb-skip" onclick="onbSkip()">スキップして始める</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Q1 気になること -->
+      <div class="onb-screen" id="onb-s1">
+        <div class="onb-inner">
+          <div class="onb-em">🤔</div>
+          <div class="onb-title">最近、気になっていることは？</div>
+          <div class="onb-sub">一番近いものを選んでください</div>
+          <div class="onb-options">
+            <div class="onb-option" onclick="selectOnbOpt(this,'q1','weight')"><span class="onb-option-em">⚖️</span>体重・体型のこと</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q1','diet')"><span class="onb-option-em">🥗</span>食事のバランス</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q1','habit')"><span class="onb-option-em">🔄</span>習慣が続かないこと</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q1','stress')"><span class="onb-option-em">😮‍💨</span>ストレス・疲れ</div>
+          </div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" id="onbBtn1" onclick="onbNext()" disabled>次へ →</button>
+          <div class="onb-skip" onclick="onbSkip()">スキップして始める</div>
+        </div>
+      </div>
+
+      <!-- Step 2: Q2 忙しさ -->
+      <div class="onb-screen" id="onb-s2">
+        <div class="onb-inner">
+          <div class="onb-em">⏰</div>
+          <div class="onb-title">1日はどのくらい<br>忙しいですか？</div>
+          <div class="onb-sub">Habio のアドバイスをあなたに合わせます</div>
+          <div class="onb-options">
+            <div class="onb-option" onclick="selectOnbOpt(this,'q2','busy')"><span class="onb-option-em">🏃</span>かなり忙しい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q2','normal')"><span class="onb-option-em">🚶</span>まあまあ</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q2','free')"><span class="onb-option-em">🧘</span>比較的ゆとりがある</div>
+          </div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" id="onbBtn2" onclick="onbNext()" disabled>次へ →</button>
+          <div class="onb-skip" onclick="onbSkip()">スキップして始める</div>
+        </div>
+      </div>
+
+      <!-- Step 3: Q3 続かなかった理由 -->
+      <div class="onb-screen" id="onb-s3">
+        <div class="onb-inner">
+          <div class="onb-em">💭</div>
+          <div class="onb-title">今まで続かなかったのは<br>なぜだと思いますか？</div>
+          <div class="onb-sub">正直に教えてください。責めたりしません</div>
+          <div class="onb-options">
+            <div class="onb-option" onclick="selectOnbOpt(this,'q3','perfect')"><span class="onb-option-em">🎯</span>完璧を目指しすぎてしまう</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q3','motive')"><span class="onb-option-em">🪫</span>やる気が続かない</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q3','forget')"><span class="onb-option-em">😅</span>忙しくて忘れてしまう</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q3','nostart')"><span class="onb-option-em">🌀</span>何から始めればいいか分からない</div>
+          </div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" id="onbBtn3" onclick="onbNext()" disabled>Habio をはじめる →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Completion -->
+      <div class="onb-screen" id="onb-s4">
+        <div class="onb-inner" style="align-items:center;justify-content:center;text-align:center;">
+          <div class="onb-em">🌿</div>
+          <div class="onb-title" id="onbCompleteTitle">準備ができました</div>
+          <div class="onb-sub" id="onbCompleteMsg">一緒に、あなたのペースで始めましょう。<br>完璧じゃなくていいんです。</div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" onclick="onbFinish()" style="max-width:280px;">Habio を使い始める →</button>
+        </div>
+      </div>
+
+    </div><!-- /onb-screens-wrap -->
+  </div><!-- /onbOverlay -->
+
+  <!-- STREAK MODAL -->
+  <div class="streak-modal-overlay" id="streakModalOverlay">
+    <div class="streak-modal" id="streakModal">
+      <div class="streak-modal-num" id="streakDays">7</div>
+      <div class="streak-modal-unit">日間継続</div>
+      <div class="streak-modal-title" id="streakModalTitle">1週間！すごいです。</div>
+      <div class="streak-modal-msg" id="streakModalMsg">毎日の積み重ねが、確かに体と心を整えています。</div>
+      <button class="streak-modal-btn" onclick="closeStreakModal()">ありがとう 🌱</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- UPGRADE MODAL -->
+<div style="position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;z-index:600;" id="upgradeModalRoot">
+  <div style="width:100%;max-width:390px;max-height:844px;position:relative;pointer-events:none;" id="upgradeModalInner">
+    <div class="modal-overlay" id="upgradeOverlay" onclick="closeUpgradeModal(event)">
+      <div class="upgrade-modal" style="position:relative;">
+        <button class="modal-close-btn" onclick="closeUpgradeModal(null,true)">×</button>
+        <div class="modal-handle"></div>
+        <div class="modal-hero">
+          <div class="modal-em">💎</div>
+          <div class="modal-title">プレミアムプランで<br>もっと寄り添います</div>
+          <div class="modal-sub">7日間、完全無料でお試しいただけます。<br>気に入らなければいつでもキャンセルOK。</div>
+        </div>
+        <div class="modal-features">
+          <div class="modal-feat">
+            <div class="modal-feat-em">🤖</div>
+            <div>
+              <div class="modal-feat-name">パーソナライズAIコーチング</div>
+              <div class="modal-feat-desc">あなたの習慣履歴・気分・生活リズムを学習して、より的確なアドバイスをお届けします。</div>
+            </div>
+          </div>
+          <div class="modal-feat">
+            <div class="modal-feat-em">📊</div>
+            <div>
+              <div class="modal-feat-name">習慣ふりかえりレポート</div>
+              <div class="modal-feat-desc">週次・月次で継続状況を可視化。どの習慣が定着しているか一目でわかります。</div>
+            </div>
+          </div>
+          <div class="modal-feat">
+            <div class="modal-feat-em">🔔</div>
+            <div>
+              <div class="modal-feat-name">インテリジェント声かけ</div>
+              <div class="modal-feat-desc">挫折しそうなタイミングを先読みして、ベストなタイミングで声をかけます。</div>
+            </div>
+          </div>
+          <div class="modal-feat">
+            <div class="modal-feat-em">🥗</div>
+            <div>
+              <div class="modal-feat-name">詳細な食事・栄養アドバイス</div>
+              <div class="modal-feat-desc">食事記録をもとに、あなたに合ったより具体的な食事の提案ができるようになります。</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-price">
+          <span class="modal-price-num">¥980</span><span class="modal-price-per"> / 月</span>
+          <div><span class="modal-price-trial">🎁 7日間は完全無料</span></div>
+        </div>
+        <div class="modal-cta-wrap">
+          <button class="modal-cta" onclick="handleUpgradeCta()">7日間、無料で試してみる →</button>
+        </div>
+        <div class="modal-foot">
+          クレジットカード不要・いつでも解約可能<br>
+          ※ 解約後も無料プランでご利用いただけます
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ── STORAGE ── */
+const Store = {
+  _p:'habio_',
+  get(k,def=null){
+    try{
+      const v=localStorage.getItem(this._p+k);
+      if(v===null) return def;
+      const parsed=JSON.parse(v);
+      // Type-guard: if caller expects array, ensure we don't return primitive
+      if(Array.isArray(def)&&!Array.isArray(parsed)) return def;
+      return parsed;
+    }catch{return def;}
+  },
+  set(k,v){
+    try{localStorage.setItem(this._p+k,JSON.stringify(v));}
+    catch(e){
+      // QuotaExceededError — prune oldest wins to free space
+      if(e.name==='QuotaExceededError'){
+        try{
+          const wins=JSON.parse(localStorage.getItem(this._p+'wins')||'[]');
+          localStorage.setItem(this._p+'wins',JSON.stringify(wins.slice(0,20)));
+          localStorage.setItem(this._p+k,JSON.stringify(v));
+        }catch{}
+      }
+    }
+  },
+  del(k){try{localStorage.removeItem(this._p+k);}catch{}},
+};
+
+/* ── DATE UTILS ── */
+const pad = n => String(n).padStart(2,'0');
+const toDateStr = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today = () => toDateStr(new Date());
+const yesterday = () => { const d=new Date(); d.setDate(d.getDate()-1); return toDateStr(d); };
+const jpWeekdays = ['日','月','火','水','木','金','土'];
+const jpDateFmt = d => (d.getMonth()+1)+'月'+d.getDate()+'日（'+jpWeekdays[d.getDay()]+'）';
+const nowTime = () => { const n=new Date(); return n.getHours()+':'+pad(n.getMinutes()); };
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ── NIGHT MODE ── */
+function isNight(){ const h=new Date().getHours(); return h>=22||h<6; }
+function applyNightMode(){
+  const app=document.getElementById('app');
+  const night=isNight();
+  app.classList.toggle('night',night);
+  document.body.classList.toggle('night-bg',night);
+  document.getElementById('night-banner').classList.toggle('show',night);
+}
+applyNightMode();
+setInterval(applyNightMode,60000);
+
+/* ── STATUS BAR CLOCK ── */
+function updateStatusClock(){
+  const n=new Date();
+  const el=document.getElementById('sbTime');
+  if(el) el.textContent=n.getHours()+':'+pad(n.getMinutes());
+}
+updateStatusClock();
+setInterval(updateStatusClock,10000);
+
+/* ── STREAK ── */
+function calcStreak(wins){
+  let s=0, d=new Date();
+  for(let i=0;i<30;i++){
+    if(wins.some(w=>w.date===toDateStr(d))){ s++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return s;
+}
+
+/* ── AI CONTEXT ── */
+function buildAIContext(){
+  const now=new Date(), h=now.getHours();
+  const moodHist=Store.get('mood_history',[]);
+  const yestMood=moodHist.find(m=>m.date===yesterday())||null;
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  const todayWins=wins.filter(w=>w.date===today());
+  const meals=Store.get('food_log_'+today(),[]);
+  return {hour:h,isNight:isNight(),yesterdayMood:yestMood,streak,todayWins,meals};
+}
+
+/* ── AI RESPONSES ── */
+const AI_DB = [
+  { re:/疲れ|つかれ|しんど|だる|くたくた/,replies:[
+    '疲れているんですね。\n今日は、休む日でも大丈夫ですよ 🍃\n無理しなくていいです。',
+    '少し深呼吸してみましょうか。\nゆっくり3回だけ。それだけでOKです。',
+    '「今日は休息の日」でいいんです。\n体を休めることも、大切な習慣のひとつです。',
+    '疲れを感じているということは、\nちゃんと頑張ってきた証拠です。\n今日はゆっくりしてください 🌙',
+  ]},
+  { re:/眠れ|ねむれ|寝れ|寝付|睡眠|ぐっすり/,replies:[
+    '眠れない夜もありますね。\nスマホを少し遠ざけて、\n目を閉じるだけでもいいですよ。',
+    '深呼吸しながら、体の力を抜いてみてください。\n息を吸って4秒、止めて4秒、吐いて4秒。\nそれを3回だけ。',
+    '眠れなかった夜も、体はちゃんと休もうとしています。\n自分を責めなくて大丈夫です。',
+    '寝る前にスマホの明るさを少し下げてみてください。\n目が休まると、眠りやすくなりますよ 🌙',
+  ]},
+  { re:/食べ|たべ|食事|ごはん|ランチ|ディナー|朝食|昼食|夕食|夜食|おやつ/,replies:[
+    '食事を気にしてくれているんですね。\nまずは「野菜を1品増やす」だけでもOKです。\n制限より、バランスを意識して 🥗',
+    'コンビニでも、少し野菜を意識するだけで十分。\n完璧じゃなくてOKですよ。',
+    '食べすぎた日も、今日は今日の話。\n明日また少しだけバランスを意識してみましょう。',
+    'お腹の声を聞きながら食べることが、\n一番のダイエットだと思います。\n焦らず、楽しく食べましょう 😊',
+  ]},
+  { re:/コンビニ|外食|デリバリー/,replies:[
+    'コンビニ食でも、工夫できますよ。\nサラダチキン＋みそ汁＋おにぎり1個。\nバランスのいい組み合わせです。',
+    '外食でも、副菜に野菜を選ぶだけでOK。\n完璧を求めなくていいですよ。',
+  ]},
+  { re:/運動|うんどう|歩け|走れ|体動|ジム|筋トレ|ヨガ/,replies:[
+    '3分だけ動けましたか？\nそれで今日は十分です 🚶',
+    '今日動けなかっただけ。\nまた明日から。焦らなくていいですよ。',
+    '「今日は体を休める日だった」と思えれば十分です。\n無理は続きません。',
+    'ジムより、毎日の「ちょっと歩く」の方が長続きします。\nエレベーターより階段、少しの積み重ねが力になります。',
+  ]},
+  { re:/体重|太っ|痩せ|ダイエット|カロリー|糖質/,replies:[
+    '数字より、毎日の小さな変化を大切にしましょう。\n体重は気温や水分で変わります。続けることが大切です。',
+    '焦らなくていいですよ。\n少しずつ整えていくことが、長く続く秘訣です。',
+    '体重計の数字ではなく、\n「今日、体が少し軽くなった気がする」\nそういう感覚を大切にしましょう 🌿',
+  ]},
+  { re:/できな|無理|失敗|続かな|挫折|やめ/,replies:[
+    '「今日は休息の日でしたね。」\nまた明日から始めればいい。それだけです 🌱',
+    '続けようとした気持ちは消えていません。\n一緒に、また少しずつ始めましょう。',
+    'できない日があるから、続けられる日の価値がある。\n責めなくていいですよ。',
+    '三日坊主でいいんです。\n四日目にまた始めれば、それは継続です 🌿',
+  ]},
+  { re:/ストレス|イライラ|もやもや|憂鬱|落ち込/,replies:[
+    'ストレスを感じているんですね。\nまずは深呼吸してみましょう。\nゆっくり息を吐くと、少し楽になります。',
+    '気持ちを言葉にしてくれてありがとう。\n一人で抱え込まなくていいですよ 🍃',
+    'もやもやする日は、\n好きな飲み物を飲みながら窓の外を眺めてみましょう。\n5分だけ、立ち止まってみてください。',
+  ]},
+  { re:/水|みず|水分|水飲/,replies:[
+    '水分補給、意識できていますね。\n1日8杯を目安に、こまめに飲みましょう。\n一気に飲まなくてOKです 💧',
+    'のどが渇いたと感じた時には、すでに軽い脱水かも。\nこまめに少しずつ飲むのがコツです。',
+  ]},
+  { re:/ありがとう|ありがとう|ありがとうございます|感謝/,replies:[
+    'こちらこそ、話しかけてくれてありがとうございます 😊\nまたいつでも。',
+    'あなたが続けようとしてくれること、\nとても嬉しいです 🍃',
+    'いつでも話しかけてくださいね。\nここにいますから。',
+  ]},
+  { re:/さびし|孤独|ひとり|一人/,replies:[
+    'ひとりで頑張っていたんですね。\n私はいつでもここにいますよ 🌿',
+    '一人じゃないですよ。\nいつでも話しかけてください。',
+  ]},
+  { re:/嬉し|うれし|よかっ|できた|達成|成功/,replies:[
+    'それは素晴らしいですね 🌱\n小さな一歩でも、積み重なると大きな変化になります。',
+    'できたんですね！\nその調子で、今日もいい一日にしましょう 😊',
+    '嬉しい気持ち、一緒に喜びます ✨\nこの調子で続けていきましょう。',
+  ]},
+  { re:/おはよう|朝|目覚め/,replies:[
+    'おはようございます 😊\n今日も一緒に、小さな一歩を踏み出しましょう。\n無理しなくていいですよ。',
+    'おはようございます 🌿\nまずは水を1杯飲んで、ゆっくりスタートしましょう。',
+  ]},
+  { re:/おやすみ|寝る|就寝/,replies:[
+    'おやすみなさい 🌙\n今日もよく頑張りました。\nゆっくり休んでください。',
+    '今日できたことを、ひとつだけ思い出してから眠ると、\n気持ちよく眠れますよ 🌙\nおやすみなさい。',
+  ]},
+];
+
+const FALLBACK_REPLIES = [
+  '聞かせてくれてありがとうございます。\n一緒に考えましょう 🌿',
+  'そうですね。\n無理しなくていいですよ。',
+  'あなたのペースで大丈夫です。\n少しずつ、一緒に進みましょう。',
+  '今日も話しかけてくれてありがとうございます 😊\nそれだけで十分です。',
+  '焦らなくていいですよ。\n今日できたことを、ひとつ思い出してみてください。',
+  '完璧な日なんてなくていいんです。\n「ちょっと前進した日」を積み重ねていきましょう 🌱',
+];
+let fallbackIdx=0;
+
+async function generateAIResponse(userMessage, context=null){
+  const ctx=context||buildAIContext();
+  return localAIResponse(userMessage,ctx);
+}
+
+function localAIResponse(msg,ctx){
+  const {hour,yesterdayMood,streak}=ctx;
+  let prefix='';
+  if(yesterdayMood&&yesterdayMood.mood==='つかれた'&&hour<12){
+    prefix='昨日はお疲れでしたね。今日は少し楽になりましたか？\n\n';
+  } else if(streak>=3&&Math.random()<.3){
+    prefix=streak+'日続いていますね。素晴らしいです 🌿\n\n';
+  }
+  const nightSuffix=isNight()?'\n\nそろそろ体を休めてください 🌙':'';
+  for(const entry of AI_DB){
+    if(entry.re.test(msg)){
+      const r=entry.replies[Math.floor(Math.random()*entry.replies.length)];
+      return {text:prefix+r+nightSuffix, delay:1400+Math.random()*800};
+    }
+  }
+  const r=FALLBACK_REPLIES[fallbackIdx%FALLBACK_REPLIES.length];
+  fallbackIdx++;
+  return {text:prefix+r, delay:1200+Math.random()*600};
+}
+
+/* ── NAVIGATION ── */
+function goTab(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const scr=document.getElementById('scr-'+name);
+  const tab=document.querySelector('[data-scr="'+name+'"]');
+  if(scr) scr.classList.add('active');
+  if(tab) tab.classList.add('active');
+  if(name==='chat') setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80);
+  if(name==='wins') renderWins();
+  if(name==='food') renderFoodLog();
+  if(name==='home') updateProgressRing();
+  if(name==='habits') renderHabitCal();
+  if(name==='settings') renderProfile();
+}
+
+/* ── TOAST ── */
+let toastTimer=null;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  if(!el) return;
+  el.textContent=msg;
+  el.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ── PROGRESS RING ── */
+const CIRC=2*Math.PI*32; // r=32 → ≈201
+function updateProgressRing(){
+  const wins=Store.get('wins',[]);
+  const todayDone=wins.filter(w=>w.date===today()).length;
+  const total=6;
+  const pct=Math.min(todayDone/total,1);
+  const ring=document.getElementById('homeRing');
+  if(ring) ring.style.strokeDasharray=`${pct*CIRC} ${CIRC}`;
+  const numEl=document.getElementById('ringNum');
+  if(numEl) numEl.textContent=todayDone;
+  const streak=calcStreak(wins);
+  const badge=document.getElementById('streakBadge');
+  if(badge) badge.textContent='🔥 '+streak+'日';
+}
+
+/* ── HABITS PROGRESS ── */
+function updateHabitProgress(){
+  const done=document.querySelectorAll('.habit-item.done').length;
+  const total=HABIT_DEFS.length;
+  const pct=Math.round(done/total*100);
+  const bar=document.getElementById('habitProgBar');
+  const txt=document.getElementById('habitProgTxt');
+  if(bar) bar.style.width=pct+'%';
+  if(txt) txt.textContent=done+' / '+total+' 完了';
+  const streak=calcStreak(Store.get('wins',[]));
+  const snum=document.getElementById('habitStreakNum');
+  if(snum) snum.textContent=streak;
+  renderHabitCal();
+}
+
+/* ── HOME GREETING ── */
+const DAY_MSGS=[
+  '今日は水分を少し意識してみましょう。それだけで、体は喜びます。',
+  '新しい週の始まりです。ゆっくりスタートで大丈夫です。',
+  '昨日より少しだけ整えてみましょう。それで十分です。',
+  '今日も一緒に、小さな一歩を踏み出しましょう。',
+  '焦らなくていいですよ。あなたのペースで続けることが大切です。',
+  '今週もよく頑張りました。今日は自分を少し休ませてあげてください。',
+  '週末ですね。体を休めることも、立派な健康習慣です。',
+];
+const NIGHT_MSGS=[
+  'もう休む時間ですね。今日よくできたことを、ひとつ思い出してみましょう。',
+  'ゆっくり深呼吸して、今日を手放してください。よく頑張りました。',
+  '今夜はスマホを早めに置いて、体を休めてください 🌙',
+];
+const FOOD_TIPS=[
+  '野菜を1品増やすだけで、体の調子が変わります。コンビニのサラダでもOKですよ。',
+  '朝ごはんを食べると、代謝が上がって1日のエネルギーが安定します。',
+  '水を1杯飲んでから食事をすると、食べすぎ防止になりますよ 💧',
+  'よく噛んで食べると満腹感が出やすくなります。ゆっくり味わってみてください。',
+  'コンビニでは、サラダチキン＋みそ汁＋おにぎり1個が黄金の組み合わせです。',
+  '夜遅い食事は胃に負担がかかります。できれば就寝2時間前までに済ませましょう。',
+  '揚げ物が続いた日は、翌日の一食を和食にするだけで十分です。',
+];
+
+function initHome(){
+  const now=new Date(), h=now.getHours();
+  const ctx=buildAIContext();
+  const night=isNight();
+
+  document.getElementById('homeDate').textContent=jpDateFmt(now);
+  document.getElementById('habitsDate').textContent=jpDateFmt(now);
+  document.getElementById('winsDate').textContent=jpDateFmt(now);
+  document.getElementById('foodDate').textContent=jpDateFmt(now);
+
+  let greet,sub;
+  if(night){ greet='おやすみなさい'; sub='今日もお疲れさまでした。ゆっくり休んでください。'; }
+  else if(h>=5&&h<12){
+    greet='おはようございます';
+    if(ctx.yesterdayMood?.mood==='つかれた') sub='昨日はお疲れでしたね。今日はゆっくりのペースで。';
+    else if(ctx.streak>=7) sub=ctx.streak+'日続いていますね。あなたは変わっています 🌿';
+    else if(ctx.streak>=3) sub=ctx.streak+'日続いていますね。今日も一緒に 🌿';
+    else sub='今日も無理せず、一緒に小さな一歩を。';
+  } else if(h>=12&&h<18){ greet='こんにちは'; sub='今日のここまで、よく来ました。'; }
+  else { greet='こんばんは'; sub='今日もお疲れさまでした。少しだけ整えましょう。'; }
+
+  // Mood override (today's mood takes priority)
+  const todayMood=Store.get('mood_history',[]).find(m=>m.date===today());
+  const refMood=todayMood||ctx.yesterdayMood;
+  if(refMood&&!night){
+    if(refMood.mood==='つかれた') sub='まずは、ゆっくりしてください。焦らなくていいですよ。';
+    else if(refMood.mood==='とても良い') sub='好調ですね。今日もこの感じで行きましょう ✨';
+    else if(refMood.mood==='いい感じ'&&ctx.streak>0) sub='いい感じですね。'+ctx.streak+'日目、続いています 🌿';
+  }
+
+  const uname=Store.get('user_name','');
+  const greetEl=document.getElementById('homeGreet');
+  if(greetEl){
+    greetEl.childNodes[0].textContent=uname?uname+'さん、'+greet:greet;
+    const small=document.getElementById('homeGreetSub');
+    if(small) small.textContent=sub;
+  }
+
+  const msgEl=document.getElementById('habitoMsg');
+  if(msgEl){ const msgs=night?NIGHT_MSGS:DAY_MSGS; msgEl.textContent=msgs[now.getDay()%msgs.length]; }
+
+  const foodMsgEl=document.getElementById('foodAiMsg');
+  if(foodMsgEl) foodMsgEl.textContent=FOOD_TIPS[now.getDay()%FOOD_TIPS.length];
+
+  if(night){
+    const en=document.getElementById('stepEm'), nn=document.getElementById('stepName');
+    if(en) en.textContent='🌙'; if(nn) nn.textContent='早めに寝る';
+  }
+
+  const start=Store.get('start_date',today());
+  const diff=Math.round((new Date()-new Date(start))/(1000*60*60*24))+1;
+  const pmEl=document.getElementById('profileMeta');
+  if(pmEl) pmEl.textContent='Habio を使いはじめて '+diff+'日目';
+}
+
+/* ── MOOD ── */
+const MOOD_REPLIES={
+  'つかれた':'疲れているんですね。今日は休む日でも大丈夫ですよ 🍃',
+  'まあまあ':'そのままで大丈夫です。一緒に少し整えていきましょう 😊',
+  'ふつう':'ふつうの日が続くことも、大切なことです ☁️',
+  'いい感じ':'その調子です！今日も少し前進しましょう 🌿',
+  'とても良い':'最高ですね！その気持ちを大切にしてください ✨',
+};
+function selectMood(btn){
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const mood=btn.dataset.mood;
+  const hist=Store.get('mood_history',[]).filter(m=>m.date!==today());
+  hist.unshift({date:today(),mood,ts:new Date().toISOString()});
+  Store.set('mood_history',hist.slice(0,30));
+  const replyEl=document.getElementById('moodReply');
+  if(replyEl){replyEl.textContent=MOOD_REPLIES[mood]||'';replyEl.classList.add('show');}
+}
+function restoreMood(){
+  const hist=Store.get('mood_history',[]);
+  const m=hist.find(m=>m.date===today());
+  if(!m) return;
+  const btn=document.querySelector('.mood-btn[data-mood="'+m.mood+'"]');
+  if(btn) btn.classList.add('selected');
+  const replyEl=document.getElementById('moodReply');
+  if(replyEl){replyEl.textContent=MOOD_REPLIES[m.mood]||'';replyEl.classList.add('show');}
+}
+
+/* ── TODAY'S STEP ── */
+function doStep(){
+  const btn=document.getElementById('stepBtn');
+  if(!btn||btn.disabled) return;
+  btn.textContent='できた ✓'; btn.classList.add('done'); btn.disabled=true;
+  Store.set('step_done_date',today());
+  const name=document.getElementById('stepName')?.textContent||'今日の一歩';
+  const em=document.getElementById('stepEm')?.textContent||'✨';
+  logWin(em,name+'ができた','今日の小さな一歩');
+  showToast('✓ 記録しました！');
+}
+function restoreStep(){
+  if(Store.get('step_done_date')===today()){
+    const btn=document.getElementById('stepBtn');
+    if(btn){btn.textContent='できた ✓';btn.classList.add('done');btn.disabled=true;}
+  }
+}
+
+/* ── WINS ── */
+function logWin(em,title,note=''){
+  const wins=Store.get('wins',[]);
+  if(wins.some(w=>w.date===today()&&w.title===title)) return;
+  wins.unshift({id:Date.now(),em,title,note,date:today(),ts:new Date().toISOString()});
+  Store.set('wins',wins.slice(0,60));
+  renderHomeWins();
+  renderWins();
+  updateProgressRing();
+  updateHabitProgress();
+  checkStreakMilestone(calcStreak(wins));
+}
+
+function renderHomeWins(){
+  const listEl=document.getElementById('homeWinList');
+  if(!listEl) return;
+  const wins=Store.get('wins',[]).filter(w=>w.date===today());
+  if(!wins.length){
+    listEl.innerHTML='<div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>何か一つ試してみましょう 🌿</div>';
+    return;
+  }
+  listEl.innerHTML=wins.slice(0,4).map(w=>`
+    <div class="win-row">
+      <div class="win-ck">✓</div>
+      <span class="win-tx">${esc(w.em)} ${esc(w.title)}</span>
+    </div>`).join('');
+}
+
+function renderWins(){
+  const wins=Store.get('wins',[]);
+  const todayW=wins.filter(w=>w.date===today());
+  const weekW=wins.filter(w=>w.date!==today()&&(Date.now()-new Date(w.ts))<7*864e5);
+  const todayEl=document.getElementById('today-wins-list');
+  if(todayEl) todayEl.innerHTML=todayW.length?todayW.map(winCardHTML).join(''):'<div class="wins-empty">今日はまだ記録がありません。<br>何か一つ、試してみませんか 🌱</div>';
+  const weekEl=document.getElementById('week-wins-list');
+  if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の記録はまだありません。<br>今日が最初の一歩になります 🌿</div>';
+  const ctx=buildAIContext();
+  const closeT=document.getElementById('winsCloseT');
+  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>少し整いました。';
+  const habioMsg=document.getElementById('winsHabioMsg');
+  if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
+}
+
+function winCardHTML(w){
+  return `<div class="win-card">
+    <div class="win-card-em">${esc(w.em)}</div>
+    <div><div class="win-card-t">${esc(w.title)}</div><div class="win-card-s">${esc(w.note||'')}</div></div>
+    <div class="win-card-done">✓</div>
+  </div>`;
+}
+
+/* ── HABITS ── */
+const HABIT_DEFS=[
+  {id:'water', em:'💧',name:'水を飲む',   note:'1日2杯から始めよう', winNote:'水分を意識できました'},
+  {id:'breath',em:'🌿',name:'深呼吸する', note:'ゆっくり3回だけ',    winNote:'心が少し落ち着きました'},
+  {id:'walk',  em:'🚶',name:'少し歩く',   note:'3分でもOK',           winNote:'体を動かせました'},
+  {id:'veg',   em:'🥗',name:'野菜を1品',  note:'コンビニでも大丈夫',  winNote:'バランスを意識できました'},
+  {id:'sleep', em:'🌙',name:'早めに寝る', note:'昨日より30分でもOK',  winNote:'体を休める準備ができました'},
+  {id:'sun',   em:'☀️',name:'朝日を浴びる',note:'窓を開けるだけでOK', winNote:'体内時計が整いはじめます'},
+];
+
+function initHabits(){
+  const lastDate=Store.get('habit_date','');
+  if(lastDate!==today()){Store.set('habit_state',{});Store.set('habit_date',today());}
+  const state=Store.get('habit_state',{});
+  const listEl=document.getElementById('habitList');
+  if(!listEl) return;
+  listEl.innerHTML=HABIT_DEFS.map(h=>`
+    <div class="habit-item${state[h.id]?' done':''}" data-id="${h.id}" onclick="toggleHabit(this)">
+      <div class="habit-em">${h.em}</div>
+      <div class="habit-info">
+        <div class="habit-name">${h.name}</div>
+        <div class="habit-note-txt">${state[h.id]?'できました ✓':h.note}</div>
+      </div>
+      <div class="habit-chk">${state[h.id]?'✓':''}</div>
+    </div>`).join('');
+  updateHabitEnc();
+  updateHabitProgress();
+}
+
+function toggleHabit(el){
+  const id=el.dataset.id;
+  const state=Store.get('habit_state',{});
+  const def=HABIT_DEFS.find(h=>h.id===id);
+  if(!def) return;
+  const nowDone=!el.classList.contains('done');
+  el.classList.toggle('done',nowDone);
+  el.querySelector('.habit-chk').textContent=nowDone?'✓':'';
+  el.querySelector('.habit-note-txt').textContent=nowDone?'できました ✓':def.note;
+  state[id]=nowDone;
+  Store.set('habit_state',state);
+  if(nowDone){
+    logWin(def.em,def.name+'ができた',def.winNote);
+    showToast(def.em+' '+def.name+'を記録しました！');
+  }
+  updateHabitEnc();
+  updateHabitProgress();
+}
+
+const ENC_MSGS=[
+  {t:'いい調子です。',s:'続けようとしていること、それ自体が前進です。'},
+  {t:'少し整ってきましたね。',s:'完璧じゃなくていい。この積み重ねが大切です。'},
+  {t:'今日もよく頑張りました。',s:'できないものがあっても大丈夫。また明日から。'},
+  {t:'素晴らしいです 🌿',s:'一つひとつの小さな変化が、習慣になっていきます。'},
+  {t:'全部できましたね！✨',s:'完璧な日です。こんな日が続くといいですね。'},
+];
+function updateHabitEnc(){
+  const done=document.querySelectorAll('.habit-item.done').length;
+  const enc=document.getElementById('habitEnc');
+  if(!enc) return;
+  enc.classList.toggle('show',done>=1);
+  if(done>=1){
+    const msg=ENC_MSGS[Math.min(done-1,ENC_MSGS.length-1)];
+    const t=document.getElementById('habitEncT'),s=document.getElementById('habitEncS');
+    if(t) t.textContent=msg.t; if(s) s.textContent=msg.s;
+  }
+}
+
+/* ── FOOD LOG ── */
+const FOOD_QUICK_ITEMS=[
+  {id:'veg',   em:'🥗',name:'野菜・サラダ'},
+  {id:'rice',  em:'🍙',name:'ごはん・主食'},
+  {id:'protein',em:'🍗',name:'タンパク質'},
+  {id:'water', em:'💧',name:'水・お茶'},
+  {id:'soup',  em:'🍜',name:'汁物'},
+  {id:'fruit', em:'🍎',name:'フルーツ'},
+  {id:'snack', em:'🍪',name:'おやつ'},
+  {id:'outside',em:'🍱',name:'外食'},
+  {id:'egg',   em:'🥚',name:'たまご'},
+  {id:'fish',  em:'🐟',name:'お魚'},
+  {id:'milk',  em:'🥛',name:'乳製品'},
+  {id:'coffee',em:'☕',name:'コーヒー'},
+];
+
+let currentMealTime=null;
+
+function initFoodQuickGrid(){
+  const grid=document.getElementById('foodQuickGrid');
+  if(!grid) return;
+  grid.innerHTML=FOOD_QUICK_ITEMS.map(item=>`
+    <button class="food-quick-btn" onclick="logFoodItem('${item.id}','${item.em}','${item.name}')">
+      <span class="food-quick-em">${item.em}</span>
+      <span class="food-quick-name">${item.name}</span>
+    </button>`).join('');
+}
+
+function openFoodSheet(mealTime){
+  currentMealTime=mealTime;
+  const titles={morning:'朝食に何を食べましたか？',noon:'昼食に何を食べましたか？',night:'夕食に何を食べましたか？'};
+  const titleEl=document.getElementById('foodSheetTitle');
+  if(titleEl) titleEl.textContent=titles[mealTime]||'何を食べましたか？';
+  document.getElementById('foodSheetOverlay').classList.add('show');
+}
+
+function closeFoodSheet(event){
+  if(event&&event.target!==document.getElementById('foodSheetOverlay')) return;
+  document.getElementById('foodSheetOverlay').classList.remove('show');
+  currentMealTime=null;
+}
+
+function logFoodItem(id,em,name){
+  if(!currentMealTime) return;
+  const key='food_log_'+today();
+  const logs=Store.get(key,[]);
+  logs.push({id,em,name,mealTime:currentMealTime,ts:new Date().toISOString()});
+  Store.set(key,logs);
+  document.getElementById('foodSheetOverlay').classList.remove('show');
+  currentMealTime=null;
+  renderFoodLog();
+  logWin(em,name+'を食べた','食事の記録');
+  showToast(em+' 記録しました！');
+}
+
+function deleteFoodItem(idx){
+  const key='food_log_'+today();
+  const logs=Store.get(key,[]);
+  logs.splice(idx,1);
+  Store.set(key,logs);
+  renderFoodLog();
+}
+
+function renderFoodLog(){
+  const logs=Store.get('food_log_'+today(),[]);
+  const sections={morning:[],noon:[],night:[]};
+  logs.forEach((log,i)=>{ if(sections[log.mealTime]) sections[log.mealTime].push({...log,idx:i}); });
+  for(const [time,items] of Object.entries(sections)){
+    const el=document.getElementById('meal-'+time);
+    if(!el) continue;
+    if(!items.length){
+      const emptyMsg={morning:'朝ごはん、何を食べましたか？',noon:'ランチを記録してみましょう',night:'夕食を記録してみましょう'};
+      el.innerHTML=`<div class="meal-empty">${emptyMsg[time]||'まだ記録がありません'}</div>`;
+      continue;
+    }
+    el.innerHTML=items.map(item=>`
+      <div class="food-log-item fade-in">
+        <div class="food-log-em">${esc(item.em)}</div>
+        <div class="food-log-name">${esc(item.name)}</div>
+        <div class="food-log-time">${item.ts?new Date(item.ts).getHours()+':'+pad(new Date(item.ts).getMinutes()):''}</div>
+        <div class="food-log-del" onclick="deleteFoodItem(${item.idx})">×</div>
+      </div>`).join('');
+  }
+  const foodAiEl=document.getElementById('foodAiMsg');
+  if(foodAiEl) foodAiEl.textContent=generateFoodAiComment(logs);
+}
+
+/* ── CHAT ── */
+const MAX_CHAT=40;
+let lastRenderedDate='';
+
+function buildContextGreeting(){
+  const h=new Date().getHours();
+  const name=Store.get('user_name','');
+  const prefix=name?name+'さん、':'';
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  const hist=Store.get('chat_history',[]);
+  const todayStr=today();
+
+  // "昨日ぶり" detection — last message was yesterday or earlier
+  const lastMsg=hist.filter(m=>!m.me).slice(-1)[0];
+  const lastDate=lastMsg&&lastMsg.ts?toDateStr(new Date(lastMsg.ts)):null;
+  const yest=yesterday();
+  const isYesterday=lastDate===yest;
+  const isLonger=lastDate&&lastDate<yest;
+
+  // Morning food nudge
+  const todayFood=Store.get('food_log_'+todayStr,[]);
+  const hasMorningFood=todayFood.some(f=>f.mealTime==='morning');
+
+  if(h>=5&&h<10){
+    if(isYesterday) return prefix+'おはようございます 🌿\n昨日もありがとうございました。今日も一緒にやっていきましょう。';
+    if(isLonger) return prefix+'おかえりなさい 🌿\nしばらくぶりですね。また一緒に始めていきましょう。';
+    if(streak>=7) return prefix+'おはようございます ✨\n'+streak+'日続いていますね。本当にすごいです。';
+    if(!hasMorningFood) return prefix+'おはようございます 😊\n朝ごはん、記録してみませんか？';
+    return prefix+'おはようございます 😊\n今日も一緒に、小さな一歩を踏み出しましょう。';
+  }
+  if(h>=10&&h<14){
+    if(streak>0) return prefix+'こんにちは 🌿\n今日もここにいますよ。'+streak+'日目ですね。';
+    return prefix+'こんにちは 😊\n何かあれば、気軽に話しかけてください。';
+  }
+  if(h>=14&&h<18){
+    if(isYesterday||isLonger) return prefix+'こんにちは 🌿\nまた話せてよかったです。今日はどんな一日でしたか？';
+    return prefix+'こんにちは ☀️\n午後もお疲れさまです。';
+  }
+  if(h>=18&&h<22){
+    return prefix+'おつかれさまでした 🌿\n今日一日、どうでしたか？';
+  }
+  // Night
+  return prefix+'夜遅くまでお疲れさまです 🌙\n無理しないでくださいね。';
+}
+
+function loadChatHistory(){
+  const msgs=document.getElementById('chatMsgs');
+  if(!msgs) return;
+  const hist=Store.get('chat_history',[]);
+  msgs.innerHTML='';
+  lastRenderedDate='';
+  if(!hist.length){
+    appendBubble(buildContextGreeting(),false,nowTime(),false);
+  } else {
+    hist.forEach(m=>appendBubble(m.text,m.me,m.time,false,m.ts?toDateStr(new Date(m.ts)):null));
+  }
+  const tr=document.createElement('div');
+  tr.id='chatTyping'; tr.className='typing-row';
+  tr.innerHTML='<div class="m-av-sm">🌱</div><div class="typing-bbl"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+  msgs.appendChild(tr);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function appendBubble(text,isMe,time,save=true,dateStr=null){
+  const msgs=document.getElementById('chatMsgs');
+  const typing=document.getElementById('chatTyping');
+
+  // Date separator
+  const ds=dateStr||today();
+  if(ds&&ds!==lastRenderedDate){
+    lastRenderedDate=ds;
+    const sep=document.createElement('div');
+    sep.className='date-sep';
+    sep.textContent=ds===today()?'今日':ds===yesterday()?'昨日':ds.replace(/(\d{4})-(\d{2})-(\d{2})/,'$2月$3日');
+    msgs.insertBefore(sep,typing||null);
+  }
+
+  const row=document.createElement('div');
+  row.className='mrow fade-in'+(isMe?' me':'');
+  const html=esc(text).replace(/\n/g,'<br>');
+  const metaHtml=isMe
+    ?`<div class="bbl-meta"><span>${time}</span><span class="bbl-read">既読</span></div>`
+    :`<div class="bbl-meta"><span>${time}</span></div>`;
+  row.innerHTML=isMe
+    ?`<div><div class="bbl">${html}</div>${metaHtml}</div>`
+    :`<div class="m-av-sm">🌱</div><div><div class="bbl">${html}</div>${metaHtml}</div>`;
+  msgs.insertBefore(row,typing||null);
+  msgs.scrollTop=msgs.scrollHeight;
+  if(save){
+    const hist=Store.get('chat_history',[]);
+    hist.push({text,me:isMe,time,ts:new Date().toISOString()});
+    Store.set('chat_history',hist.slice(-MAX_CHAT));
+  }
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('chatInput');
+  if(!inp) return;
+  const text=inp.value.trim();
+  if(!text) return;
+  appendBubble(text,true,nowTime());
+  inp.value=''; inp.style.height='';
+  document.getElementById('sendBtn').disabled=true;
+  const typing=document.getElementById('chatTyping');
+  if(typing) typing.style.opacity='1';
+  document.getElementById('chatMsgs').scrollTop=99999;
+  const ctx=buildAIContext();
+  const res=await generateAIResponse(text,ctx);
+  await sleep(res.delay);
+  if(typing) typing.style.opacity='0';
+  await sleep(180);
+  appendBubble(res.text,false,nowTime());
+  if(typing) typing.style.opacity='1';
+  if(/ありがとう|よかった|できた|頑張|嬉し/.test(text)) logWin('💬','Habio と話せた','気持ちを伝えることができました');
+}
+
+async function quickChat(text){
+  const inp=document.getElementById('chatInput');
+  if(!inp) return;
+  inp.value=text;
+  document.getElementById('sendBtn').disabled=false;
+  await sendMsg();
+}
+
+function onInputChange(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+  document.getElementById('sendBtn').disabled=!el.value.trim();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const ci=document.getElementById('chatInput');
+  if(ci) ci.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+});
+
+/* ── SETTINGS ── */
+function toggleToggle(el,key){
+  el.classList.toggle('on');
+  Store.set('toggle_'+key,el.classList.contains('on'));
+}
+function restoreToggles(){
+  ['notif','sleep'].forEach(k=>{
+    const stored=Store.get('toggle_'+k,true);
+    const el=document.getElementById('tog-'+k);
+    if(el) el.classList.toggle('on',stored);
+  });
+}
+function resetData(){
+  if(!confirm('習慣・チャット・食事の記録をすべて削除しますか？')) return;
+  ['wins','chat_history','habit_state','habit_date','step_done_date','mood_history','start_date'].forEach(k=>Store.set(k,null));
+  ['food_log_'+today()].forEach(k=>Store.set(k,null));
+  showToast('データをリセットしました');
+  setTimeout(()=>location.reload(),1000);
+}
+
+/* ── THEME ── */
+function initThemeSwatches(){
+  const saved=Store.get('theme_color','#72B994');
+  document.querySelectorAll('.swatch').forEach(sw=>{
+    sw.classList.toggle('sel',sw.dataset.color===saved);
+    sw.addEventListener('click',()=>{
+      document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+      sw.classList.add('sel');
+      applyTheme(sw.dataset.color);
+      Store.set('theme_color',sw.dataset.color);
+    });
+  });
+  applyTheme(saved);
+}
+function applyTheme(hex){
+  const app=document.getElementById('app');
+  const [r,g,b]=hexToRgb(hex);
+  const lighter=rgbToHex(blend(r,255,.55),blend(g,255,.55),blend(b,255,.55));
+  const palest =rgbToHex(blend(r,255,.82),blend(g,255,.82),blend(b,255,.82));
+  const darkest=rgbToHex(Math.round(r*.78),Math.round(g*.78),Math.round(b*.78));
+  app.style.setProperty('--g',hex);
+  app.style.setProperty('--g-d',darkest);
+  app.style.setProperty('--g-l',lighter);
+  app.style.setProperty('--g-p',palest);
+  app.style.setProperty('--g-pp',rgbToHex(blend(r,255,.91),blend(g,255,.91),blend(b,255,.91)));
+  app.style.setProperty('--t-g',darkest);
+}
+const hexToRgb=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const blend=(c,t,f)=>Math.round(c+(t-c)*f);
+const rgbToHex=(r,g,b)=>'#'+[r,g,b].map(v=>pad(Math.min(255,Math.max(0,v)).toString(16))).join('');
+
+/* ── UPGRADE MODAL ── */
+function showUpgradeModal(){
+  const root=document.getElementById('upgradeModalRoot');
+  const overlay=document.getElementById('upgradeOverlay');
+  if(root) root.style.pointerEvents='all';
+  if(overlay) overlay.classList.add('show');
+}
+function closeUpgradeModal(event,force=false){
+  if(!force&&event&&event.target!==document.getElementById('upgradeOverlay')) return;
+  const root=document.getElementById('upgradeModalRoot');
+  const overlay=document.getElementById('upgradeOverlay');
+  if(overlay) overlay.classList.remove('show');
+  setTimeout(()=>{if(root)root.style.pointerEvents='none';},400);
+}
+function handleUpgradeCta(){
+  closeUpgradeModal(null,true);
+  showToast('準備中です。もう少しお待ちください 🌱');
+}
+
+/* ── PROFILE ── */
+function renderProfile(){
+  const name=Store.get('user_name','');
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  const start=Store.get('start_date',today());
+  const days=Math.round((new Date()-new Date(start))/864e5)+1;
+
+  // Weekly continuity rate
+  const now=new Date();
+  const dow=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(dow===0?6:dow-1));
+  mon.setHours(0,0,0,0);
+  const wkDates=[];
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);wkDates.push(toDateStr(d));}
+  const wkDays=new Set(wins.filter(w=>wkDates.includes(w.date)).map(w=>w.date)).size;
+  const wkRate=Math.round(wkDays/7*100);
+
+  const nameEl=document.getElementById('profileName');
+  if(nameEl) nameEl.textContent=name?name+'さん、こんにちは':'こんにちは';
+  const metaEl=document.getElementById('profileMeta');
+  if(metaEl) metaEl.textContent='Habio を使いはじめて '+days+'日目';
+  const tw=document.getElementById('statTotalWins');
+  if(tw) tw.textContent=wins.length;
+  const wr=document.getElementById('statWeekRate');
+  if(wr) wr.textContent=wkRate+'%';
+  const st=document.getElementById('statStreak');
+  if(st) st.textContent=streak+'日';
+}
+
+/* ── HABIT CALENDAR ── */
+function renderHabitCal(){
+  const calDays=document.getElementById('calDays');
+  const calLbl=document.getElementById('calStreakLbl');
+  if(!calDays) return;
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  if(calLbl) calLbl.textContent=streak>0?'🔥 '+streak+'日継続中':'';
+
+  // Monday of current week
+  const now=new Date();
+  const dow=now.getDay(); // 0=Sun
+  const monday=new Date(now);
+  monday.setDate(now.getDate()-(dow===0?6:dow-1));
+  monday.setHours(0,0,0,0);
+
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(monday);
+    d.setDate(monday.getDate()+i);
+    const ds=toDateStr(d);
+    const dayWins=wins.filter(w=>w.date===ds);
+    const habitDone=dayWins.filter(w=>HABIT_DEFS.some(h=>w.title===h.name+'ができた')).length;
+    days.push({d,ds,isToday:ds===today(),isFuture:d>now,count:habitDone,total:HABIT_DEFS.length});
+  }
+
+  calDays.innerHTML=days.map((day,i)=>{
+    const jpDay=['月','火','水','木','金','土','日'][i];
+    const isFut=day.isFuture;
+    const full=!isFut&&day.count>=day.total;
+    const partial=!isFut&&!full&&day.count>0;
+    const any=!isFut&&day.count>0;
+    const prevAny=i>0&&!days[i-1].isFuture&&days[i-1].count>0;
+    const nextAny=i<6&&!days[i+1].isFuture&&days[i+1].count>0;
+    let dotCls='cal-dot'+(full?' full':partial?' partial':'')+(day.isToday?' is-today':'');
+    let colCls='cal-col'+(day.isToday?' is-today':'');
+    return `<div class="${colCls}">
+      <div class="cal-day-lbl">${jpDay}</div>
+      <div class="cal-dot-area">
+        <div class="cal-line-l${any&&prevAny?' show':''}"></div>
+        <div class="${dotCls}"><div class="cal-dot-inner"></div></div>
+        <div class="cal-line-r${any&&nextAny?' show':''}"></div>
+      </div>
+      <div class="cal-date-num">${day.d.getDate()}</div>
+      <div class="cal-today-lbl">今日</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── WEEKLY REVIEW ── */
+function getWeekId(){
+  const now=new Date();
+  const dow=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(dow===0?6:dow-1));
+  return toDateStr(mon);
+}
+
+function calcWeekStats(weeksAgo){
+  const wins=Store.get('wins',[]);
+  const now=new Date();
+  const dow=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(dow===0?6:dow-1)-weeksAgo*7);
+  mon.setHours(0,0,0,0);
+  const weekDates=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);
+    d.setDate(mon.getDate()+i);
+    weekDates.push(toDateStr(d));
+  }
+  const ww=wins.filter(w=>weekDates.includes(w.date));
+  const activeDays=new Set(ww.map(w=>w.date)).size;
+  const habitCounts={};
+  HABIT_DEFS.forEach(h=>{
+    habitCounts[h.id]=ww.filter(w=>w.title===h.name+'ができた').length;
+  });
+  return {activeDays,habitCounts};
+}
+
+function checkWeeklyReview(){
+  const now=new Date();
+  if(now.getDay()!==0||now.getHours()<21) return;
+  if(Store.get('weekly_review_shown')===getWeekId()) return;
+  setTimeout(showWeeklyReview,2200);
+}
+
+function showWeeklyReview(){
+  const now=new Date();
+  const thisW=calcWeekStats(0);
+  const lastW=calcWeekStats(1);
+  const pctThis=Math.round(thisW.activeDays/7*100);
+  const pctLast=Math.round(lastW.activeDays/7*100);
+  const delta=pctThis-pctLast;
+  const isFirst=lastW.activeDays===0&&Store.get('wins',[]).length<7;
+
+  // Best habit
+  let bestId=null,bestCnt=0;
+  Object.entries(thisW.habitCounts).forEach(([id,n])=>{if(n>bestCnt){bestCnt=n;bestId=id;}});
+  const bestDef=HABIT_DEFS.find(h=>h.id===bestId);
+
+  // Title & sub
+  let wkTitle,wkSub;
+  if(thisW.activeDays>=5){wkTitle='素晴らしい1週間でした。';wkSub='よく続けましたね。一緒に来週も進みましょう。';}
+  else if(thisW.activeDays>=3){wkTitle='今週もお疲れさまでした。';wkSub='記録できた日を、一緒に振り返ってみましょう。';}
+  else if(thisW.activeDays>=1){wkTitle='少しだけ整えられましたね。';wkSub='続けようとした気持ちは、確かに残っています。';}
+  else{wkTitle='今週は、どうでしたか？';wkSub='記録がなくても大丈夫。また来週、一緒に始めましょう。';}
+
+  // Habio comment
+  let habioMsg;
+  if(isFirst){
+    habioMsg='初めての1週間、ありがとうございます。始めてくれただけで十分です。一緒にもう一週間、少しずつ進みましょう。';
+  } else if(delta>10){
+    habioMsg='先週より良くなっていますね。数字より、続けようとした気持ちが着実に積み重なっています 🌿';
+  } else if(delta>=-10){
+    habioMsg='先週とほぼ同じペースで来ています。「変わらない」ということは、止まらなかったということです 🌱';
+  } else {
+    habioMsg='難しい週でしたね。でも、こうしてふりかえってくれました。それだけで、もう来週は変わります 🍃';
+  }
+
+  const el=id=>document.getElementById(id);
+  el('wkTitle').textContent=wkTitle;
+  el('wkSub').textContent=wkSub;
+  el('wkActiveDays').textContent=thisW.activeDays;
+  el('wkPct').textContent=pctThis+'%';
+  const deltaEl=el('wkDelta');
+  const dCls=delta>10?'up':delta<-10?'down':'flat';
+  const dTxt=isFirst?'初週':delta>0?'+'+delta+'%':delta===0?'→':delta+'%';
+  deltaEl.className='wk-delta '+dCls;
+  deltaEl.textContent=dTxt;
+  el('wkHabioMsg').textContent=habioMsg;
+  if(bestDef&&bestCnt>0){
+    el('wkBestEm').textContent=bestDef.em;
+    el('wkBestName').textContent=bestDef.name;
+    el('wkBestSub').textContent='今週 '+bestCnt+'日達成できました';
+    el('wkBestRow').style.display='flex';
+  } else {
+    el('wkBestRow').style.display='none';
+  }
+
+  el('weeklyOverlay').classList.add('show');
+  Store.set('weekly_review_shown',getWeekId());
+
+  // Animate bars after modal slides in
+  setTimeout(()=>{
+    el('wkBarThis').style.width=pctThis+'%';
+    el('wkBarLast').style.width=pctLast+'%';
+  },120);
+}
+
+function onWeeklyOverlayClick(e){
+  if(e.target!==document.getElementById('weeklyOverlay')) return;
+  closeWeeklyReview();
+}
+
+function closeWeeklyReview(){
+  const ov=document.getElementById('weeklyOverlay');
+  if(ov) ov.classList.remove('show');
+}
+
+/* ── ONBOARDING ── */
+let onbStep=0;
+const onbAnswers={};
+
+function initOnboarding(){
+  const overlay=document.getElementById('onbOverlay');
+  if(!overlay) return;
+  if(Store.get('onb_done')){overlay.style.display='none';return;}
+  onbStep=0;
+  updateOnbDots();
+}
+
+function updateOnbDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('onbDot'+i);
+    if(d) d.classList.toggle('active',i<=onbStep);
+  }
+}
+
+function selectOnbOpt(el,q,val){
+  el.parentElement.querySelectorAll('.onb-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  onbAnswers[q]=val;
+  const btn=document.getElementById('onbBtn'+onbStep);
+  if(btn) btn.disabled=false;
+}
+
+function onbNext(){
+  const curr=document.getElementById('onb-s'+onbStep);
+  if(!curr) return;
+  const nextStep=onbStep+1;
+  const next=document.getElementById('onb-s'+nextStep);
+  if(!next){onbFinish();return;}
+  curr.classList.add('exit');
+  setTimeout(()=>curr.classList.remove('active','exit'),360);
+  onbStep=nextStep;
+  updateOnbDots();
+  setTimeout(()=>next.classList.add('active'),40);
+  if(onbStep===4) buildOnbComplete();
+}
+
+function buildOnbComplete(){
+  const MAP={
+    perfect:{title:'完璧じゃなくていいんです',msg:'Habio は「続けられる量」を一緒に探します。\n今日できることだけ、少しずつ。'},
+    motive: {title:'やる気より、仕組みが大切です',msg:'やる気がなくても続けられるよう、\nHabio が毎日そっと寄り添います。'},
+    forget: {title:'Habio が覚えています',msg:'忙しい日も、Habio が忘れずにいます。\nあなたは気づいた時だけでOKです。'},
+    nostart:{title:'一緒に見つけましょう',msg:'最初の一歩は一番小さくていい。\nHabio があなたに合った始め方を一緒に考えます。'},
+  };
+  const m=MAP[onbAnswers.q3]||{title:'準備ができました',msg:'一緒に、あなたのペースで始めましょう。\n完璧じゃなくていいんです。'};
+  const t=document.getElementById('onbCompleteTitle');
+  const s=document.getElementById('onbCompleteMsg');
+  if(t) t.textContent=m.title;
+  if(s) s.innerHTML=m.msg.replace(/\n/g,'<br>');
+}
+
+function onbSkip(){onbFinish();}
+
+function onbFinish(){
+  Store.set('onb_done',true);
+  Store.set('onb_answers',onbAnswers);
+  const overlay=document.getElementById('onbOverlay');
+  if(overlay){overlay.classList.add('done');setTimeout(()=>overlay.style.display='none',540);}
+  setPersonalizedFirstChat();
+}
+
+function setPersonalizedFirstChat(){
+  if(Store.get('chat_history',[]).length>0) return;
+  const MAP={
+    perfect:'はじめまして。Habio です 🌱\n\n「完璧にやろう」と思わなくて大丈夫ですよ。\n今日できることだけ、一緒に少しずつやってみましょう。\n\nいつでも話しかけてください。',
+    motive: 'はじめまして。Habio です 🌱\n\nやる気がない日も、ここに来てくれれば十分です。\n大事なのは、続けようとしていること。\nそれだけで十分ですよ。',
+    forget: 'はじめまして。Habio です 🌱\n\n忙れても大丈夫。また気づいた時に来てください。\n「また戻ってこられた」、それ自体が継続です。',
+    nostart:'はじめまして。Habio です 🌱\n\n何から始めればいいか分からない？\nまずは「水を1杯飲む」だけでOKです 💧\n一緒に、最初の一歩を踏み出しましょう。',
+  };
+  const def='はじめまして。Habio です 🌱\n\nあなたのペースで、一緒に進みましょう。\n焦らなくていいですよ。\n\nいつでも話しかけてください。';
+  const msg=MAP[onbAnswers.q3]||def;
+  Store.set('chat_history',[{text:msg,me:false,time:nowTime(),ts:new Date().toISOString()}]);
+  const msgs=document.getElementById('chatMsgs');
+  if(msgs){
+    msgs.innerHTML='';
+    appendBubble(msg,false,nowTime(),false);
+    const tr=document.createElement('div');
+    tr.id='chatTyping';tr.className='typing-row';
+    tr.innerHTML='<div class="m-av-sm">🌱</div><div class="typing-bbl"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+    msgs.appendChild(tr);
+  }
+}
+
+/* ── STREAK MODAL ── */
+const STREAK_MILESTONES=[
+  {days:3, title:'3日間、続きましたね。',   msg:'小さな積み重ねが、確かに始まっています。続けようとしたこと、それが全てです 🌿'},
+  {days:7, title:'1週間！すごいです。',      msg:'7日間の積み重ね、本物です。あなたのペースで続けてきた証拠ですね ✨'},
+  {days:14,title:'2週間継続。',             msg:'もう習慣の芽が出てきています。焦らず、このままのペースで大丈夫です 🌱'},
+  {days:30,title:'1ヶ月。本物の変化です。', msg:'30日間、本当によく続きました。あなたの体と心が、少しずつ整ってきています 🌿'},
+];
+
+function checkStreakMilestone(streak){
+  for(const m of STREAK_MILESTONES){
+    if(streak===m.days&&!Store.get('celebrated_'+m.days)){
+      Store.set('celebrated_'+m.days,true);
+      setTimeout(()=>showStreakModal(m.days),700);
+      break;
+    }
+  }
+}
+
+function showStreakModal(days){
+  const m=STREAK_MILESTONES.find(x=>x.days===days);
+  if(!m) return;
+  document.getElementById('streakDays').textContent=days;
+  document.getElementById('streakModalTitle').textContent=m.title;
+  document.getElementById('streakModalMsg').textContent=m.msg;
+  const modal=document.getElementById('streakModal');
+  const ems=['🍃','🌿','✨','🌱','💚','🍀'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.textContent=ems[i%ems.length];
+    p.style.cssText=`left:${5+Math.random()*90}%;bottom:${-5+Math.random()*55}%;--p-dur:${2+Math.random()*1.5}s;--p-delay:${Math.random()*.9}s;--p-rot:${-50+Math.random()*100}deg;`;
+    modal.appendChild(p);
+    p.addEventListener('animationend',()=>p.remove());
+  }
+  document.getElementById('streakModalOverlay').classList.add('show');
+}
+
+function closeStreakModal(){
+  const ov=document.getElementById('streakModalOverlay');
+  if(ov) ov.classList.remove('show');
+  setTimeout(()=>document.querySelectorAll('#streakModal .particle').forEach(p=>p.remove()),500);
+}
+
+/* ── FOOD AI COMMENT ── */
+function generateFoodAiComment(logs){
+  if(!logs.length) return FOOD_TIPS[new Date().getDay()%FOOD_TIPS.length];
+  const ids=logs.map(l=>l.id);
+  const has=id=>ids.includes(id);
+  const meals=[...new Set(logs.map(l=>l.mealTime))];
+  const allMeals=meals.length>=3;
+  const hasVeg=has('veg');
+  const hasProt=has('protein')||has('fish')||has('egg');
+  const hasWater=has('water');
+  const hasSnack=has('snack');
+  const hasOut=has('outside');
+  if(allMeals&&hasVeg&&hasProt) return '3食＋野菜＋タンパク質、とても整っています。この調子でいきましょう 🌿';
+  if(hasVeg&&hasProt) return '野菜とタンパク質が摂れていますね。バランスを意識できています ✨';
+  if(allMeals) return '3食きちんと食べられましたね。体のリズムが整っていきます 🌱';
+  if(hasVeg&&hasWater) return '野菜と水分、両方意識できていますね。体が喜んでいます 💧';
+  if(hasVeg) return '野菜を記録できましたね。小さな意識が体を変えていきます 🥗';
+  if(hasProt) return 'タンパク質が摂れていますね。継続すると代謝が整ってきますよ 💪';
+  if(hasWater) return '水分補給できていますね。こまめに飲むと体の調子が上がりますよ 💧';
+  if(hasOut) return '外食でも記録できましたね。次は副菜に野菜を1品意識してみましょう。';
+  if(hasSnack) return 'おやつもOKです。罪悪感より、全体のバランスで考えましょう 🍃';
+  if(logs.length>=2) return '記録が続いていますね。続けることで、自分の食事パターンが見えてきます 🌱';
+  return '記録してくれてありがとう。続けることで、少しずつ変化に気づけますよ。';
+}
+
+/* ── iOS KEYBOARD VIEWPORT FIX ── */
+(function(){
+  if(!window.visualViewport) return;
+  const app=document.getElementById('app');
+  const base=window.visualViewport.height;
+  window.visualViewport.addEventListener('resize',()=>{
+    const h=window.visualViewport.height;
+    const keyboardOpen=h<base*.85;
+    app.style.height=keyboardOpen?h+'px':'';
+  });
+})();
+
+/* ── INIT ── */
+function init(){
+  if(!Store.get('start_date')) Store.set('start_date',today());
+
+  // Loading screen copy: returning vs new user
+  const ldSub=document.getElementById('ldSub');
+  if(ldSub) ldSub.textContent=Store.get('onb_done')?'今日も、おかえりなさい。':'はじめまして。一緒に始めましょう 🌿';
+
+  initOnboarding();
+  initHome();
+  initHabits();
+  initFoodQuickGrid();
+  restoreMood();
+  restoreStep();
+  restoreToggles();
+  initThemeSwatches();
+  loadChatHistory();
+  renderHomeWins();
+  renderWins();
+  renderFoodLog();
+  updateProgressRing();
+  renderHabitCal();
+  checkWeeklyReview();
+  renderProfile();
+
+  // Fade out loading screen
+  const ld=document.getElementById('loading');
+  if(ld){
+    const delay=Store.get('onb_done')?500:900;
+    setTimeout(()=>{
+      ld.classList.add('ld-out');
+      setTimeout(()=>{ld.style.display='none';},580);
+    },delay);
+  }
+}
+init();
+</script>
+</body>
+</html>

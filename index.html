@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habio — 気合いじゃなくていい。続けられる健康習慣へ。</title>
+  <meta name="description" content="責めない。比べない。あなたのペースで続けられる健康習慣サポート。AIが毎日やさしく寄り添います。">
+  <meta name="theme-color" content="#72B994">
+  <!-- OGP -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Habio — 気合いじゃなくていい。続けられる健康習慣へ。">
+  <meta property="og:description" content="責めない。比べない。AIが毎日そっと寄り添う、健康習慣アプリ。まずは無料で。">
+  <meta property="og:image" content="https://habio.app/og-image.png">
+  <meta property="og:url" content="https://habio.app">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+
+/* ================================================================
+   RESET
+   ================================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','YuGothic',sans-serif;
+  background:#F9F9F7;
+  color:#3A3A3A;
+  line-height:2;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ================================================================
+   TOKENS
+   ================================================================ */
+:root{
+  --g:        #72B994;
+  --g-d:      #5AA47E;
+  --g-l:      #BCDECB;
+  --g-p:      #E8F5EE;
+  --b-p:      #D5E9F5;
+  --peach-p:  #FAE8E3;
+  --beige:    #F2EAE0;
+  --beige-d:  #E8DDD0;
+  --bg:       #F9F9F7;
+  --bg-w:     #FFFCF8;
+  --card:     #FFFFFF;
+  --t:        #3A3A3A;
+  --t-m:      #686868;
+  --t-l:      #A0A0A0;
+  --t-g:      #4A9A6A;
+
+  --sh-soft:  0 4px 24px rgba(0,0,0,.06);
+  --sh-mid:   0 12px 40px rgba(0,0,0,.08);
+  --sh-float: 0 20px 60px rgba(0,0,0,.09);
+
+  --r-s:14px;
+  --r-m:22px;
+  --r-l:32px;
+  --r-xl:44px;
+  --r-f:9999px;
+}
+
+/* ================================================================
+   LAYOUT
+   ================================================================ */
+.w    {width:100%;max-width:660px;margin:0 auto;padding:0 22px;}
+.ww   {width:100%;max-width:1060px;margin:0 auto;padding:0 22px;}
+.sec  {padding:72px 0;}
+.secl {padding:96px 0;}
+.ct   {text-align:center;}
+
+/* ================================================================
+   TYPE HELPERS
+   ================================================================ */
+.tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:12px;font-weight:700;letter-spacing:.08em;
+  padding:5px 16px;border-radius:var(--r-f);
+  margin-bottom:20px;
+}
+.stitle{
+  font-size:clamp(22px,5.5vw,36px);
+  font-weight:700;line-height:1.55;color:var(--t);
+  letter-spacing:-.015em;
+}
+.ssub{font-size:15px;color:var(--t-m);margin-top:14px;line-height:2.1;}
+.ac{color:var(--g);}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:8px;padding:17px 36px;border-radius:var(--r-f);
+  font-size:16px;font-weight:700;text-decoration:none;
+  letter-spacing:.02em;cursor:pointer;border:none;
+  transition:transform .22s,box-shadow .22s,background .2s;
+  min-height:56px;
+}
+.btn-p{
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;box-shadow:0 8px 28px rgba(114,185,148,.4);
+  width:100%;
+}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(114,185,148,.5);}
+.btn-p:active{transform:translateY(0);}
+
+.btn-o{
+  border:2px solid var(--g);color:var(--g);
+  background:transparent;width:100%;
+}
+.btn-o:hover{background:var(--g-p);}
+
+.btn-app{
+  border:2px solid var(--beige-d);color:var(--t-m);
+  background:var(--bg-w);width:100%;
+  font-size:14px;
+}
+.btn-app:hover{background:var(--beige);border-color:var(--g-l);}
+
+@media(min-width:600px){.btn-p,.btn-o,.btn-app{width:auto;}}
+
+/* ================================================================
+   FLOAT CTA (mobile)
+   ================================================================ */
+.float-cta{
+  position:fixed;bottom:18px;left:14px;right:14px;z-index:400;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:16px;font-weight:700;
+  text-align:center;text-decoration:none;
+  padding:19px;border-radius:var(--r-f);
+  box-shadow:0 10px 36px rgba(114,185,148,.5);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .35s,transform .35s;
+}
+.float-cta.gone{opacity:0;transform:translateY(100px);pointer-events:none;}
+@media(min-width:780px){.float-cta{display:none;}}
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  background:rgba(249,249,247,.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(114,185,148,.1);
+}
+.h-in{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:1060px;margin:0 auto;padding:14px 22px;
+}
+.logo{
+  font-size:22px;font-weight:700;color:var(--g);
+  letter-spacing:.04em;text-decoration:none;
+  display:flex;align-items:baseline;gap:8px;
+}
+.logo-s{font-size:12px;font-weight:400;color:var(--t-l);}
+.h-btn{
+  display:none;
+}
+@media(min-width:780px){
+  .h-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--g);color:#fff;
+    padding:10px 26px;border-radius:var(--r-f);
+    font-size:14px;font-weight:600;text-decoration:none;
+    transition:background .2s,transform .2s;
+  }
+  .h-btn:hover{background:var(--g-d);transform:translateY(-1px);}
+}
+
+/* ================================================================
+   HERO
+   ================================================================ */
+.hero{
+  padding:130px 0 80px;
+  background:linear-gradient(165deg,var(--bg-w) 0%,var(--g-p) 55%,var(--b-p) 100%);
+  position:relative;overflow:hidden;
+}
+.blob{
+  position:absolute;border-radius:50%;pointer-events:none;
+}
+.blob-1{
+  width:460px;height:460px;
+  top:-110px;right:-110px;
+  background:radial-gradient(circle,rgba(188,222,203,.5) 0%,transparent 68%);
+}
+.blob-2{
+  width:340px;height:340px;
+  bottom:-80px;left:-80px;
+  background:radial-gradient(circle,rgba(213,233,245,.4) 0%,transparent 68%);
+}
+
+.hero-grid{position:relative;z-index:1;}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.85);
+  border:1px solid var(--g-l);
+  color:var(--t-g);font-size:13px;font-weight:600;
+  padding:7px 18px;border-radius:var(--r-f);
+  margin-bottom:28px;
+}
+
+.hero-title{
+  font-size:clamp(28px,7.5vw,54px);
+  font-weight:700;line-height:1.38;
+  letter-spacing:-.02em;margin-bottom:22px;
+}
+.hero-title .soft{
+  display:block;font-size:clamp(16px,4vw,26px);
+  font-weight:400;color:var(--t-m);
+  margin-top:10px;letter-spacing:0;
+}
+
+.hero-desc{
+  font-size:16px;color:var(--t-m);
+  line-height:2.15;margin-bottom:36px;
+}
+.hero-desc strong{color:var(--t);font-weight:600;}
+
+.hero-ctas{display:flex;flex-direction:column;gap:12px;max-width:340px;}
+.hero-note{font-size:12px;color:var(--t-l);margin-top:14px;}
+
+/* --- Animated Chat Card --- */
+.chat-wrap{
+  position:relative;
+  margin-top:52px;
+}
+.chat-phone{
+  background:var(--card);
+  border-radius:var(--r-xl);
+  padding:30px 22px 22px;
+  box-shadow:var(--sh-float),0 2px 6px rgba(0,0,0,.04);
+  max-width:360px;margin:0 auto;
+}
+
+.chat-bar{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--g-p);
+  margin-bottom:22px;
+}
+.c-av{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--b-p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.c-name{font-size:15px;font-weight:700;}
+.c-online{
+  font-size:12px;color:var(--g);
+  display:flex;align-items:center;gap:4px;
+}
+.c-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--g);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+.msg-list{display:flex;flex-direction:column;gap:12px;}
+
+.mrow{
+  display:flex;align-items:flex-end;gap:8px;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .45s ease,transform .45s ease;
+}
+.mrow.show{opacity:1;transform:translateY(0);}
+.mrow.me{flex-direction:row-reverse;}
+
+.m-av{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--b-p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+
+.bbl{
+  background:var(--g-p);
+  border-radius:6px 20px 20px 20px;
+  padding:13px 17px;
+  font-size:14px;line-height:1.8;max-width:80%;
+}
+.mrow.me .bbl{
+  background:var(--beige);
+  border-radius:20px 6px 20px 20px;
+}
+.bbl-time{
+  font-size:10px;color:var(--t-l);
+  margin-top:4px;
+}
+.bbl-read{
+  font-size:10px;color:var(--g);
+  margin-top:4px;text-align:right;
+}
+
+.typing-row{
+  display:flex;align-items:flex-end;gap:8px;
+  opacity:0;transition:opacity .3s;
+}
+.typing-row.show{opacity:1;}
+.typing-bbl{
+  background:var(--g-p);
+  border-radius:6px 20px 20px 20px;
+  padding:14px 18px;
+  display:inline-flex;gap:5px;align-items:center;
+}
+.tdot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--g-l);
+  animation:tdot 1.3s ease-in-out infinite;
+}
+.tdot:nth-child(2){animation-delay:.18s;}
+.tdot:nth-child(3){animation-delay:.36s;}
+@keyframes tdot{
+  0%,80%,100%{opacity:.3;transform:scale(.85);}
+  40%{opacity:1;transform:scale(1.15);}
+}
+
+/* float badges */
+.hf{
+  position:absolute;
+  background:var(--card);border-radius:var(--r-m);
+  padding:10px 16px;
+  box-shadow:var(--sh-mid);
+  font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;
+}
+.hf-1{top:-16px;right:-12px;}
+.hf-2{bottom:28px;left:-20px;}
+@media(max-width:380px){.hf{display:none;}}
+
+@media(min-width:780px){
+  .hero{padding:152px 0 104px;}
+  .hero-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:72px;align-items:center;
+  }
+  .chat-wrap{margin-top:0;}
+  .chat-phone{animation:float 5.5s ease-in-out infinite;}
+}
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-10px);}
+}
+
+/* ================================================================
+   REASSURANCE (安心できる空気)
+   ================================================================ */
+.reassure{background:var(--bg-w);}
+
+.reassure-items{
+  display:grid;gap:14px;margin-top:44px;
+}
+@media(min-width:600px){
+  .reassure-items{grid-template-columns:repeat(3,1fr);}
+}
+
+.rs-card{
+  background:var(--card);
+  border-radius:var(--r-l);
+  padding:36px 28px;
+  text-align:center;
+  border:1.5px solid var(--g-p);
+  box-shadow:var(--sh-soft);
+  transition:transform .22s,box-shadow .22s;
+  position:relative;overflow:hidden;
+}
+.rs-card:hover{transform:translateY(-4px);box-shadow:var(--sh-mid);}
+.rs-card::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--g),var(--g-l));
+  border-radius:var(--r-f) var(--r-f) 0 0;
+}
+
+.rs-em{font-size:40px;margin-bottom:18px;line-height:1;}
+.rs-word{
+  font-size:clamp(20px,5vw,26px);
+  font-weight:700;color:var(--t);
+  margin-bottom:10px;line-height:1.4;
+}
+.rs-body{font-size:13px;color:var(--t-m);line-height:1.9;}
+
+/* ================================================================
+   AI VOICE PULL QUOTE
+   ================================================================ */
+.ai-voice{
+  padding:48px 22px;
+  display:flex;justify-content:center;
+}
+.ai-voice-inner{
+  max-width:540px;width:100%;
+  background:linear-gradient(135deg,var(--g-p),var(--b-p));
+  border-radius:var(--r-l);
+  padding:36px 32px;
+  display:flex;gap:18px;align-items:flex-start;
+}
+.ai-voice-av{
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--b-p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.ai-voice-label{
+  font-size:12px;font-weight:700;color:var(--t-g);
+  letter-spacing:.06em;margin-bottom:10px;
+}
+.ai-voice-text{
+  font-size:16px;font-weight:500;
+  color:var(--t);line-height:1.85;
+}
+
+/* ================================================================
+   EMPATHY
+   ================================================================ */
+.empathy{background:var(--bg);}
+
+.emp-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;margin-top:36px;
+}
+@media(min-width:600px){
+  .emp-grid{grid-template-columns:repeat(3,1fr);}
+}
+
+.emp-c{
+  background:var(--beige);border-radius:var(--r-m);
+  padding:24px 18px;text-align:center;
+  transition:transform .2s;
+}
+.emp-c:hover{transform:translateY(-3px);}
+.emp-em{font-size:32px;margin-bottom:10px;line-height:1;}
+.emp-tx{font-size:13px;color:var(--t-m);line-height:1.7;}
+
+.emp-bridge{
+  margin-top:44px;
+  background:var(--card);
+  border-radius:var(--r-l);
+  padding:44px 28px;
+  border:1.5px solid var(--g-p);
+  box-shadow:var(--sh-soft);
+  text-align:center;
+}
+.emp-bridge-t{
+  font-size:clamp(19px,4.5vw,28px);
+  font-weight:700;line-height:1.65;color:var(--t);
+}
+.emp-bridge-s{
+  font-size:15px;color:var(--t-m);
+  margin-top:14px;line-height:2.1;
+}
+.brand-line{
+  margin:26px auto 0;
+  max-width:420px;
+  font-size:clamp(17px,4vw,23px);
+  font-weight:700;
+  line-height:1.7;
+  color:var(--t-g);
+  padding:20px 24px;
+  background:var(--g-p);
+  border-left:4px solid var(--g);
+  border-radius:0 var(--r-m) var(--r-m) 0;
+  text-align:left;
+}
+
+/* ================================================================
+   WHY CONTINUE
+   ================================================================ */
+.why{background:var(--bg-w);}
+.why-grid{display:grid;gap:16px;margin-top:44px;}
+@media(min-width:640px){.why-grid{grid-template-columns:1fr 1fr;}}
+
+.why-c{
+  background:var(--card);
+  border-radius:var(--r-l);padding:34px 28px;
+  border:1.5px solid var(--g-p);
+  box-shadow:var(--sh-soft);
+  position:relative;overflow:hidden;
+  transition:transform .22s,box-shadow .22s;
+}
+.why-c:hover{transform:translateY(-4px);box-shadow:var(--sh-mid);}
+.why-c::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--g),var(--g-l));
+}
+
+.why-em{font-size:36px;margin-bottom:18px;line-height:1;}
+.why-h{font-size:18px;font-weight:700;margin-bottom:10px;line-height:1.5;}
+.why-b{font-size:14px;color:var(--t-m);line-height:1.95;}
+.why-q{
+  margin-top:14px;padding:12px 16px;
+  background:var(--g-p);border-radius:var(--r-s);
+  font-size:13px;font-weight:600;color:var(--t-g);line-height:1.65;
+}
+
+/* ================================================================
+   SMALL WINS
+   ================================================================ */
+.wins{background:var(--bg);}
+.wins-grid{
+  display:grid;gap:12px;margin-top:36px;
+}
+@media(min-width:480px){.wins-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:768px){.wins-grid{grid-template-columns:repeat(3,1fr);}}
+
+.win-c{
+  background:var(--card);border-radius:var(--r-m);
+  padding:22px 20px;
+  border:1.5px solid transparent;
+  box-shadow:var(--sh-soft);
+  transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+.win-c.done{
+  border-color:var(--g-l);
+  background:linear-gradient(145deg,var(--card),var(--g-p));
+}
+.win-c:hover{transform:translateY(-2px);box-shadow:var(--sh-mid);}
+
+.win-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.win-em{font-size:26px;}
+.win-lbl{font-size:14px;font-weight:600;line-height:1.5;}
+.win-sub{font-size:12px;color:var(--t-l);margin-top:2px;}
+
+.win-foot{display:flex;align-items:center;justify-content:space-between;}
+.win-ok{font-size:12px;color:var(--t-g);font-weight:700;}
+.win-ng{font-size:12px;color:var(--t-l);}
+.win-chk{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.win-chk.y{background:var(--g);color:#fff;}
+.win-chk.n{background:var(--beige);color:var(--t-l);font-size:12px;}
+
+.wins-msg{
+  margin-top:36px;
+  background:linear-gradient(135deg,var(--g-p),var(--b-p));
+  border-radius:var(--r-l);padding:36px 24px;text-align:center;
+}
+.wins-msg-t{font-size:18px;font-weight:700;line-height:1.7;}
+.wins-msg-s{font-size:14px;color:var(--t-m);margin-top:10px;}
+
+/* ================================================================
+   FEATURES
+   ================================================================ */
+.feats{background:var(--beige);}
+.feat-grid{display:grid;gap:14px;margin-top:44px;}
+@media(min-width:640px){.feat-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:900px){.feat-grid{grid-template-columns:repeat(3,1fr);}}
+
+.feat-c{
+  background:var(--card);border-radius:var(--r-l);
+  padding:30px 26px;
+  box-shadow:var(--sh-soft);
+  transition:transform .22s,box-shadow .22s;
+}
+.feat-c:hover{transform:translateY(-4px);box-shadow:var(--sh-mid);}
+
+.feat-ic{
+  width:54px;height:54px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin-bottom:18px;
+}
+.g{background:var(--g-p);}
+.b{background:var(--b-p);}
+.p{background:var(--peach-p);}
+.e{background:var(--beige);}
+
+.feat-nm{font-size:16px;font-weight:700;margin-bottom:8px;}
+.feat-bd{font-size:13px;color:var(--t-m);line-height:1.9;}
+
+/* ================================================================
+   DAY IN LIFE
+   ================================================================ */
+.day{background:var(--bg-w);}
+.tl{max-width:560px;margin:44px auto 0;}
+
+.tli{display:grid;grid-template-columns:82px 1fr;gap:20px;}
+.tl-left{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.tl-t{
+  font-size:12px;font-weight:700;color:var(--t-g);
+  background:var(--g-p);padding:5px 11px;
+  border-radius:var(--r-f);white-space:nowrap;line-height:1;
+}
+.tl-stem{
+  width:2px;flex:1;min-height:28px;
+  background:linear-gradient(to bottom,var(--g-l),rgba(188,222,203,.08));
+  margin-top:10px;
+}
+.tl-r{padding-bottom:28px;}
+.tl-bbl{
+  background:var(--card);
+  border-radius:4px 22px 22px 22px;
+  padding:18px 22px;font-size:14px;line-height:1.85;
+  box-shadow:var(--sh-soft);margin-top:10px;
+}
+.tl-sndr{
+  font-size:12px;font-weight:700;color:var(--t-g);
+  margin-bottom:6px;letter-spacing:.04em;
+}
+
+/* ================================================================
+   VOICES
+   ================================================================ */
+.voices{background:var(--bg);}
+
+.v-scroll{
+  display:flex;gap:16px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding:4px 0 16px;
+  margin-top:40px;
+}
+.v-scroll::-webkit-scrollbar{display:none;}
+
+.v-c{
+  background:var(--card);border-radius:var(--r-l);
+  padding:30px 26px;min-width:280px;max-width:300px;flex-shrink:0;
+  border:1.5px solid var(--beige-d);
+  box-shadow:var(--sh-soft);
+}
+@media(min-width:900px){
+  .v-scroll{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    overflow-x:visible;margin-top:40px;
+  }
+  .v-c{min-width:auto;max-width:none;}
+}
+
+.v-stars{color:#F4C542;font-size:16px;margin-bottom:14px;letter-spacing:2px;}
+.v-tx{font-size:14px;color:var(--t);line-height:1.95;margin-bottom:22px;}
+.v-foot{display:flex;align-items:center;gap:12px;}
+.v-av{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g-l),var(--b-p));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.v-nm{font-size:13px;font-weight:700;}
+.v-mt{font-size:12px;color:var(--t-l);margin-top:2px;}
+.v-disc{font-size:11px;color:var(--t-l);text-align:center;margin-top:14px;}
+
+/* ── PERSONAS ── */
+.sec.personas{padding:80px 0 60px;}
+.persona-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px;
+}
+@media(min-width:900px){.persona-grid{grid-template-columns:repeat(4,1fr);}}
+.persona-c{
+  background:var(--card);border-radius:24px;padding:26px 20px;
+  border:1.5px solid var(--beige-d);box-shadow:var(--sh-soft);
+  display:flex;flex-direction:column;gap:10px;
+}
+.persona-em{font-size:28px;line-height:1;}
+.persona-nm{font-size:14px;font-weight:700;color:var(--t);}
+.persona-bd{font-size:13px;color:var(--t-l);line-height:1.8;}
+@media(max-width:500px){
+  .persona-grid{grid-template-columns:1fr;}
+  .persona-c{flex-direction:row;align-items:flex-start;gap:14px;}
+  .persona-em{font-size:24px;flex-shrink:0;margin-top:2px;}
+}
+
+/* ================================================================
+   PRICING
+   ================================================================ */
+.pricing{background:var(--bg-w);}
+
+.p-grid{display:grid;gap:16px;margin-top:44px;}
+@media(min-width:640px){
+  .p-grid{grid-template-columns:1fr 1fr;max-width:740px;margin:44px auto 0;}
+}
+
+.p-c{
+  border-radius:var(--r-xl);padding:40px 32px;
+  border:2px solid transparent;
+  box-shadow:var(--sh-soft);
+  transition:transform .22s,box-shadow .22s;
+  position:relative;
+}
+.p-c:hover{transform:translateY(-4px);box-shadow:var(--sh-mid);}
+
+.p-c.free{background:var(--bg);border-color:var(--beige-d);}
+.p-c.paid{
+  background:linear-gradient(150deg,var(--g-p),var(--b-p));
+  border-color:var(--g-l);
+}
+
+.p-rec{
+  position:absolute;top:18px;right:-2px;
+  background:var(--g);color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  padding:5px 18px 5px 14px;border-radius:4px 0 0 4px;
+}
+
+.p-tier{font-size:12px;color:var(--t-l);margin-bottom:6px;}
+.p-name{font-size:21px;font-weight:700;}
+.p-row{
+  margin:22px 0;padding:22px 0;
+  border-top:1px solid rgba(0,0,0,.07);
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+.p-num{font-size:42px;font-weight:700;letter-spacing:-.02em;}
+.p-per{font-size:14px;color:var(--t-m);}
+.p-trial{font-size:12px;color:var(--t-g);font-weight:600;margin-top:6px;}
+
+.p-list{list-style:none;margin:20px 0 28px;display:flex;flex-direction:column;gap:12px;}
+.p-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--t-m);}
+.ck{color:var(--g);font-size:15px;flex-shrink:0;margin-top:2px;}
+
+.p-foot{font-size:12px;color:var(--t-l);text-align:center;margin-top:22px;line-height:1.9;}
+
+/* ================================================================
+   APP PREVIEW TEASER
+   ================================================================ */
+.app-teaser{
+  background:linear-gradient(155deg,var(--bg-w) 0%,var(--g-p) 60%,var(--b-p) 100%);
+  padding:72px 0;
+}
+.app-teaser-inner{
+  display:flex;flex-direction:column;align-items:center;gap:36px;
+}
+@media(min-width:780px){
+  .app-teaser-inner{flex-direction:row;gap:64px;align-items:center;}
+  .app-teaser-copy{flex:1;}
+  .app-teaser-phone{flex-shrink:0;}
+}
+
+.app-phone-frame{
+  width:220px;
+  background:var(--card);
+  border-radius:36px;
+  padding:18px 16px 22px;
+  box-shadow:0 24px 64px rgba(0,0,0,.10),0 4px 12px rgba(0,0,0,.05);
+  border:6px solid #E8E8E8;
+  position:relative;
+}
+.app-phone-frame::before{
+  content:'';position:absolute;
+  top:10px;left:50%;transform:translateX(-50%);
+  width:50px;height:4px;
+  background:#D8D8D8;border-radius:4px;
+}
+.app-screen-mock{
+  background:var(--g-p);
+  border-radius:24px;
+  padding:20px 16px 16px;
+  min-height:180px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.asm-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:12px;font-weight:600;color:var(--t);
+}
+.asm-em{font-size:18px;}
+.asm-check{
+  margin-left:auto;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--g);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;flex-shrink:0;
+}
+.asm-ai{
+  background:var(--card);border-radius:8px 16px 16px 16px;
+  padding:10px 14px;font-size:11px;line-height:1.7;
+  color:var(--t-m);
+}
+
+/* ================================================================
+   FUTURE
+   ================================================================ */
+.future{background:var(--beige);}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px;}
+@media(min-width:600px){.f-grid{grid-template-columns:repeat(4,1fr);}}
+
+.f-c{
+  background:var(--card);border-radius:var(--r-m);
+  padding:24px 16px;text-align:center;
+  border:1.5px solid var(--beige-d);
+  box-shadow:var(--sh-soft);opacity:.85;
+}
+.f-em{font-size:28px;margin-bottom:10px;}
+.f-nm{font-size:13px;font-weight:600;margin-bottom:8px;}
+.f-tag{
+  display:inline-block;background:var(--beige);color:var(--t-l);
+  font-size:10px;font-weight:700;letter-spacing:.06em;
+  padding:3px 10px;border-radius:var(--r-f);
+}
+
+/* ================================================================
+   FAQ
+   ================================================================ */
+.faq{background:var(--bg-w);}
+.faq-list{max-width:640px;margin:44px auto 0;display:flex;flex-direction:column;gap:10px;}
+.faq-i{background:var(--card);border-radius:var(--r-m);box-shadow:var(--sh-soft);}
+.faq-q{
+  padding:20px 24px;display:flex;align-items:flex-start;
+  gap:14px;font-size:15px;font-weight:600;
+}
+.faq-qi{color:var(--g);font-size:20px;font-weight:700;flex-shrink:0;line-height:1.3;}
+.faq-a{padding:0 24px 20px 58px;font-size:14px;color:var(--t-m);line-height:1.95;}
+
+/* ================================================================
+   FINAL CTA
+   ================================================================ */
+.final{
+  background:linear-gradient(155deg,var(--g-p) 0%,var(--b-p) 100%);
+  padding:96px 0;text-align:center;
+}
+.final-t{
+  font-size:clamp(24px,5.5vw,40px);
+  font-weight:700;line-height:1.55;margin-bottom:16px;
+}
+.final-s{
+  font-size:16px;color:var(--t-m);
+  line-height:2.15;margin-bottom:44px;
+}
+.final-ctas{
+  display:flex;flex-direction:column;
+  align-items:center;gap:14px;
+}
+@media(min-width:500px){
+  .final-ctas{flex-direction:row;justify-content:center;}
+  .btn-p.fb{width:auto;padding:18px 52px;font-size:18px;}
+}
+.btn-p.fb{max-width:380px;}
+.final-n{font-size:12px;color:var(--t-l);margin-top:18px;}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+footer{
+  background:#363636;color:rgba(255,255,255,.5);
+  padding:52px 22px 36px;text-align:center;font-size:13px;
+}
+.f-logo{color:var(--g);font-size:20px;font-weight:700;margin-bottom:6px;}
+.f-tag{margin-bottom:26px;}
+.f-links{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:26px;}
+.f-links a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s;}
+.f-links a:hover{color:var(--g);}
+.f-copy{font-size:12px;color:rgba(255,255,255,.25);}
+
+/* ================================================================
+   SCROLL REVEAL
+   ================================================================ */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.05s;}
+.d2{transition-delay:.12s;}
+.d3{transition-delay:.19s;}
+
+/* ================================================================
+   ALSO FAIL (dark emotional pull section)
+   ================================================================ */
+.also-fail{
+  background:#1E2D28;
+  padding:92px 0;text-align:center;
+}
+.also-fail-q{
+  font-size:clamp(21px,5.5vw,36px);
+  font-weight:700;
+  color:rgba(255,255,255,.28);
+  letter-spacing:-.015em;
+  margin-bottom:24px;
+}
+.also-fail-b{
+  font-size:clamp(15px,3.5vw,19px);
+  color:rgba(255,255,255,.52);
+  line-height:2.3;margin-bottom:30px;
+}
+.also-fail-a{
+  font-size:clamp(22px,5.8vw,38px);
+  font-weight:700;
+  color:var(--g);
+  letter-spacing:-.02em;
+}
+
+/* ================================================================
+   COMPARISON SECTION
+   ================================================================ */
+.diff{background:var(--bg-w);}
+.diff-frame{margin-top:44px;display:grid;gap:16px;}
+@media(min-width:680px){.diff-frame{grid-template-columns:1fr 1fr;}}
+
+.diff-card{border-radius:var(--r-l);padding:36px 28px;}
+.diff-card.other{
+  background:var(--card);
+  border:2px solid var(--beige-d);
+}
+.diff-card.ours{
+  background:linear-gradient(145deg,var(--g-p),var(--b-p));
+  border:2px solid var(--g-l);
+}
+.diff-head{
+  font-size:13px;font-weight:700;letter-spacing:.07em;
+  margin-bottom:24px;
+  display:flex;align-items:center;gap:8px;
+}
+.diff-head.other{color:var(--t-l);}
+.diff-head.ours{color:var(--t-g);}
+
+.diff-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid rgba(0,0,0,.06);
+  font-size:14px;line-height:1.7;
+}
+.diff-item:last-child{border-bottom:none;}
+.diff-ic{font-size:14px;flex-shrink:0;margin-top:2px;}
+.diff-ic.x{color:var(--t-l);}
+.diff-ic.o{color:var(--g);}
+.diff-tx{color:var(--t-l);}
+.diff-tx.ours{color:var(--t);font-weight:500;}
+
+.diff-foot{
+  margin-top:44px;
+  background:linear-gradient(135deg,var(--g-p),var(--b-p));
+  border-radius:var(--r-l);
+  padding:44px 32px;text-align:center;
+  border:1.5px solid var(--g-l);
+}
+.diff-foot-t{
+  font-size:clamp(18px,4.5vw,26px);
+  font-weight:700;line-height:1.75;
+  color:var(--t);margin-bottom:14px;
+}
+.diff-foot-s{font-size:15px;color:var(--t-m);line-height:2.1;}
+.diff-foot-tag{
+  display:inline-block;
+  background:var(--g);color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.05em;
+  padding:6px 20px;border-radius:var(--r-f);
+  margin-bottom:22px;
+}
+
+/* mobile bottom spacer */
+.mb-sp{height:90px;display:block;}
+@media(min-width:780px){.mb-sp{display:none;}}
+
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+  FLOATING CTA
+  ============================================================ -->
+<div class="float-cta" id="floatCta" style="gap:0;flex-direction:column;padding:0;overflow:hidden;">
+  <a href="app.html" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;color:#fff;text-decoration:none;font-size:15px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.2);">
+    🌱 まずは無料で試してみる
+  </a>
+  <a href="app.html" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:500;">
+    📱 アプリを体験する
+  </a>
+</div>
+
+
+<!-- ============================================================
+  HEADER
+  ============================================================ -->
+<header>
+  <div class="h-in">
+    <a class="logo" href="#">Habio <span class="logo-s">健康習慣サポート</span></a>
+    <a class="h-btn" href="app.html">まずは無料で試してみる</a>
+  </div>
+</header>
+
+
+<!-- ============================================================
+  HERO
+  ============================================================ -->
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="ww">
+    <div class="hero-grid">
+
+      <!-- Copy -->
+      <div>
+        <div class="hero-eyebrow">🌿 「頑張れない日」を前提に設計されたAI</div>
+
+        <h1 class="hero-title">
+          気合いじゃ<br>なくていい。<br>
+          <span class="ac">続けられる仕組み</span>が、<br>あなたを変える。
+          <span class="soft">
+            頑張れない日があっても、大丈夫。<br>
+            Habio がそっと、一緒に歩きます。
+          </span>
+        </h1>
+
+        <p class="hero-desc">
+          食事・運動・生活習慣を、AIが<strong>あなたに合わせて</strong>やさしくサポート。<br>
+          完璧じゃなくていい。少しずつで、ちゃんと変われる。
+        </p>
+
+        <div class="hero-ctas">
+          <a class="btn btn-p" href="app.html">まずは無料で試してみる →</a>
+          <a class="btn btn-app" href="app.html">📱 アプリを体験する</a>
+        </div>
+        <p class="hero-note">クレジットカード不要 &nbsp;·&nbsp; いつでも解約可能</p>
+      </div>
+
+      <!-- Chat Visual -->
+      <div class="chat-wrap">
+        <div class="chat-phone" style="position:relative;">
+          <div class="hf hf-1">✅ 21日間続きました</div>
+
+          <div class="chat-bar">
+            <div class="c-av">🌱</div>
+            <div>
+              <div class="c-name">Habio</div>
+              <div class="c-online"><span class="c-dot"></span> いつでも話しかけてください</div>
+            </div>
+          </div>
+
+          <div class="msg-list" id="heroChat">
+            <!-- JS で順番に表示 -->
+          </div>
+
+          <div class="hf hf-2">💧 水を飲めた ✓</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  REASSURANCE（焦らなくていい）
+  ============================================================ -->
+<section class="sec reassure">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">Habio が大切にしていること</div>
+      <h2 class="stitle">正しい答えだけでは、<br>人は変われない。</h2>
+      <p class="ssub">
+        食べすぎない方がいい、運動した方がいい——そんなことは、みんな知っています。<br>
+        問題は「知っているのに続かない」こと。Habio は、そこに向き合います。
+      </p>
+    </div>
+
+    <div class="reassure-items">
+      <div class="rs-card rv d1">
+        <div class="rs-em">🍃</div>
+        <div class="rs-word">焦らなくていい。</div>
+        <div class="rs-body">急がなくていい。あなたのリズムで、少しずつ進めれば十分です。</div>
+      </div>
+      <div class="rs-card rv d2">
+        <div class="rs-em">☁️</div>
+        <div class="rs-word">今日は休んでもいい。</div>
+        <div class="rs-body">できない日があっても大丈夫。また明日から始めればいい。それだけです。</div>
+      </div>
+      <div class="rs-card rv d3">
+        <div class="rs-em">🌱</div>
+        <div class="rs-word">完璧じゃなくていい。</div>
+        <div class="rs-body">70点でも60点でも、続けることの方がずっと大切です。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  AI VOICE #1
+  ============================================================ -->
+<div class="ai-voice rv">
+  <div class="ai-voice-inner">
+    <div class="ai-voice-av">🌱</div>
+    <div>
+      <div class="ai-voice-label">Habio からひとこと</div>
+      <div class="ai-voice-text">
+        「昨日できなかったことは、忘れましょう。<br>
+        今日また始めようとしてくれた。<br>
+        それだけで、もう十分です。」
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+  EMPATHY
+  ============================================================ -->
+<section class="sec empathy">
+  <div class="w">
+    <div class="rv">
+      <div class="tag">こんな気持ち、ありませんか？</div>
+      <h2 class="stitle">
+        続けられない自分を、<br>
+        責めていませんか？
+      </h2>
+      <p class="ssub">多くの方が同じ気持ちを抱えています。あなただけじゃないんです。</p>
+    </div>
+
+    <div class="emp-grid rv">
+      <div class="emp-c"><div class="emp-em">😮‍💨</div><div class="emp-tx">習慣が<br>続かない</div></div>
+      <div class="emp-c"><div class="emp-em">🤔</div><div class="emp-tx">何から<br>始めればいいか<br>わからない</div></div>
+      <div class="emp-c"><div class="emp-em">⏰</div><div class="emp-tx">忙しくて<br>時間がない</div></div>
+      <div class="emp-c"><div class="emp-em">🍽️</div><div class="emp-tx">食事管理が<br>苦手</div></div>
+      <div class="emp-c"><div class="emp-em">😞</div><div class="emp-tx">一人だと<br>すぐ挫折する</div></div>
+      <div class="emp-c"><div class="emp-em">💪</div><div class="emp-tx">厳しい指導が<br>プレッシャー</div></div>
+    </div>
+
+    <div class="emp-bridge rv">
+      <p class="emp-bridge-t">
+        意志が弱いんじゃない。<br>
+        ただ、<span class="ac">続けられる仕組み</span>が<br>
+        なかっただけ。
+      </p>
+      <div class="brand-line">
+        「健康は、頑張ることじゃなく、<br>続けられること。」
+      </div>
+      <p class="emp-bridge-s">
+        Habio は「管理」ではなく「継続できる状態を作ること」を目指しています。<br>
+        責めない。比べない。挫折しそうな前に、そっと声をかける。
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  ALSO FAIL (dark emotional pull)
+  ============================================================ -->
+<section class="also-fail">
+  <div class="w">
+    <div class="rv ct">
+      <p class="also-fail-q">「また続かなかった。」</p>
+      <p class="also-fail-b">
+        その瞬間に必要なのは、<br>
+        厳しい管理でも、完璧な計画でもなく、
+      </p>
+      <p class="also-fail-a">"責めないサポート"でした。</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  WHY CONTINUE
+  ============================================================ -->
+<section class="sec why" id="why">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">続けられる理由</div>
+      <h2 class="stitle">
+        「また失敗するかも」<br>
+        と思っているあなたへ。
+      </h2>
+      <p class="ssub">
+        意志の問題じゃない。<br>
+        続けられるように<strong>設計されていなかっただけ</strong>です。
+      </p>
+    </div>
+
+    <div class="why-grid">
+
+      <div class="why-c rv d1">
+        <div class="why-em">🤗</div>
+        <div class="why-h">責めない。怒らない。</div>
+        <div class="why-b">
+          サボった日があっても、Habio は一切責めません。「また明日から」と、やさしく一緒に再スタートします。自己嫌悪のループを、終わらせましょう。
+        </div>
+        <div class="why-q">「頑張れなかった日も、責めずに続けられる。」</div>
+      </div>
+
+      <div class="why-c rv d2">
+        <div class="why-em">🐢</div>
+        <div class="why-h">あなたのペースでいい。</div>
+        <div class="why-b">
+          1日1つの小さな行動でOK。完璧を目指さなくていい。Habio はあなたのペースに合わせて、今日できることだけを提案します。
+        </div>
+        <div class="why-q">「少しずつで、ちゃんと変われる。」</div>
+      </div>
+
+      <div class="why-c rv d1">
+        <div class="why-em">💬</div>
+        <div class="why-h">毎日、そっと寄り添う。</div>
+        <div class="why-b">
+          朝・昼・夜、タイミングよく声をかけます。悩んだとき、疲れたとき、気軽に話しかけてください。一人で頑張らなくていい環境をつくります。
+        </div>
+        <div class="why-q">「孤独な習慣改善から、卒業できる。」</div>
+      </div>
+
+      <div class="why-c rv d2">
+        <div class="why-em">⭐</div>
+        <div class="why-h">小さな変化を、一緒に喜ぶ。</div>
+        <div class="why-b">
+          「水を飲めた」「少し歩けた」。どんな小さな変化も、Habio は見逃しません。小さな成功体験の積み重ねが、本物の自信になります。
+        </div>
+        <div class="why-q">「小さな成功が、続ける力になる。」</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  COMPARISON (なぜこのAIは続けられるのか)
+  ============================================================ -->
+<section class="sec diff">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">「ChatGPTでよくない？」と思った方へ</div>
+      <h2 class="stitle">
+        なぜ、このAIは<br>
+        <span class="ac">続けられるのか？</span>
+      </h2>
+      <p class="ssub">
+        知識を与えるだけでは、人は変われません。<br>
+        必要なのは、<strong>「継続できる状態を作ること」</strong>です。
+      </p>
+    </div>
+
+    <div class="diff-frame rv">
+      <div class="diff-card other">
+        <div class="diff-head other">💬 普通のAI / ChatGPT</div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">質問に答えるだけ</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">三日坊主を想定していない</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">習慣化の設計がない</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">挫折タイミングを見ていない</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">自己嫌悪を理解しない</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic x">✕</span>
+          <span class="diff-tx">モチベ低下を考慮しない</span>
+        </div>
+      </div>
+
+      <div class="diff-card ours">
+        <div class="diff-head ours">🌱 Habio</div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">挫折する前に、そっと声をかける</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">続かない日を前提に設計されている</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">心理学・習慣化設計をベースに動く</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">三日坊主になる前に先手を打つ</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">責めず、また始められる言葉をかける</span>
+        </div>
+        <div class="diff-item">
+          <span class="diff-ic o">✓</span>
+          <span class="diff-tx ours">"ゼロにしない"継続サポートを続ける</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="diff-foot rv">
+      <div class="diff-foot-tag">「続かなかった人」のために設計されたAI</div>
+      <div class="diff-foot-t">
+        このAIは、<span class="ac">「頑張れない日」を前提に</span><br>
+        作られています。
+      </div>
+      <div class="diff-foot-s">
+        「情報提供」ではなく、<strong>「継続できる状態を作ること」</strong>。<br>
+        それが、Habio の本当の価値です。
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+  AI VOICE #2
+  ============================================================ -->
+<div class="ai-voice rv">
+  <div class="ai-voice-inner">
+    <div class="ai-voice-av">🌱</div>
+    <div>
+      <div class="ai-voice-label">Habio からひとこと</div>
+      <div class="ai-voice-text">
+        「続かなかったのは、あなたのせいじゃない。<br>
+        続けられる仕組みが、なかっただけです。<br>
+        一緒に、作っていきましょう。」
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+  SMALL WINS
+  ============================================================ -->
+<section class="sec wins">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">今日の小さな「できた」</div>
+      <h2 class="stitle">
+        こんな小さなことでも、<br>
+        ちゃんと前進しています。
+      </h2>
+      <p class="ssub">
+        数字よりも、気持ち。結果よりも、続けた事実。<br>
+        Habio は、どんな一歩も見逃しません。
+      </p>
+    </div>
+
+    <div class="wins-grid rv">
+      <div class="win-c done">
+        <div class="win-top">
+          <div class="win-em">💧</div>
+          <div><div class="win-lbl">水を2杯飲んだ</div><div class="win-sub">朝・昼に意識できました</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ok">✓ できた！</span>
+          <div class="win-chk y">✓</div>
+        </div>
+      </div>
+
+      <div class="win-c done">
+        <div class="win-top">
+          <div class="win-em">🚶</div>
+          <div><div class="win-lbl">3分だけ歩いた</div><div class="win-sub">昼休みにすき間時間で</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ok">✓ できた！</span>
+          <div class="win-chk y">✓</div>
+        </div>
+      </div>
+
+      <div class="win-c done">
+        <div class="win-top">
+          <div class="win-em">🥗</div>
+          <div><div class="win-lbl">野菜を1品増やした</div><div class="win-sub">コンビニで意識できた</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ok">✓ できた！</span>
+          <div class="win-chk y">✓</div>
+        </div>
+      </div>
+
+      <div class="win-c done">
+        <div class="win-top">
+          <div class="win-em">🌙</div>
+          <div><div class="win-lbl">23時前に寝られた</div><div class="win-sub">いつもより30分早く</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ok">✓ できた！</span>
+          <div class="win-chk y">✓</div>
+        </div>
+      </div>
+
+      <div class="win-c">
+        <div class="win-top">
+          <div class="win-em">🧘</div>
+          <div><div class="win-lbl">深呼吸を3回した</div><div class="win-sub">明日チャレンジしよう</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ng">また明日！</span>
+          <div class="win-chk n">○</div>
+        </div>
+      </div>
+
+      <div class="win-c">
+        <div class="win-top">
+          <div class="win-em">☀️</div>
+          <div><div class="win-lbl">朝日を浴びた</div><div class="win-sub">できる日からでOK</div></div>
+        </div>
+        <div class="win-foot">
+          <span class="win-ng">また明日！</span>
+          <div class="win-chk n">○</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wins-msg rv">
+      <p class="wins-msg-t">
+        「また明日チャレンジする」でいい。<br>
+        それを続けることが、いちばん大事。
+      </p>
+      <p class="wins-msg-s">Habio は、そのスタンスで毎日あなたと一緒に歩きます。</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  FEATURES
+  ============================================================ -->
+<section class="sec feats ct" id="features">
+  <div class="ww">
+    <div class="rv">
+      <div class="tag">AIにできること</div>
+      <h2 class="stitle">管理じゃなく、<br>寄り添ってくれる存在。</h2>
+      <p class="ssub">厳しいルールも、プレッシャーも、ありません。</p>
+    </div>
+
+    <div class="feat-grid rv">
+      <div class="feat-c"><div class="feat-ic g">🥗</div><div class="feat-nm">食事アドバイス</div><div class="feat-bd">コンビニ・外食でもOK。今の生活に合った、無理のない提案をします。制限ではなく、バランスを整えます。</div></div>
+      <div class="feat-c"><div class="feat-ic b">🚶</div><div class="feat-nm">軽い運動提案</div><div class="feat-bd">ジム不要。すき間時間の3分から。あなたができることだけを提案します。</div></div>
+      <div class="feat-c"><div class="feat-ic p">💬</div><div class="feat-nm">続かなくなる前に、声をかける</div><div class="feat-bd">朝・昼・夜、挫折しそうなタイミングを先読みして、そっと声をかけます。通知ではなく、寄り添いです。</div></div>
+      <div class="feat-c"><div class="feat-ic e">🔄</div><div class="feat-nm">頑張れない日も、ゼロにしない</div><div class="feat-bd">サボった翌日も、責めません。「1つだけ」の小さな行動から、また一緒に始めます。</div></div>
+      <div class="feat-c"><div class="feat-ic g">🌙</div><div class="feat-nm">生活習慣の改善</div><div class="feat-bd">睡眠・水分・生活リズム。体全体のバランスをやさしく整えます。</div></div>
+      <div class="feat-c"><div class="feat-ic b">📝</div><div class="feat-nm">習慣の振り返り</div><div class="feat-bd">続けた記録を可視化。小さな積み重ねが見えると、もっと続けたくなります。</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  DAY IN LIFE
+  ============================================================ -->
+<section class="sec day ct">
+  <div class="w">
+    <div class="rv">
+      <div class="tag">1日の利用イメージ</div>
+      <h2 class="stitle">こんなふうに、<br>毎日そっと寄り添います。</h2>
+      <p class="ssub">強制ではなく、声かけ。命令ではなく、提案。</p>
+    </div>
+
+    <div class="tl rv">
+
+      <div class="tli">
+        <div class="tl-left"><div class="tl-t">朝 7:30</div><div class="tl-stem"></div></div>
+        <div class="tl-r">
+          <div class="tl-bbl" style="text-align:left;">
+            <div class="tl-sndr">🌤 Habio からのメッセージ</div>
+            おはようございます 😊<br>
+            今日も無理せず、一緒に小さな一歩を踏み出しましょう。<br>
+            まずは朝ごはんのあと、コップ一杯のお水から。それだけでOKです ☀️
+          </div>
+        </div>
+      </div>
+
+      <div class="tli">
+        <div class="tl-left"><div class="tl-t">昼 12:15</div><div class="tl-stem"></div></div>
+        <div class="tl-r">
+          <div class="tl-bbl" style="text-align:left;">
+            <div class="tl-sndr">🥙 ランチのヒント</div>
+            コンビニランチですか？<br>
+            サラダチキン＋カップみそ汁がおすすめです。<br>
+            おにぎり1つも一緒に。制限より、バランスを意識して。
+          </div>
+        </div>
+      </div>
+
+      <div class="tli">
+        <div class="tl-left"><div class="tl-t">午後 15:00</div><div class="tl-stem"></div></div>
+        <div class="tl-r">
+          <div class="tl-bbl" style="text-align:left;">
+            <div class="tl-sndr">🚶 すき間時間の提案</div>
+            少し疲れてきた時間帯ですね。<br>
+            席を立って、3分だけ歩いてみませんか？<br>
+            無理しなくていいですよ。できそうなときだけで大丈夫です。
+          </div>
+        </div>
+      </div>
+
+      <div class="tli">
+        <div class="tl-left"><div class="tl-t">夜 21:00</div></div>
+        <div class="tl-r">
+          <div class="tl-bbl" style="text-align:left;">
+            <div class="tl-sndr">🌙 今日のふりかえり</div>
+            今日もお疲れさまでした 🍃<br>
+            朝の水分補給、できましたね。それだけで十分です。<br>
+            完璧じゃなくていい。また明日も一緒に続けましょう。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  PERSONAS
+  ============================================================ -->
+<section class="sec personas ct">
+  <div class="ww">
+    <div class="rv">
+      <div class="tag">こんな方に使われています</div>
+      <h2 class="stitle">完璧じゃなくていい。<br>続けたい気持ちがあれば。</h2>
+    </div>
+
+    <div class="persona-grid rv">
+
+      <div class="persona-c">
+        <div class="persona-em">🛋️</div>
+        <div class="persona-nm">運動が続かない方</div>
+        <div class="persona-bd">「ジムに通おう」と思うたびに挫折してきた。Habio は「今日は3分歩くだけでいい」と言ってくれるので、気づいたら続いていた。</div>
+      </div>
+
+      <div class="persona-c">
+        <div class="persona-em">🍱</div>
+        <div class="persona-nm">食事制限に疲れた方</div>
+        <div class="persona-bd">カロリー計算や我慢が長続きしなかった。制限じゃなくバランスを整えるアドバイスが、ストレスなく続けられた理由。</div>
+      </div>
+
+      <div class="persona-c">
+        <div class="persona-em">😮‍💨</div>
+        <div class="persona-nm">仕事で余裕がない方</div>
+        <div class="persona-bd">残業続き、外食ばかり。そんな生活でも「コンビニならこれ」と教えてくれるから、できることから始められた。</div>
+      </div>
+
+      <div class="persona-c">
+        <div class="persona-em">🔄</div>
+        <div class="persona-nm">何度も挫折してきた方</div>
+        <div class="persona-bd">サボった翌日も責めない。「また今日から」と言ってくれる存在が、一番必要だったかもしれない。</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  VOICES
+  ============================================================ -->
+<section class="sec voices">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">続けられた声</div>
+      <h2 class="stitle">「はじめて、続きました。」</h2>
+      <p class="ssub">同じように悩んでいた方が、少しずつ変わっています。</p>
+    </div>
+
+    <div class="v-scroll rv">
+
+      <div class="v-c">
+        <div class="v-stars">★★★★★</div>
+        <p class="v-tx">「3日坊主の私が、気づいたら2週間続いていました。Habio が責めないんです。サボった次の日も『昨日は休めましたね。今日は1つだけ』って言ってくれて。それだけで十分でした。」</p>
+        <div class="v-foot">
+          <div class="v-av">👩</div>
+          <div><div class="v-nm">34歳・会社員</div><div class="v-mt">利用 3ヶ月目</div></div>
+        </div>
+      </div>
+
+      <div class="v-c">
+        <div class="v-stars">★★★★★</div>
+        <p class="v-tx">「外食ばかりの生活で、何を食べればいいか全くわかってなかった。でもHabio は『今日のランチ、サラダチキン足してみては』みたいに具体的で。それなら私にもできました。」</p>
+        <div class="v-foot">
+          <div class="v-av">👨</div>
+          <div><div class="v-nm">42歳・自営業</div><div class="v-mt">利用 2ヶ月目</div></div>
+        </div>
+      </div>
+
+      <div class="v-c">
+        <div class="v-stars">★★★★★</div>
+        <p class="v-tx">「夜勤明けの疲れた日に『今日は無理しないで』って言ってくれた。アプリに気を遣われるとは思ってなかったので、なんか泣きそうになりました。それからずっと使っています。」</p>
+        <div class="v-foot">
+          <div class="v-av">👩</div>
+          <div><div class="v-nm">28歳・看護師</div><div class="v-mt">利用 5ヶ月目</div></div>
+        </div>
+      </div>
+
+      <div class="v-c">
+        <div class="v-stars">★★★★☆</div>
+        <p class="v-tx">「体重は正直まだあまり変わっていないけど、毎朝水を飲む習慣だけはちゃんとできるようになりました。小さいけど、自分でも驚いています。」</p>
+        <div class="v-foot">
+          <div class="v-av">👩</div>
+          <div><div class="v-nm">51歳・パート主婦</div><div class="v-mt">利用 6週目</div></div>
+        </div>
+      </div>
+
+    </div>
+    <p class="v-disc">※ 個人の感想です。サービスの効果・効能を保証するものではありません。</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  AI VOICE #3
+  ============================================================ -->
+<div class="ai-voice rv">
+  <div class="ai-voice-inner">
+    <div class="ai-voice-av">🌱</div>
+    <div>
+      <div class="ai-voice-label">Habio からひとこと</div>
+      <div class="ai-voice-text">
+        「何度挫折しても、大丈夫です。<br>
+        あなたの意志が弱いんじゃない。<br>
+        続けられる仕組みが、なかっただけです。」
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+  PRICING
+  ============================================================ -->
+<section class="sec pricing ct" id="start">
+  <div class="ww">
+    <div class="rv">
+      <div class="tag">料金プラン</div>
+      <h2 class="stitle">まずは無料で、<br>気軽に試してください。</h2>
+      <p class="ssub">プランはいつでも変えられます。合わなければやめていい。</p>
+    </div>
+
+    <div class="p-grid rv">
+
+      <div class="p-c free">
+        <div class="p-tier">まずはここから</div>
+        <div class="p-name">無料プラン</div>
+        <div class="p-row">
+          <div><span class="p-num">¥0</span><span class="p-per"> / 月</span></div>
+          <div class="p-trial">期間制限なし、ずっと無料</div>
+        </div>
+        <ul class="p-list">
+          <li><span class="ck">✓</span> 毎日のAI声かけ（1日3回）</li>
+          <li><span class="ck">✓</span> 食事アドバイス（基本）</li>
+          <li><span class="ck">✓</span> 軽い運動提案</li>
+          <li><span class="ck">✓</span> 継続記録の確認</li>
+          <li><span class="ck">✓</span> 習慣チェックリスト</li>
+        </ul>
+        <a class="btn btn-o" href="app.html">無料ではじめる</a>
+      </div>
+
+      <div class="p-c paid">
+        <div class="p-rec">おすすめ</div>
+        <div class="p-tier">もっと寄り添ってほしい方へ</div>
+        <div class="p-name">プレミアムプラン</div>
+        <div class="p-row">
+          <div><span class="p-num">¥980</span><span class="p-per"> / 月</span></div>
+          <div class="p-trial">7日間、無料でお試しできます</div>
+        </div>
+        <ul class="p-list">
+          <li><span class="ck">✓</span> 無料プランのすべて</li>
+          <li><span class="ck">✓</span> パーソナライズ習慣提案</li>
+          <li><span class="ck">✓</span> 毎月の習慣ふりかえりレポート</li>
+          <li><span class="ck">✓</span> AI声かけ回数の増加</li>
+          <li><span class="ck">✓</span> 食事・運動の詳細アドバイス</li>
+          <li><span class="ck">✓</span> 優先サポート対応</li>
+        </ul>
+        <a class="btn btn-p" href="app.html">7日間、無料で試してみる →</a>
+      </div>
+
+    </div>
+
+    <p class="p-foot">
+      いつでも解約可能。解約後も無料プランで利用できます。<br>
+      ※ 本サービスはAIによる習慣改善サポートです。医療的な診断・治療は行いません。
+    </p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  APP PREVIEW TEASER
+  ============================================================ -->
+<section class="app-teaser">
+  <div class="ww">
+    <div class="app-teaser-inner rv">
+
+      <div class="app-teaser-copy">
+        <div class="tag">アプリを体験する</div>
+        <h2 class="stitle">
+          使い心地を、<br>
+          まず<span class="ac">触れてみてください。</span>
+        </h2>
+        <p class="ssub">
+          登録不要・インストール不要。<br>
+          ブラウザで今すぐ体験できます。
+        </p>
+        <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px;max-width:300px;">
+          <a class="btn btn-p" href="app.html">📱 アプリを体験してみる</a>
+          <p style="font-size:12px;color:var(--t-l);margin-top:4px;">データはすべてブラウザ内に保存されます</p>
+        </div>
+      </div>
+
+      <div class="app-teaser-phone">
+        <div class="app-phone-frame">
+          <div class="app-screen-mock">
+            <div class="asm-ai">おはようございます 🌿<br>今日も一緒に、少しずつ。</div>
+            <div class="asm-row"><span class="asm-em">💧</span>水を飲む<div class="asm-check">✓</div></div>
+            <div class="asm-row"><span class="asm-em">🌿</span>深呼吸する<div class="asm-check" style="background:var(--beige);color:var(--t-l);">○</div></div>
+            <div class="asm-row"><span class="asm-em">🚶</span>少し歩く<div class="asm-check" style="background:var(--beige);color:var(--t-l);">○</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  FUTURE
+  ============================================================ -->
+<section class="sec future ct">
+  <div class="ww">
+    <div class="rv">
+      <div class="tag">もっと寄り添うために</div>
+      <h2 class="stitle">あなたと一緒に、<br>育ちつづけます。</h2>
+      <p class="ssub">Habio は、これからも進化していきます。</p>
+    </div>
+
+    <div class="f-grid rv">
+      <div class="f-c"><div class="f-em">😊</div><div class="f-nm">毎日の気分記録</div><span class="f-tag">準備中</span></div>
+      <div class="f-c"><div class="f-em">🌙</div><div class="f-nm">睡眠サポート</div><span class="f-tag">準備中</span></div>
+      <div class="f-c"><div class="f-em">📸</div><div class="f-nm">食事かんたん記録</div><span class="f-tag">準備中</span></div>
+      <div class="f-c"><div class="f-em">💚</div><div class="f-nm">LINE連携</div><span class="f-tag">準備中</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  FAQ
+  ============================================================ -->
+<section class="sec faq">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">よくある質問</div>
+      <h2 class="stitle">はじめての方へ</h2>
+    </div>
+
+    <div class="faq-list rv">
+      <div class="faq-i">
+        <div class="faq-q"><span class="faq-qi">Q</span><span>AIとのやりとりはどんな感じですか？</span></div>
+        <div class="faq-a">LINEのようなチャット形式で、やさしく声をかけます。「今日のランチ何がいいですか？」と相談するだけでもOK。気軽にいつでも話しかけてください。</div>
+      </div>
+      <div class="faq-i">
+        <div class="faq-q"><span class="faq-qi">Q</span><span>運動が苦手でも大丈夫ですか？</span></div>
+        <div class="faq-a">もちろんです。「1分だけ立ち上がる」「エレベーターより階段」といった小さな動きを大切にしています。ハードな運動は一切提案しません。</div>
+      </div>
+      <div class="faq-i">
+        <div class="faq-q"><span class="faq-qi">Q</span><span>続かなかったらどうなりますか？</span></div>
+        <div class="faq-a">責めません。Habio は「また明日から一緒にやりましょう」とやさしく声をかけるだけです。完璧を求めないことが、長続きの秘訣だと考えています。</div>
+      </div>
+      <div class="faq-i">
+        <div class="faq-q"><span class="faq-qi">Q</span><span>医療的なアドバイスはしますか？</span></div>
+        <div class="faq-a">いいえ。Habio はAIによる習慣改善サポートサービスです。医療的な診断・治療のアドバイスは行いません。体の不調がある場合は医療機関にご相談ください。</div>
+      </div>
+      <div class="faq-i">
+        <div class="faq-q"><span class="faq-qi">Q</span><span>解約はいつでもできますか？</span></div>
+        <div class="faq-a">はい。いつでも解約できます。解約後も無料プランで引き続き使えます。余計な手数料・違約金は一切ありません。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  FINAL CTA
+  ============================================================ -->
+<section class="final">
+  <div class="w">
+    <div class="rv ct">
+      <h2 class="final-t">
+        「今度は続けられる<br>
+        かもしれない。」<br>
+        <span style="font-size:.65em;font-weight:400;color:var(--t-m);">その感覚が、本物の変化の始まりです。</span>
+      </h2>
+      <p class="final-s">
+        「痩せ方が分からない」のではない。<br>
+        ただ、<strong>続けられる仕組みが、なかっただけ。</strong><br>
+        Habio が、その仕組みになります。
+      </p>
+      <div class="final-ctas">
+        <a class="btn btn-p fb" href="app.html">あなたのペースで始める（無料）</a>
+        <a class="btn btn-app" href="app.html" style="min-height:52px;font-size:14px;">📱 アプリを体験する</a>
+      </div>
+      <p class="final-n">クレジットカード不要 &nbsp;·&nbsp; いつでも解約可能</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  FOOTER
+  ============================================================ -->
+<footer>
+  <div class="f-logo">Habio</div>
+  <p class="f-tag">あなたのやさしい健康習慣パートナー</p>
+  <div class="f-links">
+    <a href="#">利用規約</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">特定商取引法に基づく表記</a>
+    <a href="#">お問い合わせ</a>
+  </div>
+  <p class="f-copy">© 2025 Habio. All rights reserved.</p>
+</footer>
+
+<div class="mb-sp"></div>
+
+
+<!-- ============================================================
+  SCRIPTS
+  ============================================================ -->
+<script>
+/* ── Scroll Reveal ── */
+const rvObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('on'); rvObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
+
+
+/* ── Float CTA hide when pricing visible ── */
+const floatCta = document.getElementById('floatCta');
+const pricingSec = document.getElementById('start');
+const ctaObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { floatCta.classList.toggle('gone', e.isIntersecting); });
+}, { threshold: 0.15 });
+if (pricingSec) ctaObs.observe(pricingSec);
+
+
+/* ── Hero Chat Animation ── */
+const chatRoot = document.getElementById('heroChat');
+
+const chatData = [
+  {
+    type: 'ai',
+    html: 'おはようございます 😊<br>今日も無理せず、<br>一緒に小さな一歩を。',
+    time: '08:12',
+    delay: 600,
+    typingDur: 1200
+  },
+  {
+    type: 'user',
+    html: '昨日、夜食べすぎちゃって…',
+    time: '08:14',
+    delay: 400,
+    typingDur: 0
+  },
+  {
+    type: 'ai',
+    html: '大丈夫ですよ 🍃<br>今日の朝ごはんで、<br>野菜を少し増やすだけでOK。<br>責めなくていいんです。',
+    time: '08:14',
+    delay: 400,
+    typingDur: 1600
+  },
+  {
+    type: 'ai-typing',
+    delay: 800,
+    typingDur: 99999   // stays
+  }
+];
+
+let chatRunning = false;
+
+function makeTyping() {
+  const row = document.createElement('div');
+  row.className = 'typing-row';
+  row.innerHTML = `
+    <div class="m-av">🌱</div>
+    <div class="typing-bbl">
+      <div class="tdot"></div>
+      <div class="tdot"></div>
+      <div class="tdot"></div>
+    </div>`;
+  return row;
+}
+
+function makeMessage(d) {
+  const isMe = d.type === 'user';
+  const row = document.createElement('div');
+  row.className = `mrow${isMe ? ' me' : ''}`;
+
+  if (isMe) {
+    row.innerHTML = `
+      <div>
+        <div class="bbl">${d.html}</div>
+        <div class="bbl-time" style="text-align:right;">${d.time}</div>
+        <div class="bbl-read">既読</div>
+      </div>`;
+  } else {
+    row.innerHTML = `
+      <div class="m-av">🌱</div>
+      <div>
+        <div class="bbl">${d.html}</div>
+        <div class="bbl-time">${d.time}</div>
+      </div>`;
+  }
+  return row;
+}
+
+async function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+async function runChat() {
+  if (chatRunning) return;
+  chatRunning = true;
+  chatRoot.innerHTML = '';
+
+  for (const d of chatData) {
+    await sleep(d.delay);
+
+    if (d.type === 'ai-typing') {
+      const tr = makeTyping();
+      chatRoot.appendChild(tr);
+      await sleep(80);
+      tr.classList.add('show');
+      break;
+    }
+
+    let typingEl = null;
+    if (d.typingDur > 0) {
+      typingEl = makeTyping();
+      chatRoot.appendChild(typingEl);
+      await sleep(80);
+      typingEl.classList.add('show');
+      await sleep(d.typingDur);
+      typingEl.classList.remove('show');
+      await sleep(200);
+      chatRoot.removeChild(typingEl);
+    }
+
+    const msgEl = makeMessage(d);
+    chatRoot.appendChild(msgEl);
+    await sleep(60);
+    msgEl.classList.add('show');
+  }
+}
+
+/* Start chat animation when hero comes into view */
+const heroObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      runChat();
+      heroObs.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const heroSection = document.querySelector('.hero');
+if (heroSection) heroObs.observe(heroSection);
+</script>
+
+</body>
+</html>
