@@ -1079,6 +1079,112 @@ body.night-bg{background:#C8C3BB;}
   100%{transform:scale(1);opacity:1;}
 }
 .pop-in{animation:popIn .35s ease both;}
+
+/* ── RECOMMEND ── */
+.rec-section{padding:0 22px;display:flex;flex-direction:column;gap:12px;}
+.rec-card{
+  background:var(--card);border-radius:var(--r-l);
+  padding:18px 20px;box-shadow:var(--sh1);
+  border-left:3px solid var(--g-l);
+  transition:all var(--trans-dur);
+}
+.rec-card.primary{border-left-color:var(--g);}
+.rec-card-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:10px;font-weight:700;letter-spacing:.07em;
+  padding:3px 10px;border-radius:var(--r-f);
+  margin-bottom:10px;
+}
+.rec-card-title{font-size:14px;font-weight:700;color:var(--t);line-height:1.55;margin-bottom:6px;}
+.rec-card-desc{font-size:12px;color:var(--t-m);line-height:1.85;margin-bottom:14px;}
+.rec-card-cta{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--g-p);color:var(--t-g);
+  font-size:12px;font-weight:700;
+  padding:8px 16px;border-radius:var(--r-f);
+  border:1.5px solid var(--g-l);
+  transition:all var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;cursor:pointer;
+}
+.rec-card-cta:active{background:var(--g);color:#fff;border-color:var(--g);}
+.rec-card.primary .rec-card-cta{background:var(--g);color:#fff;border-color:var(--g);}
+.rec-card.primary .rec-card-cta:active{opacity:.82;}
+.rec-footer-note{
+  font-size:10px;color:var(--t-l);
+  text-align:center;padding:0 22px 4px;line-height:1.8;
+}
+
+/* ── REC DETAIL MODAL ── */
+.rec-modal-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.48);
+  z-index:680;opacity:0;pointer-events:none;
+  transition:opacity .32s ease;
+  display:flex;align-items:flex-end;
+}
+.rec-modal-overlay.show{opacity:1;pointer-events:all;}
+.rec-modal{
+  background:var(--card);width:100%;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:0 0 36px;
+  transform:translateY(100%);
+  transition:transform .42s cubic-bezier(.32,.72,0,1);
+  max-height:88vh;overflow-y:auto;scrollbar-width:none;
+  position:relative;
+}
+.rec-modal::-webkit-scrollbar{display:none;}
+.rec-modal-overlay.show .rec-modal{transform:translateY(0);}
+.rec-modal-handle{
+  width:36px;height:4px;border-radius:var(--r-f);
+  background:var(--border);margin:14px auto 18px;
+}
+.rec-modal-close{
+  position:absolute;top:14px;right:18px;
+  font-size:22px;color:var(--t-l);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;padding:6px;
+}
+.rec-modal-hero{
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  margin:0 22px;border-radius:var(--r-l);
+  padding:22px 20px;text-align:center;margin-bottom:20px;
+}
+.rec-modal-em{font-size:40px;margin-bottom:10px;}
+.rec-modal-product{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t-g);
+  margin-bottom:6px;text-transform:uppercase;
+}
+.rec-modal-title{font-size:18px;font-weight:700;color:var(--t);line-height:1.5;}
+.rec-modal-sub{font-size:13px;color:var(--t-m);margin-top:8px;line-height:1.9;}
+.rec-modal-body{padding:0 22px;margin-bottom:20px;}
+.rec-modal-points{
+  display:flex;flex-direction:column;gap:10px;margin-bottom:18px;
+}
+.rec-modal-point{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--bg);border-radius:var(--r-m);padding:13px 14px;
+}
+.rec-modal-point-em{font-size:18px;flex-shrink:0;line-height:1.3;}
+.rec-modal-point-t{font-size:13px;font-weight:600;color:var(--t);margin-bottom:2px;}
+.rec-modal-point-s{font-size:11px;color:var(--t-m);line-height:1.7;}
+.rec-modal-notice{
+  font-size:11px;color:var(--t-l);line-height:1.9;
+  background:var(--bg);border-radius:var(--r-m);
+  padding:12px 14px;margin-bottom:20px;
+}
+.rec-modal-cta{
+  display:block;width:calc(100% - 44px);margin:0 22px;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:15px;font-weight:700;
+  padding:16px;border-radius:var(--r-f);text-align:center;
+  box-shadow:0 8px 24px rgba(114,185,148,.32);
+  transition:transform var(--trans-dur),opacity var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;cursor:pointer;
+}
+.rec-modal-cta:active{transform:scale(.97);}
+.rec-modal-foot{
+  font-size:11px;color:var(--t-l);
+  text-align:center;margin-top:12px;padding:0 22px;line-height:1.9;
+}
   </style>
 </head>
 <body>
@@ -1193,6 +1299,13 @@ body.night-bg{background:#C8C3BB;}
       </div>
       <span class="cs-arr">›</span>
     </div>
+
+    <p class="sec-lbl" id="recLbl" style="display:none;">あなたへのおすすめ</p>
+    <div id="recCards" class="rec-section" style="display:none;"></div>
+    <p class="rec-footer-note" id="recNote" style="display:none;">
+      ※ 広告・アフィリエイトリンクを含む場合があります
+    </p>
+
     <div style="height:16px;"></div>
   </div>
 
@@ -1655,6 +1768,26 @@ body.night-bg{background:#C8C3BB;}
     </div>
   </div>
 
+  <!-- REC DETAIL MODAL -->
+  <div class="rec-modal-overlay" id="recModalOverlay" onclick="onRecModalOverlayClick(event)">
+    <div class="rec-modal" id="recModal">
+      <div class="rec-modal-handle"></div>
+      <button class="rec-modal-close" onclick="closeRecModal()">×</button>
+      <div class="rec-modal-hero">
+        <div class="rec-modal-em" id="recModalEm">🔥</div>
+        <div class="rec-modal-product" id="recModalProduct">代謝サポート</div>
+        <div class="rec-modal-title" id="recModalTitle"></div>
+        <div class="rec-modal-sub" id="recModalSub"></div>
+      </div>
+      <div class="rec-modal-body">
+        <div class="rec-modal-points" id="recModalPoints"></div>
+        <div class="rec-modal-notice" id="recModalNotice"></div>
+      </div>
+      <button class="rec-modal-cta" id="recModalCta" onclick="onRecModalCta()">詳しく見る（外部サイト）</button>
+      <div class="rec-modal-foot">※ 広告・アフィリエイトリンクを含みます<br>効果には個人差があります</div>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <!-- UPGRADE MODAL -->
@@ -1925,7 +2058,7 @@ function goTab(name){
   if(name==='chat') setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80);
   if(name==='wins') renderWins();
   if(name==='food') renderFoodLog();
-  if(name==='home') updateProgressRing();
+  if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
   if(name==='settings') renderProfile();
 }
@@ -2855,6 +2988,181 @@ function generateFoodAiComment(logs){
   return '記録してくれてありがとう。続けることで、少しずつ変化に気づけますよ。';
 }
 
+/* ── AFFILIATE RECOMMEND ── */
+const AFFILIATE_LINKS = {
+  slimmanage: "https://a.r10.to/h5BVog",
+  metabolism: "",
+  exercise:   "",
+  diet:       ""
+};
+
+const REC_DEFS = [
+  {
+    id:'slimmanage',
+    em:'🌿',
+    tag:'代謝・ダイエット系',
+    title:'夜の生活リズムを、少し整えてみませんか？',
+    desc:'代謝サポートを習慣の一部として取り入れたい方へ。生活リズムの改善補助として、ひとつの選択肢としてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🌿',
+      product:'スリムマネージ',
+      title:'夜の生活リズムが気になる方へ',
+      sub:'代謝サポートを、習慣の一部として。\nHabio が生活改善の補助になりうるサービスとしてご紹介します。',
+      points:[
+        {em:'💧',t:'生活習慣の補助として',s:'日々の生活リズムを整えたい方向けに設計されたサプリメントです。'},
+        {em:'🌙',t:'夜の代謝サポート',s:'忙しい毎日の中で、習慣の一部として取り入れやすい形になっています。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'押し売りはしません。気になる方の参考として、選択肢としてご紹介します。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n疾患がある方・妊娠中の方は事前に医師にご相談ください。',
+      ctaLabel:'スリムマネージを詳しく見る',
+    },
+  },
+  {
+    id:'metabolism',
+    em:'🔥',
+    tag:'代謝・ダイエット系',
+    title:'体重が落ちにくい…と感じていませんか？',
+    desc:'生活リズムや代謝が気になる方向けに、サポートになりうるサービスをご紹介します。効果には個人差がありますが、選択肢として参考にしてください。',
+    cta:'詳しく見る',
+    modal:null,
+  },
+  {
+    id:'exercise',
+    em:'🚶',
+    tag:'運動サポート系',
+    title:'3分から始められる運動、知っていますか？',
+    desc:'「運動が苦手」「続いたことがない」という方向けに、無理なく始められるサービスをご紹介します。まずは小さな一歩から。',
+    cta:'今すぐチェック',
+    modal:null,
+  },
+  {
+    id:'diet',
+    em:'🥗',
+    tag:'食事改善系',
+    title:'食事管理が続かないのは、方法の問題かも',
+    desc:'外食が多い方・食事記録が続かない方に向けて、ゆるく継続できるサービスをご紹介します。完璧を目指さなくていいんです。',
+    cta:'詳しく見る',
+    modal:null,
+  },
+];
+
+/* ── REC LOGGING ── */
+function logRecEvent(event){
+  const logs=Store.get('rec_logs',[]);
+  logs.push({event,ts:new Date().toISOString()});
+  Store.set('rec_logs',logs.slice(-200));
+}
+
+/* ── REC DETAIL MODAL ── */
+let _recModalCurrentId=null;
+
+function recCardClick(id){
+  const d=REC_DEFS.find(r=>r.id===id);
+  if(!d) return;
+  logRecEvent('rec_card_click_'+id);
+  if(d.modal){
+    showRecModal(id,d);
+  } else {
+    const link=AFFILIATE_LINKS[id];
+    if(link){ window.open(link,'_blank','noopener,noreferrer'); }
+    else     { showToast('準備中です。もう少しお待ちください 🌿'); }
+  }
+}
+
+function showRecModal(id,def){
+  _recModalCurrentId=id;
+  const m=def.modal;
+  const setTxt=(elId,val)=>{const e=document.getElementById(elId);if(e)e.textContent=val||'';};
+  const setHTML=(elId,val)=>{const e=document.getElementById(elId);if(e)e.innerHTML=val||'';};
+  setTxt('recModalEm',m.em);
+  setTxt('recModalProduct',m.product);
+  setTxt('recModalTitle',m.title);
+  setHTML('recModalSub',m.sub.replace(/\n/g,'<br>'));
+  const pts=document.getElementById('recModalPoints');
+  if(pts) pts.innerHTML=m.points.map(p=>`
+    <div class="rec-modal-point">
+      <div class="rec-modal-point-em">${p.em}</div>
+      <div><div class="rec-modal-point-t">${p.t}</div><div class="rec-modal-point-s">${p.s}</div></div>
+    </div>`).join('');
+  setHTML('recModalNotice',m.notice.replace(/\n/g,'<br>'));
+  const ctaEl=document.getElementById('recModalCta');
+  if(ctaEl) ctaEl.textContent=m.ctaLabel+' →';
+  const ov=document.getElementById('recModalOverlay');
+  if(ov) ov.classList.add('show');
+  logRecEvent('rec_card_view_'+id);
+}
+
+function onRecModalCta(){
+  if(!_recModalCurrentId) return;
+  const link=AFFILIATE_LINKS[_recModalCurrentId];
+  logRecEvent('rec_card_click_'+_recModalCurrentId+'_cta');
+  closeRecModal();
+  if(link){ setTimeout(()=>window.open(link,'_blank','noopener,noreferrer'),120); }
+  else     { showToast('準備中です。もう少しお待ちください 🌿'); }
+}
+
+function closeRecModal(){
+  const ov=document.getElementById('recModalOverlay');
+  if(ov) ov.classList.remove('show');
+  _recModalCurrentId=null;
+}
+
+function onRecModalOverlayClick(e){
+  if(e.target===document.getElementById('recModalOverlay')) closeRecModal();
+}
+
+function renderRecommendCards(){
+  const el=document.getElementById('recCards');
+  const lbl=document.getElementById('recLbl');
+  const note=document.getElementById('recNote');
+  if(!el) return;
+
+  const {streak,meals,hour}=buildAIContext();
+  const onbA=Store.get('onb_answers',{});
+
+  // Conditions that pin slimmanage to position 1
+  const slimFirst=
+    hour>=18 ||
+    isNight() ||
+    streak<5  ||
+    meals.length<=1 ||
+    onbA.q1==='weight' ||
+    onbA.q1==='diet';
+
+  // Base order without slimmanage
+  let base=['metabolism','exercise','diet'];
+  if(streak<3)              base=['exercise','metabolism','diet'];
+  if(meals.length<=1)       base=['diet',...base.filter(x=>x!=='diet')];
+  if(hour>=20||isNight())   base=['metabolism',...base.filter(x=>x!=='metabolism')];
+  if(onbA.q1==='weight')    base=['metabolism',...base.filter(x=>x!=='metabolism')];
+  else if(onbA.q1==='diet') base=['diet',...base.filter(x=>x!=='diet')];
+
+  // Insert slimmanage
+  const order=slimFirst
+    ? ['slimmanage',...base]
+    : [...base,'slimmanage'];
+
+  el.innerHTML=order.map((id,i)=>{
+    const d=REC_DEFS.find(r=>r.id===id);
+    if(!d) return '';
+    const isPrimary=i===0;
+    return `<div class="rec-card${isPrimary?' primary':''}">
+      <div class="rec-card-tag">${d.em} ${d.tag}</div>
+      <div class="rec-card-title">${d.title}</div>
+      <div class="rec-card-desc">${d.desc}</div>
+      <button class="rec-card-cta" onclick="recCardClick('${d.id}')">${d.cta} →</button>
+    </div>`;
+  }).join('');
+
+  el.style.display='flex';
+  if(lbl)  lbl.style.display='';
+  if(note) note.style.display='';
+
+  // View log for slimmanage if it's visible
+  if(slimFirst) logRecEvent('rec_card_view_slimmanage');
+}
+
 /* ── iOS KEYBOARD VIEWPORT FIX ── */
 (function(){
   if(!window.visualViewport) return;
@@ -2885,6 +3193,7 @@ function init(){
   initThemeSwatches();
   loadChatHistory();
   renderHomeWins();
+  renderRecommendCards();
   renderWins();
   renderFoodLog();
   updateProgressRing();
