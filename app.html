@@ -2022,8 +2022,36 @@ const FALLBACK_REPLIES = [
 ];
 let fallbackIdx=0;
 
+const CHAT_WORKER_URL = 'https://habio-chat.katsuyuki-jyoukou.workers.dev';
+
 async function generateAIResponse(userMessage, context=null){
   const ctx=context||buildAIContext();
+
+  // Build context payload for the worker
+  const ctxPayload={
+    streak: ctx.streak||0,
+    hour: ctx.hour||new Date().getHours(),
+    todayMood: ctx.todayMood||null,
+    mealsCount: (ctx.meals||[]).length,
+  };
+
+  // Send last 6 messages as history (3 exchanges)
+  const history=Store.get('chat_history',[]).slice(-6);
+
+  try{
+    const res=await fetch(CHAT_WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:userMessage,context:ctxPayload,history}),
+    });
+    if(!res.ok) throw new Error('worker error');
+    const data=await res.json();
+    if(data.text) return {text:data.text,delay:600};
+  }catch(e){
+    console.warn('AI Worker fallback:',e);
+  }
+
+  // Fallback to local response if worker fails
   return localAIResponse(userMessage,ctx);
 }
 
