@@ -1,5 +1,25 @@
 const ALLOWED_ORIGIN = 'https://habio.pages.dev';
 
+// Affiliate products catalog
+const PRODUCTS = [
+  { keywords: ['体重','体脂肪','脂肪','太','カロリ','痩せ','ダイエット'], name: 'カロリンピュア（機能性表示食品・エラグ酸配合）', url: 'https://a.r10.to/hgTpBU' },
+  { keywords: ['夜','睡眠','生活習慣','リズム','スリム'], name: 'スリムマネージ', url: 'https://a.r10.to/h5BVog' },
+  { keywords: ['バーナー','燃焼','引き締め','キラー'], name: 'キラーバーナー2（倖田來未監修）', url: 'https://a.r10.to/hFz0dn' },
+  { keywords: ['筋肉','筋膜','マッサージ','コリ','疲れ','ほぐ'], name: '筋膜リリースガン ミニ', url: 'https://a.r10.to/h5yeu5' },
+  { keywords: ['活力','精力','マカ','亜鉛','アルギニン','シトルリン'], name: 'シトルリン・アルギニン・マカ・亜鉛', url: 'https://a.r10.to/hgZsnR' },
+  { keywords: ['コーヒー','朝','食事','食欲'], name: 'C COFFEE ダイエットコーヒー', url: 'https://a.r10.to/hkvUAU' },
+  { keywords: ['サウナ','発汗','温活','ベルト','ウォーキング'], name: '発汗サウナベルト', url: 'https://a.r10.to/h5qSXb' },
+];
+
+const PRODUCT_TRIGGER = /サプリ|健康食品|おすすめ.*商品|商品.*おすすめ|何かいい|グッズ|アイテム|体重|痩せ|ダイエット|脂肪|筋肉|筋膜|マッサージ|活力|コーヒー|サウナ|温活|燃焼/;
+
+function findProduct(msg) {
+  for (const p of PRODUCTS) {
+    if (p.keywords.some(k => msg.includes(k))) return p;
+  }
+  return null;
+}
+
 function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN,
@@ -11,50 +31,21 @@ function corsHeaders(origin) {
 function buildSystemPrompt(ctx) {
   const { streak = 0, hour = 12, todayMood = null, mealsCount = 0 } = ctx;
   const timeDesc = hour < 6 ? '深夜' : hour < 12 ? '午前' : hour < 18 ? '午後' : '夜';
-  let contextDesc = `・現在の時間帯：${timeDesc}（${hour}時）\n`;
-  if (streak > 0) contextDesc += `・${streak}日連続で習慣を継続中\n`;
-  if (todayMood) contextDesc += `・今日の気分：${todayMood}\n`;
-  if (mealsCount > 0) contextDesc += `・今日の食事ログ：${mealsCount}件\n`;
+  let contextDesc = `時間帯：${timeDesc}`;
+  if (streak > 0) contextDesc += `、${streak}日連続継続中`;
+  if (todayMood) contextDesc += `、今日の気分：${todayMood}`;
+  if (mealsCount > 0) contextDesc += `、食事ログ：${mealsCount}件`;
 
-  return `あなたは「Habio」という健康習慣サポートアプリのAIアシスタントです。
-ユーザーの毎日の小さな習慣をやさしくサポートします。
+  return `あなたはHabioというアプリのAIアシスタントです。
+ユーザー状況（参考）：${contextDesc}
 
-## キャラクター
-- 責めない、比べない、押し付けない
-- 温かく、簡潔に返答する
-- 「また今日から」と言える存在
-- 医療的なアドバイスはしない
-
-## 返答ルール
-- 1〜3文で簡潔に（長くしない）
+ルール：
+- ユーザーのメッセージに直接答える
+- 1〜3文で簡潔に返す
 - 絵文字を1〜2個使う
-- やわらかい言葉を使う
+- やわらかく温かい言葉で話す
 - 医療診断・治療の提案はしない
-- 必ず日本語で返答する
-
-## PR商品カタログ（アフィリエイト）
-ユーザーが体重・ダイエット・運動・食事・サプリ・健康グッズについて尋ねた場合のみ、以下から最も関連する商品を1つだけ自然に紹介できます。
-
-| カテゴリ | 商品名 | URL |
-|---|---|---|
-| 体重・体脂肪が気になる | カロリンピュア（機能性表示食品・エラグ酸） | https://a.r10.to/hgTpBU |
-| 生活習慣・夜の習慣サポート | スリムマネージ | https://a.r10.to/h5BVog |
-| 生活習慣サポート全般 | キラーバーナー2（倖田來未監修） | https://a.r10.to/hFz0dn |
-| 運動後のセルフケア・マッサージ | 筋膜リリースガン ミニ | https://a.r10.to/h5yeu5 |
-| 活力・体力サポート | シトルリン・アルギニン・マカ・亜鉛 | https://a.r10.to/hgZsnR |
-| ダイエットコーヒー・朝の習慣 | C COFFEE | https://a.r10.to/hkvUAU |
-| 運動中の温活 | 発汗サウナベルト | https://a.r10.to/h5qSXb |
-
-### 商品紹介ルール（必須）
-- 紹介する場合は文末に「（PR・広告）楽天市場のリンクです」と必ず付ける
-- 1回の返答で紹介するのは1商品まで
-- URLをそのまま文中に含める（例: 気になる方はこちらをどうぞ → https://a.r10.to/xxx）
-- 「絶対に効く」「必ず痩せる」などの断定表現は使わない
-- 「医薬品ではありません。効果には個人差があります」を添える
-- ユーザーが商品を求めていない場合は紹介しない
-
-## 現在のユーザー状況
-${contextDesc}`;
+- 日本語で返答する`;
 }
 
 export default {
@@ -88,6 +79,8 @@ export default {
       });
     }
 
+    // Detect product intent
+    const product = PRODUCT_TRIGGER.test(message) ? findProduct(message) : null;
     const systemPrompt = buildSystemPrompt(context);
 
     // Include last 6 messages (3 exchanges) as conversation history
@@ -121,8 +114,13 @@ export default {
       }
 
       const data = await openaiRes.json();
-      const text = data.choices?.[0]?.message?.content?.trim()
+      let text = data.choices?.[0]?.message?.content?.trim()
         || 'うまく返信できませんでした。もう一度話しかけてみてください 🌿';
+
+      // Append product recommendation block if product was detected
+      if (product) {
+        text += `\n\nひとつ選択肢としてご紹介します 🌿\n▶ ${product.name}\n${product.url}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+      }
 
       return new Response(JSON.stringify({ text }), {
         headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
