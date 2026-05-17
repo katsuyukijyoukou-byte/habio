@@ -2544,7 +2544,10 @@ function appendBubble(text,isMe,time,save=true,dateStr=null){
 
   const row=document.createElement('div');
   row.className='mrow fade-in'+(isMe?' me':'');
-  const html=esc(text).replace(/\n/g,'<br>');
+  const html=esc(text)
+    .replace(/\n/g,'<br>')
+    .replace(/(https?:\/\/[^\s<]+)/g,
+      '<a href="$1" target="_blank" rel="nofollow sponsored noopener" style="color:#72B994;text-decoration:underline;word-break:break-all;">$1</a>');
   const metaHtml=isMe
     ?`<div class="bbl-meta"><span>${time}</span><span class="bbl-read">既読</span></div>`
     :`<div class="bbl-meta"><span>${time}</span></div>`;
