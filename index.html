@@ -948,76 +948,84 @@ footer{
 @media(min-width:780px){.mb-sp{display:none;}}
 
 /* ================================================================
-   PRODUCT CARDS (PR)
+   AFFILIATE CARDS (PR)
    ================================================================ */
-.product-sec{padding:72px 0;background:#F2EEE8;}
-.product-sec-hd{text-align:center;margin-bottom:36px;}
-.product-sec-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  background:#E8F5EE;color:#4A9A6A;
-  font-size:12px;font-weight:700;letter-spacing:.08em;
-  padding:5px 16px;border-radius:9999px;margin-bottom:16px;
+.affiliate-section{
+  padding:80px 0;
+  background:linear-gradient(160deg,#1a3a2a 0%,#0f2a1e 100%);
 }
-.product-sec-title{font-size:clamp(18px,4.5vw,26px);font-weight:700;color:#3A3A3A;line-height:1.55;}
-.product-sec-sub{font-size:14px;color:#686868;margin-top:10px;line-height:1.9;}
-.product-sec-note{
-  font-size:11px;color:#A0A0A0;margin-top:8px;
+.affiliate-section h2{
+  font-size:clamp(20px,5vw,32px);font-weight:700;
+  color:#fff;text-align:center;margin-bottom:12px;
+}
+.affiliate-section>div>p{
+  font-size:14px;color:rgba(255,255,255,.7);
+  text-align:center;line-height:1.9;margin-bottom:6px;
+}
+.affiliate-note{
+  display:block;font-size:11px;
+  color:rgba(255,255,255,.4);
+  text-align:center;margin-bottom:0 !important;
 }
 
-.product-grid{
+.affiliate-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:24px;
+  margin-top:32px;
 }
-@media(min-width:680px){
-  .product-grid{grid-template-columns:repeat(3,1fr);}
-}
-@media(min-width:960px){
-  .product-grid{grid-template-columns:repeat(5,1fr);}
+@media(max-width:540px){
+  .affiliate-grid{grid-template-columns:1fr;}
 }
 
-.product-card{
-  background:#fff;border-radius:20px;
-  box-shadow:0 4px 20px rgba(0,0,0,.06);
-  overflow:hidden;display:flex;flex-direction:column;
-  transition:transform .2s ease,box-shadow .2s ease;
+.affiliate-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  overflow:hidden;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:.3s ease;
 }
-.product-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,.10);}
-.product-card-img{
-  width:100%;aspect-ratio:1/1;
-  background:linear-gradient(135deg,#E8F5EE,#D5E9F5);
-  display:flex;align-items:center;justify-content:center;
-  font-size:48px;overflow:hidden;flex-shrink:0;
+.affiliate-card:hover{transform:translateY(-4px);}
+.affiliate-card a{display:block;text-decoration:none;color:inherit;}
+.affiliate-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  display:block;
+  background:rgba(255,255,255,.06);
 }
-.product-card-img img{width:100%;height:100%;object-fit:cover;}
-.product-card-body{padding:14px 14px 16px;flex:1;display:flex;flex-direction:column;}
-.product-card-cat{
-  font-size:10px;font-weight:700;letter-spacing:.08em;color:#72B994;
-  margin-bottom:6px;
+.affiliate-body{padding:18px;}
+.affiliate-label{
+  display:inline-block;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#6ee7b7;
+  color:#06281C;
+  font-weight:700;
+  margin-bottom:10px;
 }
-.product-card-name{
-  font-size:13px;font-weight:700;color:#3A3A3A;
-  line-height:1.55;margin-bottom:6px;flex:1;
+.affiliate-title{
+  font-size:15px;
+  line-height:1.6;
+  color:#fff;
+  margin-bottom:8px;
 }
-.product-card-desc{
-  font-size:11px;color:#686868;line-height:1.8;margin-bottom:12px;
-}
-.product-card-cta{
+.affiliate-cta{
   display:block;text-align:center;
   background:linear-gradient(135deg,#72B994,#5AA47E);
   color:#fff;font-size:12px;font-weight:700;
   padding:9px 12px;border-radius:9999px;
-  text-decoration:none;
+  margin-top:12px;
   transition:opacity .2s ease;
 }
-.product-card-cta:hover{opacity:.88;}
-.product-card-cta.todo{
-  background:#D0D0D0;color:#888;cursor:not-allowed;
-  pointer-events:none;
-}
-.product-footer-note{
-  text-align:center;font-size:11px;color:#A0A0A0;
-  margin-top:20px;line-height:1.9;
+.affiliate-cta:hover{opacity:.85;}
+.affiliate-footer-note{
+  text-align:center;font-size:11px;
+  color:rgba(255,255,255,.35);
+  margin-top:28px;line-height:1.9;
 }
 
   </style>
@@ -1616,88 +1624,80 @@ footer{
 
 
 <!-- ============================================================
-  PRODUCT RECOMMENDATIONS (PR)
+  AFFILIATE RECOMMENDATIONS (PR)
   ============================================================ -->
-<section class="product-sec" id="recommend">
+<section class="affiliate-section" id="recommend">
   <div class="ww">
 
-    <div class="product-sec-hd rv">
-      <div class="product-sec-tag">🌿 PR・習慣改善サポートアイテム</div>
-      <h2 class="product-sec-title">あなたの習慣を、もう少し整えるために</h2>
-      <p class="product-sec-sub">Habio と一緒に使いたい方へ、選択肢のひとつとしてご紹介します。<br>売り込みではありません。気になるものだけ、ご参考にどうぞ。</p>
-      <p class="product-sec-note">※ 以下は楽天アフィリエイトを利用した広告リンクです（PR）</p>
-    </div>
+    <h2>🌿 PR・習慣改善サポートアイテム</h2>
+    <p>あなたの習慣を、もう少し整えるために。<br>Habio と一緒に使いたい方へ、選択肢のひとつとしてご紹介します。</p>
+    <p class="affiliate-note">※ 以下は楽天アフィリエイトを利用した広告リンクです（PR）</p>
 
-    <div class="product-grid rv">
+    <div class="affiliate-grid rv">
 
       <!-- ① キラーバーナー2 -->
-      <div class="product-card">
-        <div class="product-card-img">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg" alt="キラーバーナー2" loading="lazy">
-        </div>
-        <div class="product-card-body">
-          <div class="product-card-cat">代謝サポート</div>
-          <h3 class="product-card-name">倖田來未監修 キラーバーナー2（機能性表示食品）</h3>
-          <p class="product-card-desc">食生活や習慣改善をサポートするダイエット補助サプリ。</p>
-          <a class="product-card-cta" href="https://a.r10.to/hFz0dn" target="_blank" rel="nofollow sponsored noopener">楽天で詳細を見る</a>
-        </div>
+      <div class="affiliate-card">
+        <a href="https://a.r10.to/hFz0dn" target="_blank" rel="nofollow sponsored noopener">
+          <img src="https://hbb.afl.rakuten.co.jp/hgb/470efb07.5e869f9e.470efb08.9511fedc/?me_id=1396152&item_id=10000026&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Ftrustline%2Fcabinet%2F08921800%2F12491208%2Fbnr_20251227_02.jpg%3F_ex%3D240x240&s=240x240&t=pict" alt="キラーバーナー2" loading="lazy">
+          <div class="affiliate-body">
+            <div class="affiliate-label">PR</div>
+            <div class="affiliate-title">倖田來未 開発 キラーバーナー2</div>
+            <span class="affiliate-cta">楽天で詳細を見る</span>
+          </div>
+        </a>
       </div>
 
       <!-- ② 筋膜リリースガン -->
-      <div class="product-card">
-        <div class="product-card-img">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg" alt="筋膜リリースガン" loading="lazy">
-        </div>
-        <div class="product-card-body">
-          <div class="product-card-cat">リカバリー</div>
-          <h3 class="product-card-name">筋膜リリースガン（コンパクトモデル）</h3>
-          <p class="product-card-desc">日々の疲労ケアやリカバリーをサポートするボディケアアイテム。</p>
-          <a class="product-card-cta" href="https://a.r10.to/h5yeu5" target="_blank" rel="nofollow sponsored noopener">楽天で詳細を見る</a>
-        </div>
+      <div class="affiliate-card">
+        <a href="https://a.r10.to/h5yeu5" target="_blank" rel="nofollow sponsored noopener">
+          <img src="https://hbb.afl.rakuten.co.jp/hgb/5055089a.d7685e6c.5055089b.07090e8f/?me_id=1345082&item_id=10000117&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fexcitech%2Fcabinet%2Frelx%2Fmassage-gun%2Fgun-mini-th-01.jpg%3F_ex%3D240x240&s=240x240&t=pict" alt="筋膜リリースガン" loading="lazy">
+          <div class="affiliate-body">
+            <div class="affiliate-label">PR</div>
+            <div class="affiliate-title">筋膜リリースガン ミニ</div>
+            <span class="affiliate-cta">楽天で詳細を見る</span>
+          </div>
+        </a>
       </div>
 
-      <!-- ③ 活力サポートサプリ -->
-      <div class="product-card">
-        <div class="product-card-img">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg" alt="活力サポートサプリ" loading="lazy">
-        </div>
-        <div class="product-card-body">
-          <div class="product-card-cat">活力サポート</div>
-          <h3 class="product-card-name">活力サポートサプリ（シトルリン・マカ配合）</h3>
-          <p class="product-card-desc">日常の活力やコンディション維持をサポートする栄養補助食品。</p>
-          <a class="product-card-cta" href="https://a.r10.to/hgZsnR" target="_blank" rel="nofollow sponsored noopener">楽天で詳細を見る</a>
-        </div>
+      <!-- ③ シトルリン・アルギニン -->
+      <div class="affiliate-card">
+        <a href="https://a.r10.to/hgZsnR" target="_blank" rel="nofollow sponsored noopener">
+          <img src="https://hbb.afl.rakuten.co.jp/hgb/5055089a.d7685e6c.5055089b.07090e8f/?me_id=1345082&item_id=10000018&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fexcitech%2Fcabinet%2Fsupplement%2Fexboost%2Fimgrc0106428594.jpg%3F_ex%3D240x240&s=240x240&t=pict" alt="シトルリン アルギニン" loading="lazy">
+          <div class="affiliate-body">
+            <div class="affiliate-label">PR</div>
+            <div class="affiliate-title">シトルリン・アルギニン・マカ・亜鉛</div>
+            <span class="affiliate-cta">楽天で詳細を見る</span>
+          </div>
+        </a>
       </div>
 
       <!-- ④ C COFFEE -->
-      <div class="product-card">
-        <div class="product-card-img">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg" alt="C COFFEE" loading="lazy">
-        </div>
-        <div class="product-card-body">
-          <div class="product-card-cat">習慣改善</div>
-          <h3 class="product-card-name">C COFFEE（ブラック習慣サポート）</h3>
-          <p class="product-card-desc">日常のコーヒー習慣を活かしたライフスタイルサポートドリンク。</p>
-          <a class="product-card-cta" href="https://a.r10.to/hkvUAU" target="_blank" rel="nofollow sponsored noopener">楽天で詳細を見る</a>
-        </div>
+      <div class="affiliate-card">
+        <a href="https://a.r10.to/hkvUAU" target="_blank" rel="nofollow sponsored noopener">
+          <img src="https://thumbnail.image.rakuten.co.jp/%400_mall/meatshop/cabinet/11037026/11037027/imgrc0336033151.jpg?_ex=240x240" alt="C COFFEE" loading="lazy">
+          <div class="affiliate-body">
+            <div class="affiliate-label">PR</div>
+            <div class="affiliate-title">C COFFEE ダイエットコーヒー</div>
+            <span class="affiliate-cta">楽天で詳細を見る</span>
+          </div>
+        </a>
       </div>
 
-      <!-- ⑤ 発汗サウナベルト -->
-      <div class="product-card">
-        <div class="product-card-img">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg" alt="発汗サウナベルト" loading="lazy">
-        </div>
-        <div class="product-card-body">
-          <div class="product-card-cat">発汗・温活</div>
-          <h3 class="product-card-name">発汗サウナベルト（温活サポート）</h3>
-          <p class="product-card-desc">発汗をサポートし、ボディケアや温活習慣に使えるアイテム。</p>
-          <a class="product-card-cta" href="https://a.r10.to/h5qSXb" target="_blank" rel="nofollow sponsored noopener">楽天で詳細を見る</a>
-        </div>
+      <!-- ⑤ サウナベルト -->
+      <div class="affiliate-card">
+        <a href="https://a.r10.to/h5qSXb" target="_blank" rel="nofollow sponsored noopener">
+          <img src="https://hbb.afl.rakuten.co.jp/hgb/53de15fd.d06c6846.53de15fe.7c4c4a11/?me_id=1369304&item_id=10000020&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fstan-shop%2Fcabinet%2Fsin%2Fsauna-suite%2Fsaunabelt%2Fsaunabelt-samune-c.jpg%3F_ex%3D240x240&s=240x240&t=pict" alt="サウナベルト" loading="lazy">
+          <div class="affiliate-body">
+            <div class="affiliate-label">PR</div>
+            <div class="affiliate-title">サウナベルト（温活サポート）</div>
+            <span class="affiliate-cta">楽天で詳細を見る</span>
+          </div>
+        </a>
       </div>
 
-    </div><!-- /product-grid -->
+    </div><!-- /affiliate-grid -->
 
-    <p class="product-footer-note rv">
+    <p class="affiliate-footer-note rv">
       【PR・広告】楽天アフィリエイトを利用しています<br>
       ※ 上記リンクは楽天市場の商品ページへ移動します<br>
       ※ 健康食品は医薬品ではありません。効果には個人差があります
