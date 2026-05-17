@@ -10,9 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 3efa10f49683fa7293ebef7d6661fad2
-          command: pages deploy . --project-name=habio --branch=main --commit-message="deploy from GitHub Actions"
+          node-version: '20'
+
+      - name: Setup Cloudflare auth
+        env:
+          CF_OAUTH: ${{ secrets.CF_OAUTH_TOKEN }}
+          CF_REFRESH: ${{ secrets.CF_REFRESH_TOKEN }}
+        run: |
+          mkdir -p "$HOME/.config/.wrangler/config"
+          printf 'oauth_token = "%s"\nrefresh_token = "%s"\n' "$CF_OAUTH" "$CF_REFRESH" \
+            > "$HOME/.config/.wrangler/config/default.toml"
+          mkdir -p "$HOME/.wrangler/config"
+          cp "$HOME/.config/.wrangler/config/default.toml" "$HOME/.wrangler/config/default.toml"
+
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy . --project-name=habio --branch=main --commit-message="deploy from GitHub Actions"
