@@ -2990,10 +2990,13 @@ function generateFoodAiComment(logs){
 
 /* ── AFFILIATE RECOMMEND ── */
 const AFFILIATE_LINKS = {
-  slimmanage: "https://a.r10.to/h5BVog",
-  metabolism: "",
-  exercise:   "",
-  diet:       ""
+  slimmanage:   "https://a.r10.to/h5BVog",
+  metabolism:   "https://a.r10.to/hgTpBU",
+  exercise:     "https://a.r10.to/h5yeu5",
+  diet:         "https://a.r10.to/hkvUAU",
+  killerburner: "https://a.r10.to/hFz0dn",
+  saunabelt:    "https://a.r10.to/h5qSXb",
+  citrulline:   "https://a.r10.to/hgZsnR",
 };
 
 const REC_DEFS = [
@@ -3020,30 +3023,129 @@ const REC_DEFS = [
   },
   {
     id:'metabolism',
-    em:'🔥',
-    tag:'PR｜生活習慣サポート',
-    title:'毎日の生活習慣を、少し整えてみませんか？',
-    desc:'生活リズムが気になる方向けに、日々の習慣に取り入れやすいサービスをご紹介します。効果には個人差がありますが、選択肢として参考にしてください。',
+    em:'🌿',
+    tag:'PR｜機能性表示食品',
+    title:'体重・体脂肪が気になる方へ。毎日の習慣を整えてみませんか？',
+    desc:'消費者庁に届出された機能性表示食品を、選択肢のひとつとしてご紹介します。',
     cta:'詳しく見る',
-    modal:null,
+    modal:{
+      em:'🌿',
+      product:'カロリンピュア（楽天市場）',
+      title:'体重・体脂肪が気になる方へ',
+      sub:'エラグ酸配合の機能性表示食品です。毎日の習慣のひとつとして参考にしてください。\n押し売りはしません。気になる方はご参考にどうぞ。',
+      points:[
+        {em:'📋',t:'機能性表示食品',s:'消費者庁に届出済み。体重・体脂肪を減らす機能が報告されています。'},
+        {em:'🌿',t:'毎日の習慣に',s:'日々の生活習慣に取り入れやすいサプリメントです。'},
+        {em:'🌱',t:'Habio からのご紹介',s:'気になる方の選択肢として、参考にしてみてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n疾患がある方・妊娠中の方は事前に医師にご相談ください。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でカロリンピュアを見る',
+    },
   },
   {
     id:'exercise',
-    em:'🚶',
-    tag:'運動サポート系',
-    title:'3分から始められる運動、知っていますか？',
-    desc:'「運動が苦手」「続いたことがない」という方向けに、無理なく始められるサービスをご紹介します。まずは小さな一歩から。',
-    cta:'今すぐチェック',
-    modal:null,
+    em:'💆',
+    tag:'PR｜運動サポート',
+    title:'運動後のケアに。コンパクトな筋膜リリースガン。',
+    desc:'運動習慣をサポートするアイテムとして、使いやすさを重視したグッズをご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'💆',
+      product:'筋膜リリースガン ミニ（楽天市場）',
+      title:'運動後のケアに取り入れやすいアイテム',
+      sub:'コンパクトサイズで使いやすい筋膜リリースガンを、Habio がご紹介します。',
+      points:[
+        {em:'💪',t:'運動後のセルフケアに',s:'運動後の筋肉をほぐすセルフケアアイテムです。'},
+        {em:'📦',t:'コンパクトサイズ',s:'持ち運びに便利なミニサイズ。自宅でも外出先でも使いやすい設計。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'運動習慣を続けたい方の選択肢として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）\n使用感には個人差があります。',
+      ctaLabel:'楽天市場で筋膜リリースガンを見る',
+    },
   },
   {
     id:'diet',
-    em:'🥗',
-    tag:'食事改善系',
-    title:'食事管理が続かないのは、方法の問題かも',
-    desc:'外食が多い方・食事記録が続かない方に向けて、ゆるく継続できるサービスをご紹介します。完璧を目指さなくていいんです。',
+    em:'☕',
+    tag:'PR｜食事・生活習慣',
+    title:'毎朝のコーヒーを、ちょっとだけ変えてみませんか？',
+    desc:'ダイエットコーヒーとして人気の C COFFEE を、選択肢のひとつとしてご紹介します。',
     cta:'詳しく見る',
-    modal:null,
+    modal:{
+      em:'☕',
+      product:'C COFFEE（楽天市場）',
+      title:'毎朝の習慣にプラスするコーヒー',
+      sub:'コーヒー好きの方向けに、朝の習慣として取り入れやすいアイテムをご紹介します。',
+      points:[
+        {em:'☕',t:'毎朝の習慣に',s:'コーヒーが好きな方なら、毎朝の習慣として取り入れやすいアイテムです。'},
+        {em:'🌱',t:'生活習慣のサポートに',s:'食事改善を意識している方向けに、Habio が選択肢としてご紹介します。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方は参考にしてみてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でC COFFEEを見る',
+    },
+  },
+  {
+    id:'killerburner',
+    em:'🔥',
+    tag:'PR｜生活習慣サポート',
+    title:'倖田來未さん監修のサプリメント、ご存知ですか？',
+    desc:'生活習慣を意識している方向けのサプリメントを、選択肢のひとつとしてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🔥',
+      product:'キラーバーナー2（楽天市場）',
+      title:'倖田來未監修のサプリメント',
+      sub:'生活習慣をサポートするサプリメントを、Habio がご紹介します。気になる方はご参考にどうぞ。',
+      points:[
+        {em:'🌿',t:'生活習慣に取り入れやすく',s:'毎日の生活習慣のひとつとして続けやすい設計のサプリメントです。'},
+        {em:'🔥',t:'倖田來未さん監修',s:'監修のもと開発されたサプリメントです。'},
+        {em:'🌙',t:'Habio からのご紹介',s:'気になる方の選択肢として、参考にしてみてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n疾患がある方・妊娠中の方は事前に医師にご相談ください。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でキラーバーナー2を見る',
+    },
+  },
+  {
+    id:'saunabelt',
+    em:'🧖',
+    tag:'PR｜温活・運動サポート',
+    title:'運動中の温活に。発汗サウナベルト。',
+    desc:'ウォーキングや軽い運動のときに取り入れやすいアイテムをご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🧖',
+      product:'発汗サウナベルト（楽天市場）',
+      title:'運動習慣に取り入れやすいアイテム',
+      sub:'ウォーキングや軽い運動のときに使いやすいサウナベルトを、Habio がご紹介します。',
+      points:[
+        {em:'🔥',t:'運動中の温活に',s:'運動習慣のある方が取り入れやすいアイテムです。'},
+        {em:'📦',t:'日常使いしやすい',s:'シンプルな設計で、普段の運動に組み合わせやすいアイテムです。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の参考として、選択肢のひとつとしてご紹介します。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）\n使用感には個人差があります。',
+      ctaLabel:'楽天市場でサウナベルトを見る',
+    },
+  },
+  {
+    id:'citrulline',
+    em:'💪',
+    tag:'PR｜活力サポート',
+    title:'毎日の活力を、少しサポートしてみませんか？',
+    desc:'シトルリン・アルギニン・マカ・亜鉛配合のサプリメントを、選択肢としてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'💪',
+      product:'シトルリン・アルギニン・マカ・亜鉛（楽天市場）',
+      title:'毎日の活力サポートに',
+      sub:'日々の活力を意識している方向けに、取り入れやすいサプリメントをご紹介します。',
+      points:[
+        {em:'💪',t:'活力サポートの成分配合',s:'シトルリン・アルギニン・マカ・亜鉛を配合したサプリメントです。'},
+        {em:'🌿',t:'毎日の習慣に',s:'日々の生活習慣に取り入れやすい設計になっています。'},
+        {em:'🌙',t:'Habio からのご紹介',s:'気になる方の選択肢として、参考にしてみてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n疾患がある方・妊娠中の方は事前に医師にご相談ください。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でシトルリンを見る',
+    },
   },
 ];
 
@@ -3130,18 +3232,20 @@ function renderRecommendCards(){
     onbA.q1==='weight' ||
     onbA.q1==='diet';
 
-  // Base order without slimmanage
-  let base=['metabolism','exercise','diet'];
-  if(streak<3)              base=['exercise','metabolism','diet'];
-  if(meals.length<=1)       base=['diet',...base.filter(x=>x!=='diet')];
-  if(hour>=20||isNight())   base=['metabolism',...base.filter(x=>x!=='metabolism')];
-  if(onbA.q1==='weight')    base=['metabolism',...base.filter(x=>x!=='metabolism')];
-  else if(onbA.q1==='diet') base=['diet',...base.filter(x=>x!=='diet')];
+  // Full pool (excluding slimmanage) — personalization reorders this
+  let base=['metabolism','exercise','diet','killerburner','saunabelt','citrulline'];
+  const pin=(id)=>{ base=[id,...base.filter(x=>x!==id)]; };
+  if(streak<3)              pin('exercise');
+  if(meals.length<=1)       pin('diet');
+  if(hour>=20||isNight())   pin('metabolism');
+  if(onbA.q1==='weight')    { pin('killerburner'); pin('metabolism'); }
+  else if(onbA.q1==='diet') { pin('diet'); pin('metabolism'); }
 
-  // Insert slimmanage
+  // Show top 3 from pool + slimmanage = 4 cards total
+  const top3=base.slice(0,3);
   const order=slimFirst
-    ? ['slimmanage',...base]
-    : [...base,'slimmanage'];
+    ? ['slimmanage',...top3]
+    : [...top3,'slimmanage'];
 
   el.innerHTML=order.map((id,i)=>{
     const d=REC_DEFS.find(r=>r.id===id);
