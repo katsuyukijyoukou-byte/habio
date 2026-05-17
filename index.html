@@ -989,12 +989,24 @@ footer{
 }
 .affiliate-card:hover{transform:translateY(-4px);}
 .affiliate-card a{display:block;text-decoration:none;color:inherit;}
-.affiliate-card img{
+.affiliate-img-wrap{
+  position:relative;
   width:100%;
   aspect-ratio:1/1;
+  background:linear-gradient(135deg,#1e4433,#0f2a1e);
+  overflow:hidden;
+}
+.affiliate-img-wrap img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
   object-fit:cover;
   display:block;
-  background:rgba(255,255,255,.06);
+}
+.affiliate-img-em{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;
+  z-index:0;
 }
 .affiliate-body{padding:18px;}
 .affiliate-label{
@@ -1633,12 +1645,15 @@ footer{
     <p>あなたの習慣を、もう少し整えるために。<br>Habio と一緒に使いたい方へ、選択肢のひとつとしてご紹介します。</p>
     <p class="affiliate-note">※ 以下は楽天アフィリエイトを利用した広告リンクです（PR）</p>
 
-    <div class="affiliate-grid rv">
+    <div class="affiliate-grid">
 
       <!-- ① キラーバーナー2 -->
       <div class="affiliate-card">
         <a href="https://a.r10.to/hFz0dn" target="_blank" rel="nofollow sponsored noopener">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg" alt="キラーバーナー2" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          <div class="affiliate-img-wrap">
+            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg" alt="キラーバーナー2" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
+            <div class="affiliate-img-em">🔥</div>
+          </div>
           <div class="affiliate-body">
             <div class="affiliate-label">PR</div>
             <div class="affiliate-title">倖田來未 開発 キラーバーナー2</div>
@@ -1650,7 +1665,10 @@ footer{
       <!-- ② 筋膜リリースガン -->
       <div class="affiliate-card">
         <a href="https://a.r10.to/h5yeu5" target="_blank" rel="nofollow sponsored noopener">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg" alt="筋膜リリースガン" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          <div class="affiliate-img-wrap">
+            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg" alt="筋膜リリースガン" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
+            <div class="affiliate-img-em">💆</div>
+          </div>
           <div class="affiliate-body">
             <div class="affiliate-label">PR</div>
             <div class="affiliate-title">筋膜リリースガン ミニ</div>
@@ -1662,7 +1680,10 @@ footer{
       <!-- ③ シトルリン・アルギニン -->
       <div class="affiliate-card">
         <a href="https://a.r10.to/hgZsnR" target="_blank" rel="nofollow sponsored noopener">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg" alt="シトルリン アルギニン" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          <div class="affiliate-img-wrap">
+            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg" alt="シトルリン アルギニン" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
+            <div class="affiliate-img-em">💪</div>
+          </div>
           <div class="affiliate-body">
             <div class="affiliate-label">PR</div>
             <div class="affiliate-title">シトルリン・アルギニン・マカ・亜鉛</div>
@@ -1674,7 +1695,10 @@ footer{
       <!-- ④ C COFFEE -->
       <div class="affiliate-card">
         <a href="https://a.r10.to/hkvUAU" target="_blank" rel="nofollow sponsored noopener">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg" alt="C COFFEE" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          <div class="affiliate-img-wrap">
+            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg" alt="C COFFEE" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
+            <div class="affiliate-img-em">☕</div>
+          </div>
           <div class="affiliate-body">
             <div class="affiliate-label">PR</div>
             <div class="affiliate-title">C COFFEE ダイエットコーヒー</div>
@@ -1686,7 +1710,10 @@ footer{
       <!-- ⑤ サウナベルト -->
       <div class="affiliate-card">
         <a href="https://a.r10.to/h5qSXb" target="_blank" rel="nofollow sponsored noopener">
-          <img src="https://thumbnail.image.rakuten.co.jp/@_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg" alt="サウナベルト" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          <div class="affiliate-img-wrap">
+            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg" alt="サウナベルト" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
+            <div class="affiliate-img-em">🧖</div>
+          </div>
           <div class="affiliate-body">
             <div class="affiliate-label">PR</div>
             <div class="affiliate-title">サウナベルト（温活サポート）</div>
@@ -1697,7 +1724,7 @@ footer{
 
     </div><!-- /affiliate-grid -->
 
-    <p class="affiliate-footer-note rv">
+    <p class="affiliate-footer-note">
       【PR・広告】楽天アフィリエイトを利用しています<br>
       ※ 上記リンクは楽天市場の商品ページへ移動します<br>
       ※ 健康食品は医薬品ではありません。効果には個人差があります
