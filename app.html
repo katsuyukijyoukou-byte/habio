@@ -1205,6 +1205,22 @@ body.night-bg{background:#C8C3BB;}
 }
 .rec-modal-cta-wrap .rec-modal-cta{width:100%;margin:0;}
 .rec-modal-cta-wrap .rec-modal-foot{padding:0;margin-bottom:12px;}
+.rec-modal-action-btn{
+  display:block;width:100%;
+  background:linear-gradient(135deg,var(--blue-p),var(--g-pp));
+  border:2px solid var(--blue);color:var(--t);
+  font-size:14px;font-weight:700;padding:13px;border-radius:var(--r-f);
+  text-align:center;margin-bottom:8px;cursor:pointer;
+  transition:all var(--trans-dur);-webkit-tap-highlight-color:transparent;
+}
+.rec-modal-action-btn.claimed{
+  background:var(--bg);border-color:var(--border);color:var(--t-g);
+  cursor:default;font-weight:600;
+}
+.rec-modal-action-hint{
+  font-size:11px;color:var(--t-g);text-align:center;
+  margin-bottom:10px;line-height:1.6;
+}
 
 /* ── GOAL BANNER ── */
 .goal-banner{
@@ -2525,6 +2541,8 @@ body.night-bg{background:#C8C3BB;}
         <div class="rec-modal-notice" id="recModalNotice"></div>
       </div>
       <div class="rec-modal-cta-wrap">
+        <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">おすすめ健康習慣を確認した ✓</button>
+        <div class="rec-modal-action-hint" id="recModalActionHint">確認で1pt獲得（プレミアム会員は2pt）</div>
         <div class="rec-modal-redirect">タップすると楽天市場へ移動します</div>
         <button class="rec-modal-cta" id="recModalCta" onclick="onRecModalCta()">楽天市場で見る</button>
         <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
@@ -5372,6 +5390,26 @@ function showRecModal(id,def){
     show('recModalAiReason',true);
   }
 
+  // アクションボタン初期状態
+  const jstToday=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
+  const claimedMap=Store.get('pr_actions_today',{});
+  const alreadyClaimed=claimedMap[id]===jstToday;
+  const actionBtn=document.getElementById('recModalActionBtn');
+  const actionHint=document.getElementById('recModalActionHint');
+  if(actionBtn){
+    if(alreadyClaimed){
+      actionBtn.textContent='✓ 今日のアクション達成済み';
+      actionBtn.classList.add('claimed');
+      actionBtn.disabled=true;
+      if(actionHint) actionHint.textContent='また明日チャレンジしよう';
+    } else {
+      actionBtn.textContent='おすすめ健康習慣を確認した ✓';
+      actionBtn.classList.remove('claimed');
+      actionBtn.disabled=false;
+      if(actionHint) actionHint.textContent='確認で1pt獲得（プレミアム会員は2pt）';
+    }
+  }
+
   const ov=document.getElementById('recModalOverlay');
   if(ov) ov.classList.add('show');
   logRecEvent('rec_card_view_'+id);
@@ -5380,10 +5418,58 @@ function showRecModal(id,def){
 function onRecModalCta(){
   if(!_recModalCurrentId) return;
   const link=AFFILIATE_LINKS[_recModalCurrentId];
-  logRecEvent('rec_card_click_'+_recModalCurrentId+'_cta');
+  logRecEvent('rec_card_cta_'+_recModalCurrentId);
   closeRecModal();
   if(link){ setTimeout(()=>window.open(link,'_blank','noopener,noreferrer'),120); }
   else     { showToast('準備中です。もう少しお待ちください 🌿'); }
+}
+
+async function claimPrAction(){
+  if(!_recModalCurrentId) return;
+  const email=(Store.get('user_email','')||'').trim().toLowerCase();
+  if(!email){ showToast('設定からメールアドレスを登録してください'); return; }
+
+  const btn=document.getElementById('recModalActionBtn');
+  const hint=document.getElementById('recModalActionHint');
+  if(!btn||btn.disabled) return;
+
+  btn.disabled=true;
+  btn.textContent='送信中...';
+
+  try {
+    const res=await fetch(`${STRIPE_WORKER}/pr/action`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, product_id:_recModalCurrentId}),
+    });
+    const data=await res.json();
+
+    if(data.ok){
+      btn.textContent=`✓ 今日のアクション達成！ +${data.points}pt`;
+      btn.classList.add('claimed');
+      if(hint) hint.textContent=`合計 ${data.total_points.toLocaleString()}pt`;
+      showToast(`健康習慣アクション完了！ +${data.points}pt 獲得`);
+      // ローカル記録（同日再呼び出し防止）
+      const jstToday=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
+      const m=Store.get('pr_actions_today',{});
+      m[_recModalCurrentId]=jstToday;
+      Store.set('pr_actions_today',m);
+      // ポイント表示を更新
+      loadPointsReferral();
+    } else if(data.reason==='already_claimed_today'){
+      btn.textContent='✓ 今日のアクション達成済み';
+      btn.classList.add('claimed');
+      if(hint) hint.textContent='また明日チャレンジしよう';
+    } else {
+      btn.disabled=false;
+      btn.textContent='おすすめ健康習慣を確認した ✓';
+      showToast('エラーが発生しました。もう一度お試しください。');
+    }
+  } catch(_){
+    btn.disabled=false;
+    btn.textContent='おすすめ健康習慣を確認した ✓';
+    showToast('通信エラーが発生しました');
+  }
 }
 
 function closeRecModal(){

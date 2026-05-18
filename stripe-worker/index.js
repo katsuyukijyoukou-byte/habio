@@ -31,6 +31,9 @@ export default {
     if (request.method === 'POST' && url.pathname === '/x/tweet')             return handleXTweet(request, env);
     if (request.method === 'POST' && url.pathname === '/x/disconnect')        return handleXDisconnect(request, env);
 
+    // PR habit action endpoint
+    if (request.method === 'POST' && url.pathname === '/pr/action')           return handlePrAction(request, env);
+
     return cors(JSON.stringify({ error: 'not found' }), 404);
   },
 };
@@ -463,6 +466,49 @@ async function refreshXToken(refreshToken, clientId, clientSecret) {
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────
+
+// ── /pr/action ────────────────────────────────────────────────────────────────
+async function handlePrAction(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email      = (body.email      || '').trim().toLowerCase();
+  const product_id = (body.product_id || '').trim();
+
+  if (!email)      return cors(JSON.stringify({ error: 'email required' }), 400);
+  if (!product_id) return cors(JSON.stringify({ error: 'product_id required' }), 400);
+  // 英数字とアンダースコアのみ許可（product_idインジェクション防止）
+  if (!/^[a-z0-9_]{1,32}$/.test(product_id)) return cors(JSON.stringify({ error: 'invalid product_id' }), 400);
+
+  const hash    = await hashEmail(email);
+  const jstDate = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const dedupKey = `pr_action:${hash}:${product_id}:${jstDate}`;
+
+  // 1日1回制限
+  const already = await env.PREMIUM_KV.get(dedupKey);
+  if (already) {
+    return cors(JSON.stringify({ ok: false, reason: 'already_claimed_today' }));
+  }
+
+  // プレミアム判定
+  const isPremium = (await env.PREMIUM_KV.get(`premium:${email}`)) === '1';
+  const pts = isPremium ? 2 : 1;
+
+  // ポイント付与
+  await addPoints(env.PREMIUM_KV, email, 'pr_habit_action', pts, `健康習慣アクション: ${product_id} (${jstDate})`, null);
+
+  // dedup記録（2日TTL）
+  await env.PREMIUM_KV.put(dedupKey, '1', { expirationTtl: 48 * 3600 });
+
+  const user = await env.PREMIUM_KV.get(`u:${hash}`, 'json');
+
+  return cors(JSON.stringify({
+    ok:           true,
+    points:       pts,
+    total_points: user?.total_points || pts,
+    is_premium:   isPremium,
+  }));
+}
 
 async function hashEmail(email) {
   const enc = new TextEncoder();
