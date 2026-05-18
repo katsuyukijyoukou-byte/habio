@@ -1332,6 +1332,73 @@ body.night-bg{background:#C8C3BB;}
   font-size:14px;line-height:1.8;color:var(--t);white-space:pre-wrap;min-height:60px;
 }
 
+/* ── CANCEL PREMIUM MODAL ── */
+.cancel-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(5px);
+  z-index:92;display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+}
+.cancel-overlay.show{opacity:1;pointer-events:all;}
+.cancel-sheet{
+  width:100%;max-height:92%;background:var(--bg-w);
+  border-radius:var(--r-l) var(--r-l) 0 0;
+  overflow-y:auto;padding:0 0 36px;
+  transform:translateY(40px);
+  transition:transform .35s cubic-bezier(.25,.85,.25,1);
+}
+.cancel-overlay.show .cancel-sheet{transform:translateY(0);}
+.cancel-handle{width:40px;height:4px;background:var(--t-l);border-radius:var(--r-f);margin:14px auto 0;}
+.cancel-hero{padding:20px 20px 8px;text-align:center;}
+.cancel-hero-em{font-size:44px;margin-bottom:10px;}
+.cancel-hero-t{font-size:18px;font-weight:700;color:var(--t);line-height:1.55;margin-bottom:6px;}
+.cancel-hero-s{font-size:13px;color:var(--t-m);line-height:1.9;}
+.cancel-stats{
+  display:flex;gap:0;margin:0 16px 20px;
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-l);overflow:hidden;
+}
+.cancel-stat{flex:1;padding:14px 10px;text-align:center;}
+.cancel-stat+.cancel-stat{border-left:1px solid rgba(0,0,0,.06);}
+.cancel-stat-num{font-size:20px;font-weight:700;color:var(--g);}
+.cancel-stat-lbl{font-size:10px;color:var(--t-m);margin-top:3px;}
+.cancel-rec-lbl{
+  font-size:11px;font-weight:700;color:var(--t-l);
+  letter-spacing:.08em;padding:0 20px 10px;
+}
+.cancel-rec-list{display:flex;flex-direction:column;gap:10px;padding:0 16px;margin-bottom:20px;}
+.cancel-rec-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card);border-radius:var(--r-m);
+  padding:14px 16px;box-shadow:var(--sh1);
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.cancel-rec-em{font-size:30px;flex-shrink:0;}
+.cancel-rec-body{flex:1;min-width:0;}
+.cancel-rec-tag{font-size:9px;color:var(--t-l);font-weight:700;letter-spacing:.06em;margin-bottom:3px;}
+.cancel-rec-title{font-size:13px;font-weight:700;color:var(--t);line-height:1.5;}
+.cancel-rec-cta{font-size:11px;color:var(--t-g);margin-top:4px;font-weight:600;}
+.cancel-rec-arr{font-size:18px;color:var(--t-l);flex-shrink:0;}
+.cancel-actions{padding:0 16px;}
+.cancel-stay-btn{
+  width:100%;padding:16px;border-radius:var(--r-f);
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:16px;font-weight:700;
+  border:none;cursor:pointer;margin-bottom:12px;
+  box-shadow:0 4px 16px rgba(89,160,126,.3);
+  transition:transform .15s ease;
+}
+.cancel-stay-btn:active{transform:scale(.97);}
+.cancel-quit-btn{
+  width:100%;padding:13px;border-radius:var(--r-f);
+  background:transparent;
+  color:var(--t-l);font-size:13px;font-weight:500;
+  border:1.5px solid var(--border);cursor:pointer;
+  transition:color .2s ease,border-color .2s ease;
+}
+.cancel-quit-btn:active{color:#c0392b;border-color:#c0392b;}
+
 /* ── POINTS CARD ── */
 .points-card{
   display:flex;align-items:center;
@@ -1923,6 +1990,11 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name">サービスサイトへ戻る</div><div class="st-note">Habio のランディングページ</div></div>
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
+      <div class="st-row" data-premium-show style="display:none;" onclick="openCancelPremiumModal()">
+        <div class="st-em">💎</div>
+        <div class="st-info"><div class="st-name" style="color:#c0392b;">プレミアムを解約する</div><div class="st-note">退会の前にご確認いただけます</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
       <div class="st-row" onclick="resetData()">
         <div class="st-em">🗑️</div>
         <div class="st-info"><div class="st-name">データをリセット</div><div class="st-note">習慣・チャット履歴を削除</div></div>
@@ -2171,6 +2243,47 @@ body.night-bg{background:#C8C3BB;}
       <div class="rewards-coming">
         🎁 リワード機能<br>
         <span style="font-size:11px;">バッジが10枚以上たまると、リワードと交換できるようになります（準備中）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANCEL PREMIUM MODAL -->
+  <div class="cancel-overlay" id="cancelOverlay" onclick="onCancelOverlayClick(event)">
+    <div class="cancel-sheet">
+      <div class="cancel-handle"></div>
+      <div class="cancel-hero">
+        <div class="cancel-hero-em">🌿</div>
+        <div class="cancel-hero-t">ちょっと待ってください。</div>
+        <div class="cancel-hero-s" id="cancelHeroSub">
+          ここまで続けてきたあなたの記録が<br>あります。
+        </div>
+      </div>
+      <div class="cancel-stats">
+        <div class="cancel-stat">
+          <div class="cancel-stat-num" id="cancelStreak">0日</div>
+          <div class="cancel-stat-lbl">現在のStreak</div>
+        </div>
+        <div class="cancel-stat">
+          <div class="cancel-stat-num" id="cancelPts">0pt</div>
+          <div class="cancel-stat-lbl">累計ポイント</div>
+        </div>
+        <div class="cancel-stat">
+          <div class="cancel-stat-num" id="cancelDays">0日</div>
+          <div class="cancel-stat-lbl">利用日数</div>
+        </div>
+      </div>
+      <div class="cancel-rec-lbl">あなたの習慣傾向から、引き続き役立てそうなもの（PR）</div>
+      <div class="cancel-rec-list" id="cancelRecList"></div>
+      <p style="font-size:10px;color:var(--t-l);padding:0 20px 16px;line-height:1.7;">
+        ※ 上記は楽天アフィリエイト広告です。医薬品ではありません。効果には個人差があります。
+      </p>
+      <div class="cancel-actions">
+        <button class="cancel-stay-btn" onclick="closeCancelPremiumModal()">
+          やっぱり頑張る 🌿
+        </button>
+        <button class="cancel-quit-btn" onclick="confirmCancelPremium()">
+          会員を辞める
+        </button>
       </div>
     </div>
   </div>
@@ -4822,6 +4935,85 @@ function renderRecommendCards(){
     app.style.height=keyboardOpen?h+'px':'';
   });
 })();
+
+/* ── CANCEL PREMIUM ── */
+function openCancelPremiumModal(){
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  const start=Store.get('start_date',today());
+  const days=Math.max(1,Math.round((new Date()-new Date(start))/864e5)+1);
+  const pts=getTotalPts();
+
+  // stats
+  const e=id=>document.getElementById(id);
+  if(e('cancelStreak')) e('cancelStreak').textContent=streak+'日';
+  if(e('cancelPts'))    e('cancelPts').textContent=pts+'pt';
+  if(e('cancelDays'))   e('cancelDays').textContent=days+'日';
+
+  // hero sub message
+  const sub=e('cancelHeroSub');
+  if(sub){
+    if(streak>=7) sub.textContent=streak+'日間も続けてきました。\nここで止まるのは、もったいないかもしれません。';
+    else if(pts>=20) sub.textContent='累計'+pts+'ptを積み上げてきました。\nここまでの積み重ねを大切にしてください。';
+    else sub.textContent='ここまで続けてきたあなたの記録があります。\nもう少しだけ、続けてみませんか？';
+  }
+
+  // personalized affiliate picks（利用履歴スコアリング）
+  const chatText=Store.get('chat_history',[]).slice(-30).map(m=>m.text||'').join(' ');
+  const habitGoal=Store.get('onb_answers',{}).q_ideal||'';
+  const winTitles=wins.map(w=>w.title||'').join(' ');
+  const combinedText=chatText+' '+winTitles+' '+habitGoal;
+
+  const scores={};
+  REC_DEFS.forEach(d=>{scores[d.id]=0;});
+  Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
+    kws.forEach(k=>{if(combinedText.includes(k)) scores[id]=(scores[id]||0)+1;});
+  });
+  // ゴール別ベーススコア
+  const goalBoost={
+    exercise:['exercise','emsbelt','vibration','yogamat','massageroller','walkshoe','smartwatch'],
+    food:['slimmanage','metabolism','diet','konnyaku','okara','smoothie','proteinshake','bloodsugar'],
+    sleep:['nerukara','shizumin','goodneru','pillowmist','hugmochi','eyemask'],
+    stress:['ashwaganda','bathsalt','hottab','neckrelax'],
+    water:['smoothie','sportsdrink','vitaminc','moringa'],
+    rhythm:['slimmanage','nerukara','ashwaganda','haramaki'],
+  };
+  (goalBoost[habitGoal]||[]).forEach(id=>{scores[id]=(scores[id]||0)+3;});
+
+  const sorted=REC_DEFS.slice().sort((a,b)=>{
+    const diff=(scores[b.id]||0)-(scores[a.id]||0);
+    return diff!==0?diff:Math.random()-0.5;
+  });
+  const picks=sorted.slice(0,3);
+
+  const list=e('cancelRecList');
+  if(list) list.innerHTML=picks.map(p=>`
+    <a class="cancel-rec-card" href="${AFFILIATE_LINKS[p.id]||'#'}" target="_blank" rel="nofollow sponsored noopener" onclick="logRecEvent('cancel_rec_${p.id}')">
+      <div class="cancel-rec-em">${p.em}</div>
+      <div class="cancel-rec-body">
+        <div class="cancel-rec-tag">${p.tag}</div>
+        <div class="cancel-rec-title">${p.title}</div>
+        <div class="cancel-rec-cta">楽天市場で見る →</div>
+      </div>
+      <div class="cancel-rec-arr">›</div>
+    </a>`).join('');
+
+  document.getElementById('cancelOverlay').classList.add('show');
+}
+
+function onCancelOverlayClick(e){
+  if(e.target===document.getElementById('cancelOverlay')) closeCancelPremiumModal();
+}
+function closeCancelPremiumModal(){
+  document.getElementById('cancelOverlay').classList.remove('show');
+}
+function confirmCancelPremium(){
+  Store.set('is_premium',false);
+  Store.set('premium_email','');
+  renderPremiumState();
+  closeCancelPremiumModal();
+  showToast('プレミアムを解約しました。無料プランに戻ります。');
+}
 
 /* ── POINTS & BADGES SYSTEM ── */
 const POINT_BADGES=[
