@@ -1178,6 +1178,33 @@ body.night-bg{background:#C8C3BB;}
   font-size:11px;color:var(--t-l);
   text-align:center;margin-top:12px;padding:0 22px;line-height:1.9;
 }
+.rec-modal-img-wrap{
+  margin:0 auto 14px;width:120px;height:120px;border-radius:var(--r-m);
+  overflow:hidden;background:var(--bg-w);display:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+.rec-modal-img{width:100%;height:100%;object-fit:cover;}
+.rec-modal-habit{
+  background:linear-gradient(135deg,var(--g-pp),var(--blue-p));
+  border-radius:var(--r-m);padding:14px 16px;margin-bottom:14px;
+}
+.rec-modal-habit-lbl{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:6px;}
+.rec-modal-habit-txt{font-size:13px;color:var(--t);line-height:1.8;}
+.rec-modal-ai-reason{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--bg);border-radius:var(--r-m);padding:13px 14px;margin-bottom:14px;
+}
+.rec-modal-ai-icon{font-size:18px;flex-shrink:0;}
+.rec-modal-ai-txt{font-size:12px;color:var(--t-m);line-height:1.8;}
+.rec-modal-cta-wrap{
+  position:sticky;bottom:0;background:var(--card);
+  padding:14px 22px 0;border-top:1px solid var(--border);margin-top:4px;
+}
+.rec-modal-redirect{
+  font-size:11px;color:var(--t-l);text-align:center;margin-bottom:8px;
+}
+.rec-modal-cta-wrap .rec-modal-cta{width:100%;margin:0;}
+.rec-modal-cta-wrap .rec-modal-foot{padding:0;margin-bottom:12px;}
 
 /* ── GOAL BANNER ── */
 .goal-banner{
@@ -2479,6 +2506,7 @@ body.night-bg{background:#C8C3BB;}
       <div class="rec-modal-handle"></div>
       <button class="rec-modal-close" onclick="closeRecModal()">×</button>
       <div class="rec-modal-hero">
+        <div class="rec-modal-img-wrap" id="recModalImgWrap"><img class="rec-modal-img" id="recModalImg" src="" alt=""></div>
         <div class="rec-modal-em" id="recModalEm">🔥</div>
         <div class="rec-modal-product" id="recModalProduct">代謝サポート</div>
         <div class="rec-modal-title" id="recModalTitle"></div>
@@ -2486,10 +2514,21 @@ body.night-bg{background:#C8C3BB;}
       </div>
       <div class="rec-modal-body">
         <div class="rec-modal-points" id="recModalPoints"></div>
+        <div class="rec-modal-habit" id="recModalHabit" style="display:none">
+          <div class="rec-modal-habit-lbl">習慣サポートポイント</div>
+          <div class="rec-modal-habit-txt" id="recModalHabitTxt"></div>
+        </div>
+        <div class="rec-modal-ai-reason" id="recModalAiReason" style="display:none">
+          <div class="rec-modal-ai-icon">🤖</div>
+          <div class="rec-modal-ai-txt" id="recModalAiTxt"></div>
+        </div>
         <div class="rec-modal-notice" id="recModalNotice"></div>
       </div>
-      <button class="rec-modal-cta" id="recModalCta" onclick="onRecModalCta()">楽天市場で見る</button>
-      <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
+      <div class="rec-modal-cta-wrap">
+        <div class="rec-modal-redirect">タップすると楽天市場へ移動します</div>
+        <button class="rec-modal-cta" id="recModalCta" onclick="onRecModalCta()">楽天市場で見る</button>
+        <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
+      </div>
     </div>
   </div>
 
@@ -4658,6 +4697,90 @@ const AFFILIATE_LINKS = {
   rumay3d:       "https://a.r10.to/h5wUMN",
 };
 
+// 商品画像URL（URLが空の場合は画像非表示）
+const PRODUCT_IMAGES = {
+  slimmanage:    '',
+  metabolism:    '',
+  exercise:      '',
+  diet:          '',
+  killerburner:  '',
+  saunabelt:     '',
+  citrulline:    '',
+  emsbelt:       '',
+  konnyaku:      '',
+  slimorecoffee: '',
+  protein:       '',
+  okara:         '',
+  smoothie:      '',
+  proteinshake:  '',
+  vibration:     '',
+  neckrelax:     '',
+  frozenbox:     '',
+  yogamat:       '',
+  massageroller: '',
+  balanceball:   '',
+  foamroller:    '',
+  nerukara:      '',
+  shizumin:      '',
+  goodneru:      '',
+  pillowmist:    '',
+  hugmochi:      '',
+  eyemask:       '',
+  lacto:         '',
+  rakusankin:    '',
+  forskohlii:    '',
+  cocolact:      '',
+  supponcmachi:  '',
+  hyalo:         '',
+  vitaminc:      '',
+  kouso:         '',
+  moringa:       '',
+  bloodsugar:    '',
+  cholesterol:   '',
+  puerhtea:      '',
+  vitaminb:      '',
+  aminoacid:     '',
+  hihatsu:       '',
+  mukumix:       '',
+  haramaki:      '',
+  ginger:        '',
+  bathsalt:      '',
+  hottab:        '',
+  walkshoe:      '',
+  smartwatch:    '',
+  sportsdrink:   '',
+  ashwaganda:    '',
+  rooibostea:    '',
+  lowcalbento:   '',
+  zakkokumai:    '',
+  mytrexneck:    '',
+  collagenpowder:'',
+  pelvischair:   '',
+  rakumolumbar:  '',
+  armshaer:      '',
+  donutcushion:  '',
+  legfit:        '',
+  neckpillow:    '',
+  fitnessbike:   '',
+  stepper:       '',
+  balanceboard:  '',
+  balancedisc:   '',
+  trainingsandal:'',
+  healthzosui:   '',
+  lowcalretort:  '',
+  tomatosoup:    '',
+  proterisotto:  '',
+  imuse:         '',
+  calorilimit:   '',
+  imubalance:    '',
+  blackgarlic:   '',
+  nanateatox:    '',
+  nanamitea:     '',
+  bananatea:     '',
+  traintube:     '',
+  rumay3d:       '',
+};
+
 const REC_DEFS = [
   {
     id:'slimmanage',
@@ -5139,13 +5262,62 @@ function recCardClick(id){
   const d=REC_DEFS.find(r=>r.id===id);
   if(!d) return;
   logRecEvent('rec_card_click_'+id);
-  if(d.modal){
-    showRecModal(id,d);
-  } else {
-    const link=AFFILIATE_LINKS[id];
-    if(link){ window.open(link,'_blank','noopener,noreferrer'); }
-    else     { showToast('準備中です。もう少しお待ちください 🌿'); }
-  }
+  showRecModal(id,d);
+}
+
+function autoGeneratePoints(def){
+  const tag=def.tag||'';
+  const em=def.em||'🌿';
+  if(tag.includes('睡眠')||tag.includes('快眠')||tag.includes('安眠'))
+    return [{em:'🌙',t:'睡眠の質をサポート',s:'眠りに関わる習慣をサポートするアイテムです。'},{em:'😴',t:'毎日の睡眠習慣に',s:'継続して使うことで、睡眠リズムを整えやすくなります。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('腸活')||tag.includes('乳酸菌'))
+    return [{em:'🦠',t:'腸内環境のケアに',s:'腸活をサポートするアイテムです。'},{em:'🌱',t:'継続しやすい形で',s:'毎日の習慣として取り入れやすく設計されています。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('運動')||tag.includes('ストレッチ')||tag.includes('有酸素')||tag.includes('筋トレ')||tag.includes('体幹'))
+    return [{em:'💪',t:'運動習慣をサポート',s:'運動習慣をつけたい方に取り入れやすいアイテムです。'},{em:'🏃',t:'続けやすい設計',s:'自宅でも気軽に使えるよう設計されています。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('食事')||tag.includes('置き換え')||tag.includes('カロリー')||tag.includes('低カロリー'))
+    return [{em:'🥗',t:'食事管理をサポート',s:'食生活の見直しをサポートするアイテムです。'},{em:'🌱',t:'無理なく続けられる',s:'毎日の食習慣に取り入れやすい設計です。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('温活')||tag.includes('冷え')||tag.includes('バスケア')||tag.includes('入浴剤'))
+    return [{em:'♨',t:'体を温める習慣に',s:'温活をサポートするアイテムです。'},{em:'🛁',t:'毎日のケアに',s:'日々のルーティンに取り入れやすい形です。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('美容')||tag.includes('コラーゲン')||tag.includes('フェムケア'))
+    return [{em:'✨',t:'美容習慣をサポート',s:'肌や体の美容をサポートするアイテムです。'},{em:'💧',t:'毎日続けやすい形',s:'美容習慣として取り入れやすい設計です。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('ストレス'))
+    return [{em:'🌿',t:'ストレスケアをサポート',s:'ストレスや不安が気になる方向けのアイテムです。'},{em:'😌',t:'日々の習慣に',s:'毎日の生活習慣として取り入れやすい形です。'},{em:'🌱',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('血糖値')||tag.includes('コレステロール')||tag.includes('機能性'))
+    return [{em:'📋',t:'機能性表示食品',s:'消費者庁に届出済みのアイテムです。'},{em:'🌱',t:'毎日の健康管理に',s:'習慣として取り入れやすい形でご紹介します。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  if(tag.includes('茶')||tag.includes('デトックス'))
+    return [{em:'🍵',t:'お茶習慣でデトックス',s:'飲むだけで気軽にケアできるお茶アイテムです。'},{em:'🌱',t:'毎日続けやすい',s:'ルーティンに取り入れやすい形でご紹介します。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+  return [{em:em,t:'毎日の習慣に',s:'生活習慣をサポートするアイテムです。'},{em:'🌱',t:'継続しやすい設計',s:'無理なく毎日の習慣に取り入れられます。'},{em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'}];
+}
+
+function buildHabitText(def){
+  const tag=def.tag||'';
+  if(tag.includes('睡眠')||tag.includes('快眠')||tag.includes('安眠'))
+    return '質の良い睡眠は健康習慣の基本。このアイテムを就寝ルーティンに加えることで、眠りの質を整えやすくなります。';
+  if(tag.includes('腸活')||tag.includes('乳酸菌'))
+    return '腸内環境を整えることは、免疫力や体調管理に影響します。毎日続けることで効果が期待できます。';
+  if(tag.includes('運動')||tag.includes('ストレッチ')||tag.includes('有酸素')||tag.includes('筋トレ')||tag.includes('体幹'))
+    return '運動習慣は健康の土台。このアイテムを日常に取り入れることで、無理なく体を動かす習慣が続けやすくなります。';
+  if(tag.includes('食事')||tag.includes('置き換え')||tag.includes('カロリー'))
+    return '食事の見直しは習慣化の第一歩。補助アイテムとして活用することで、無理なく継続できます。';
+  if(tag.includes('温活')||tag.includes('冷え')||tag.includes('バスケア')||tag.includes('入浴剤'))
+    return '体を温めることは基礎代謝や血流改善に役立ちます。毎日のルーティンに取り入れやすい形でサポートします。';
+  if(tag.includes('美容')||tag.includes('コラーゲン')||tag.includes('フェムケア'))
+    return '肌や体のケアも健康習慣のひとつ。毎日続けることで内側からサポートします。';
+  if(tag.includes('ストレス'))
+    return 'ストレスケアは心身のバランスを保ううえで重要です。日々の習慣の中にそっと取り入れましょう。';
+  if(tag.includes('血糖値')||tag.includes('コレステロール')||tag.includes('機能性'))
+    return '消費者庁届出の機能性表示食品として、科学的根拠をもとに開発されたアイテムです。毎日の健康管理の一助としてご活用ください。';
+  if(tag.includes('茶')||tag.includes('デトックス'))
+    return 'お茶を習慣にするだけで、気軽にデトックスや腸活をサポートできます。続けやすい形でご紹介します。';
+  return '毎日の健康習慣のサポートとして、選択肢のひとつとしてご参考ください。';
+}
+
+function buildAiReason(id,def){
+  const kws=REC_KEYWORDS[id]||[];
+  const cat=(def.tag||'').replace('PR｜','');
+  if(kws.length>0)
+    return `あなたの最近の会話から「${kws.slice(0,2).join('・')}」に関するキーワードを検出しました。このアイテムはそのサポートに役立つ可能性があります。`;
+  return `Habio のAIがあなたの健康目標と生活習慣をもとに、${cat}のカテゴリからご紹介するアイテムです。`;
 }
 
 function showRecModal(id,def){
@@ -5153,19 +5325,53 @@ function showRecModal(id,def){
   const m=def.modal;
   const setTxt=(elId,val)=>{const e=document.getElementById(elId);if(e)e.textContent=val||'';};
   const setHTML=(elId,val)=>{const e=document.getElementById(elId);if(e)e.innerHTML=val||'';};
-  setTxt('recModalEm',m.em);
-  setTxt('recModalProduct',m.product);
-  setTxt('recModalTitle',m.title);
-  setHTML('recModalSub',m.sub.replace(/\n/g,'<br>'));
-  const pts=document.getElementById('recModalPoints');
-  if(pts) pts.innerHTML=m.points.map(p=>`
-    <div class="rec-modal-point">
-      <div class="rec-modal-point-em">${p.em}</div>
-      <div><div class="rec-modal-point-t">${p.t}</div><div class="rec-modal-point-s">${p.s}</div></div>
-    </div>`).join('');
-  setHTML('recModalNotice',m.notice.replace(/\n/g,'<br>'));
-  const ctaEl=document.getElementById('recModalCta');
-  if(ctaEl) ctaEl.textContent=m.ctaLabel+' →';
+  const show=(elId,vis)=>{const e=document.getElementById(elId);if(e)e.style.display=vis?'':'none';};
+
+  // 商品画像
+  const imgUrl=(PRODUCT_IMAGES[id]||'');
+  const imgWrap=document.getElementById('recModalImgWrap');
+  const imgEl=document.getElementById('recModalImg');
+  if(imgWrap&&imgEl){
+    if(imgUrl){ imgEl.src=imgUrl; imgEl.alt=(m?m.title:def.title)||''; imgWrap.style.display='block'; }
+    else       { imgWrap.style.display='none'; }
+  }
+
+  const renderPoints=(pts)=>{
+    const el=document.getElementById('recModalPoints');
+    if(el) el.innerHTML=pts.map(p=>`
+      <div class="rec-modal-point">
+        <div class="rec-modal-point-em">${p.em}</div>
+        <div><div class="rec-modal-point-t">${p.t}</div><div class="rec-modal-point-s">${p.s}</div></div>
+      </div>`).join('');
+  };
+
+  if(m){
+    setTxt('recModalEm',m.em);
+    setTxt('recModalProduct',m.product);
+    setTxt('recModalTitle',m.title);
+    setHTML('recModalSub',m.sub.replace(/\n/g,'<br>'));
+    renderPoints(m.points);
+    setHTML('recModalNotice',m.notice.replace(/\n/g,'<br>'));
+    const ctaEl=document.getElementById('recModalCta');
+    if(ctaEl) ctaEl.textContent=m.ctaLabel+' →';
+    show('recModalHabit',false);
+    show('recModalAiReason',false);
+  } else {
+    setTxt('recModalEm',def.em);
+    setTxt('recModalProduct',(def.tag||'').replace('PR｜','')+'（楽天市場）');
+    setTxt('recModalTitle',def.title);
+    setHTML('recModalSub',def.desc||'');
+    renderPoints(autoGeneratePoints(def));
+    setHTML('recModalNotice','※ 本商品は医薬品ではありません。効果には個人差があります。<br>※ 楽天市場のページへ移動します（広告）');
+    const ctaEl=document.getElementById('recModalCta');
+    if(ctaEl) ctaEl.textContent='楽天市場で詳しく見る →';
+    const ht=buildHabitText(def);
+    if(ht){ setTxt('recModalHabitTxt',ht); show('recModalHabit',true); }
+    else  { show('recModalHabit',false); }
+    setTxt('recModalAiTxt',buildAiReason(id,def));
+    show('recModalAiReason',true);
+  }
+
   const ov=document.getElementById('recModalOverlay');
   if(ov) ov.classList.add('show');
   logRecEvent('rec_card_view_'+id);
