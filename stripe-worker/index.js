@@ -1,6 +1,6 @@
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
@@ -14,21 +14,17 @@ export default {
 
     const url = new URL(request.url);
 
-    if (request.method === 'POST' && url.pathname === '/create-checkout') {
-      return handleCreateCheckout(request, env);
-    }
-    if (request.method === 'POST' && url.pathname === '/webhook') {
-      return handleWebhook(request, env);
-    }
-    if (request.method === 'POST' && url.pathname === '/verify') {
-      return handleVerify(request, env);
-    }
-    if (request.method === 'POST' && url.pathname === '/activate') {
-      return handleActivate(request, env);
-    }
-    if (request.method === 'POST' && url.pathname === '/cancel-subscription') {
-      return handleCancelSubscription(request, env);
-    }
+    // Stripe endpoints
+    if (request.method === 'POST' && url.pathname === '/create-checkout')    return handleCreateCheckout(request, env);
+    if (request.method === 'POST' && url.pathname === '/webhook')             return handleWebhook(request, env);
+    if (request.method === 'POST' && url.pathname === '/verify')              return handleVerify(request, env);
+    if (request.method === 'POST' && url.pathname === '/activate')            return handleActivate(request, env);
+    if (request.method === 'POST' && url.pathname === '/cancel-subscription') return handleCancelSubscription(request, env);
+
+    // Points & Referral endpoints
+    if (request.method === 'GET'  && url.pathname === '/user/init')           return handleUserInit(request, env);
+    if (request.method === 'GET'  && url.pathname === '/points/me')           return handlePointsMe(request, env);
+    if (request.method === 'POST' && url.pathname === '/referral/register')   return handleReferralRegister(request, env);
 
     return cors(JSON.stringify({ error: 'not found' }), 404);
   },
@@ -50,6 +46,7 @@ async function handleCreateCheckout(request, env) {
     'line_items[0][price]': env.STRIPE_PRICE_ID,
     'line_items[0][quantity]': '1',
     'subscription_data[trial_period_days]': '7',
+    'subscription_data[metadata][email]': email,
     customer_email: email,
     success_url: successUrl,
     cancel_url: cancelUrl,
@@ -85,9 +82,21 @@ async function handleWebhook(request, env) {
 
   const type = event.type;
 
-  if (type === 'checkout.session.completed' || type === 'invoice.payment_succeeded') {
+  if (type === 'checkout.session.completed') {
     const email = extractEmail(event);
-    if (email) await setPremium(env, email, true);
+    if (email) {
+      await setPremium(env, email, true);
+      await recordPremiumStart(env, email);
+    }
+  }
+
+  // invoice.paid fires for every successful payment (trial end + monthly renewals)
+  if (type === 'invoice.paid') {
+    const email = extractEmail(event);
+    if (email) {
+      await setPremium(env, email, true);
+      await checkAndAwardPremiumReferral(env, email);
+    }
   }
 
   if (type === 'customer.subscription.deleted' || type === 'invoice.payment_failed') {
@@ -107,14 +116,10 @@ async function handleVerify(request, env) {
   if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
 
   const val = await env.PREMIUM_KV.get(`premium:${email}`);
-  const isPremium = val === '1';
-
-  return cors(JSON.stringify({ premium: isPremium }));
+  return cors(JSON.stringify({ premium: val === '1' }));
 }
 
 // ── /activate ─────────────────────────────────────────────────────────────────
-// Called immediately after Stripe redirects to success URL.
-// Retrieves the checkout session directly from Stripe (bypasses webhook timing).
 async function handleActivate(request, env) {
   let body;
   try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
@@ -135,6 +140,7 @@ async function handleActivate(request, env) {
   if (!email) return cors(JSON.stringify({ error: 'no email in session' }), 500);
 
   await setPremium(env, email, true);
+  await recordPremiumStart(env, email);
   return cors(JSON.stringify({ premium: true, email }));
 }
 
@@ -146,7 +152,6 @@ async function handleCancelSubscription(request, env) {
   const email = (body.email || '').trim().toLowerCase();
   if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
 
-  // Stripe でメールアドレスからカスタマーを検索
   const custRes = await fetch(`https://api.stripe.com/v1/customers?email=${encodeURIComponent(email)}&limit=1`, {
     headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` },
   });
@@ -154,7 +159,6 @@ async function handleCancelSubscription(request, env) {
   const customer = custData.data?.[0];
 
   if (customer) {
-    // active / trialing 両方を確認
     for (const status of ['active', 'trialing']) {
       const subRes = await fetch(
         `https://api.stripe.com/v1/subscriptions?customer=${customer.id}&status=${status}&limit=1`,
@@ -163,7 +167,6 @@ async function handleCancelSubscription(request, env) {
       const subData = await subRes.json();
       const sub = subData.data?.[0];
       if (sub) {
-        // Stripe サブスクリプションをすぐにキャンセル（次回請求なし）
         const cancelRes = await fetch(`https://api.stripe.com/v1/subscriptions/${sub.id}/cancel`, {
           method: 'POST',
           headers: {
@@ -180,12 +183,220 @@ async function handleCancelSubscription(request, env) {
     }
   }
 
-  // KV からプレミアム権限を削除
   await setPremium(env, email, false);
   return cors(JSON.stringify({ success: true }));
 }
 
+// ── /user/init ────────────────────────────────────────────────────────────────
+async function handleUserInit(request, env) {
+  const url = new URL(request.url);
+  const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+  if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
+
+  const user = await getOrCreateUser(env.PREMIUM_KV, email);
+  const hash = await hashEmail(email);
+  const refList = (await env.PREMIUM_KV.get(`refs:by:${hash}`, 'json')) || [];
+  const premiumCount = refList.filter(r => r.premium_rewarded).length;
+
+  return cors(JSON.stringify({
+    referral_code: user.referral_code,
+    referral_url: `https://habio.pages.dev/app?ref=${user.referral_code}`,
+    total_points: user.total_points || 0,
+    referred_by: user.referred_by || null,
+    referral_count: refList.length,
+    premium_referral_count: premiumCount,
+  }));
+}
+
+// ── /points/me ────────────────────────────────────────────────────────────────
+async function handlePointsMe(request, env) {
+  const url = new URL(request.url);
+  const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+  if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
+
+  const hash = await hashEmail(email);
+  const user = await env.PREMIUM_KV.get(`u:${hash}`, 'json');
+
+  if (!user) {
+    return cors(JSON.stringify({
+      total_points: 0, log: [],
+      referral_count: 0, premium_referral_count: 0,
+    }));
+  }
+
+  const log = (await env.PREMIUM_KV.get(`pts:log:${hash}`, 'json')) || [];
+  const refList = (await env.PREMIUM_KV.get(`refs:by:${hash}`, 'json')) || [];
+
+  return cors(JSON.stringify({
+    total_points: user.total_points || 0,
+    log: log.slice(0, 20),
+    referral_count: refList.length,
+    premium_referral_count: refList.filter(r => r.premium_rewarded).length,
+    referral_code: user.referral_code,
+    referral_url: `https://habio.pages.dev/app?ref=${user.referral_code}`,
+  }));
+}
+
+// ── /referral/register ────────────────────────────────────────────────────────
+async function handleReferralRegister(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email   = (body.email    || '').trim().toLowerCase();
+  const refCode = (body.ref_code || '').trim().toUpperCase();
+  if (!email || !refCode) return cors(JSON.stringify({ error: 'email and ref_code required' }), 400);
+
+  // Validate referral code
+  const refData = await env.PREMIUM_KV.get(`rc:${refCode}`, 'json');
+  if (!refData) return cors(JSON.stringify({ ok: false, reason: 'invalid_code' }), 400);
+
+  const referrerEmail = refData.owner_email;
+  if (referrerEmail === email) return cors(JSON.stringify({ ok: false, reason: 'self_referral' }));
+
+  const referredHash = await hashEmail(email);
+  const referrerHash = await hashEmail(referrerEmail);
+
+  // Check: already used any referral code
+  const existingUser = await env.PREMIUM_KV.get(`u:${referredHash}`, 'json');
+  if (existingUser?.referred_by) return cors(JSON.stringify({ ok: false, reason: 'already_used_referral' }));
+
+  // Check: same pair already registered
+  const existingRef = await env.PREMIUM_KV.get(`ref:${referrerHash}:${referredHash}`, 'json');
+  if (existingRef) return cors(JSON.stringify({ ok: false, reason: 'already_referred' }));
+
+  // Get or create both users
+  await getOrCreateUser(env.PREMIUM_KV, referrerEmail);
+  const referredUser = await getOrCreateUser(env.PREMIUM_KV, email);
+
+  const now = new Date().toISOString();
+
+  // Create referral record
+  const refRecord = {
+    referrer_email: referrerEmail,
+    referred_email: email,
+    ref_code: refCode,
+    status: 'registered',
+    signup_rewarded: false,
+    premium_rewarded: false,
+    created_at: now,
+    premium_started_at: null,
+    premium_qualified_at: null,
+  };
+  await env.PREMIUM_KV.put(`ref:${referrerHash}:${referredHash}`, JSON.stringify(refRecord));
+
+  // Add to referrer's list
+  const listKey = `refs:by:${referrerHash}`;
+  const list = (await env.PREMIUM_KV.get(listKey, 'json')) || [];
+  list.push({ referred_email: email, referred_hash: referredHash, created_at: now, premium_rewarded: false });
+  await env.PREMIUM_KV.put(listKey, JSON.stringify(list));
+
+  // Mark referred user with referrer info
+  referredUser.referred_by = referrerEmail;
+  referredUser.referred_at = now;
+  await env.PREMIUM_KV.put(`u:${referredHash}`, JSON.stringify(referredUser));
+
+  // Award signup points (both parties)
+  await addPoints(env.PREMIUM_KV, referrerEmail, 'referral_signup_referrer', 10, `${email} さんを紹介`, email);
+  await addPoints(env.PREMIUM_KV, email,          'referral_signup_referred',   5, `招待コードで登録`,   referrerEmail);
+
+  // Mark signup as rewarded
+  refRecord.signup_rewarded = true;
+  await env.PREMIUM_KV.put(`ref:${referrerHash}:${referredHash}`, JSON.stringify(refRecord));
+
+  return cors(JSON.stringify({ ok: true, bonus: { referrer: 10, referred: 5 } }));
+}
+
 // ── helpers ───────────────────────────────────────────────────────────────────
+
+async function hashEmail(email) {
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(email.toLowerCase().trim()));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+async function makeRefCode(email) {
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode('habio-ref-v1:' + email.toLowerCase().trim()));
+  const arr = Array.from(new Uint8Array(buf));
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars (0/O, 1/I)
+  return 'HABIO-' + Array.from({ length: 6 }, (_, i) => chars[arr[i] % chars.length]).join('');
+}
+
+async function getOrCreateUser(kv, email) {
+  const hash = await hashEmail(email);
+  const key = `u:${hash}`;
+  let user = await kv.get(key, 'json');
+  if (!user) {
+    const code = await makeRefCode(email);
+    user = { email, hash, referral_code: code, total_points: 0, created_at: new Date().toISOString() };
+    await kv.put(key, JSON.stringify(user));
+    await kv.put(`rc:${code}`, JSON.stringify({ owner_email: email, owner_hash: hash }));
+  }
+  return user;
+}
+
+async function addPoints(kv, email, type, points, description, relatedEmail = null) {
+  const hash = await hashEmail(email);
+  const key = `u:${hash}`;
+  const user = await kv.get(key, 'json');
+  if (!user) return;
+
+  user.total_points = (user.total_points || 0) + points;
+  await kv.put(key, JSON.stringify(user));
+
+  const logKey = `pts:log:${hash}`;
+  const log = (await kv.get(logKey, 'json')) || [];
+  log.unshift({ type, points, description, related_email: relatedEmail, created_at: new Date().toISOString() });
+  await kv.put(logKey, JSON.stringify(log.slice(0, 50)));
+}
+
+async function recordPremiumStart(env, email) {
+  const hash = await hashEmail(email);
+  const key = `u:${hash}`;
+  const user = await getOrCreateUser(env.PREMIUM_KV, email);
+  if (!user.premium_started_at) {
+    user.premium_started_at = new Date().toISOString();
+    await env.PREMIUM_KV.put(key, JSON.stringify(user));
+  }
+}
+
+async function checkAndAwardPremiumReferral(env, email) {
+  const referredHash = await hashEmail(email);
+  const referredUser = await env.PREMIUM_KV.get(`u:${referredHash}`, 'json');
+  if (!referredUser?.referred_by || !referredUser?.premium_started_at) return;
+
+  const referrerEmail = referredUser.referred_by;
+  const referrerHash  = await hashEmail(referrerEmail);
+  const refKey = `ref:${referrerHash}:${referredHash}`;
+  const refRecord = await env.PREMIUM_KV.get(refKey, 'json');
+  if (!refRecord || refRecord.premium_rewarded) return;
+
+  // Condition 1: premium registered within 7 days of referral
+  const referralAt = new Date(refRecord.created_at);
+  const premiumAt  = new Date(referredUser.premium_started_at);
+  if ((premiumAt - referralAt) / 86400000 > 7) return;
+
+  // Condition 2: 7+ days have passed since premium started (first invoice.paid = trial end)
+  const now = new Date();
+  if ((now - premiumAt) / 86400000 < 7) return;
+
+  // Award premium referral rewards
+  await addPoints(env.PREMIUM_KV, referrerEmail, 'referral_premium_referrer', 100, `${email} さんがプレミアム7日間継続`, email);
+  await addPoints(env.PREMIUM_KV, email,          'referral_premium_referred',  50, `プレミアム7日間継続ボーナス`,    referrerEmail);
+
+  // Mark rewarded
+  refRecord.premium_rewarded    = true;
+  refRecord.premium_qualified_at = now.toISOString();
+  refRecord.status               = 'premium_qualified';
+  await env.PREMIUM_KV.put(refKey, JSON.stringify(refRecord));
+
+  // Update referrer's list entry
+  const listKey = `refs:by:${referrerHash}`;
+  const list = (await env.PREMIUM_KV.get(listKey, 'json')) || [];
+  const idx = list.findIndex(r => r.referred_hash === referredHash);
+  if (idx >= 0) { list[idx].premium_rewarded = true; await env.PREMIUM_KV.put(listKey, JSON.stringify(list)); }
+}
+
 async function setPremium(env, email, active) {
   const key = `premium:${email.trim().toLowerCase()}`;
   if (active) {
@@ -198,15 +409,11 @@ async function setPremium(env, email, active) {
 function extractEmail(event) {
   const obj = event.data?.object;
   if (!obj) return null;
-  // checkout.session has customer_email or metadata.email
   if (obj.customer_email) return obj.customer_email.toLowerCase();
   if (obj.metadata?.email) return obj.metadata.email.toLowerCase();
-  // invoice has customer_email
-  if (obj.customer_email) return obj.customer_email.toLowerCase();
   return null;
 }
 
-// Stripe signature verification using Web Crypto (no Node.js required)
 async function verifyStripeSignature(payload, sigHeader, secret) {
   if (!sigHeader) throw new Error('no signature');
 
@@ -215,7 +422,6 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
   const v1 = parts.v1;
   if (!timestamp || !v1) throw new Error('malformed signature');
 
-  // Reject if timestamp is more than 5 minutes old
   if (Math.abs(Date.now() / 1000 - parseInt(timestamp)) > 300) throw new Error('timestamp out of tolerance');
 
   const signedPayload = `${timestamp}.${payload}`;

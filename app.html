@@ -1492,6 +1492,50 @@ body.night-bg{background:#C8C3BB;}
 }
 .badge-earn-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+
+/* ── POINTS SECTION ── */
+.pts-hero{display:flex;align-items:center;gap:10px;padding:8px 0 4px;}
+.pts-hero-num{font-size:32px;font-weight:700;color:var(--g);letter-spacing:-.02em;line-height:1;}
+.pts-hero-lbl{font-size:12px;color:var(--t-m);margin-top:2px;}
+.pts-log-wrap{padding:0 4px 4px;}
+.pts-log-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
+.pts-log-item:last-child{border-bottom:none;}
+.pts-log-pts{font-size:13px;font-weight:700;color:var(--g);min-width:46px;}
+.pts-log-desc{font-size:12px;color:var(--t-m);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pts-log-date{font-size:11px;color:var(--t-l);flex-shrink:0;}
+
+/* ── X SHARE SECTION ── */
+.x-share-day-row{display:flex;align-items:center;gap:12px;padding:10px 0 6px;}
+.x-share-count-text{font-size:15px;font-weight:700;color:var(--t);}
+.x-share-dots{display:flex;gap:5px;}
+.x-dot{width:16px;height:16px;border-radius:50%;background:var(--border);transition:background .2s;}
+.x-dot.filled{background:#000;}
+.x-coming-badge{display:inline-flex;align-items:center;gap:6px;background:#e7e9ea;color:#536471;font-size:12px;font-weight:600;padding:9px 16px;border-radius:9999px;margin:4px 0 8px;}
+.x-note{font-size:11px;color:var(--t-l);line-height:1.8;}
+
+/* ── REFERRAL SECTION ── */
+.ref-code-box{background:var(--g-p);border-radius:var(--r-m);padding:14px 16px;margin:6px 0 10px;display:flex;align-items:center;gap:12px;}
+.ref-code-inner{flex:1;}
+.ref-code-label{font-size:11px;color:var(--t-m);margin-bottom:3px;}
+.ref-code-val{font-size:22px;font-weight:700;color:var(--g);letter-spacing:.06em;}
+.ref-copy-btn{background:var(--g);color:#fff;border:none;border-radius:var(--r-s);padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.ref-copy-btn:active{opacity:.8;}
+.ref-url-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ref-url-text{font-size:11px;color:var(--t-m);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.ref-url-copy{background:var(--g-p);color:var(--g);border:none;border-radius:var(--r-s);padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.ref-x-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#000;color:#fff;border:none;border-radius:var(--r-s);font-size:14px;font-weight:700;cursor:pointer;margin:2px 0 12px;border-radius:var(--r-m);}
+.ref-x-btn:active{opacity:.8;}
+.ref-reward-grid{display:flex;gap:10px;margin:8px 0 12px;}
+.ref-reward-card{flex:1;background:var(--bg);border-radius:var(--r-m);padding:12px 8px;text-align:center;}
+.ref-reward-em{font-size:18px;margin-bottom:3px;}
+.ref-reward-pts{font-size:20px;font-weight:700;color:var(--g);}
+.ref-reward-lbl{font-size:10px;color:var(--t-m);margin-top:2px;line-height:1.4;}
+.ref-stats-row{display:flex;gap:12px;margin:8px 0 4px;}
+.ref-stat-card{flex:1;text-align:center;background:var(--g-p);border-radius:var(--r-m);padding:10px;}
+.ref-stat-num{font-size:22px;font-weight:700;color:var(--g);}
+.ref-stat-lbl{font-size:10px;color:var(--t-m);margin-top:2px;}
+.ref-note{font-size:11px;color:var(--t-l);line-height:1.8;margin-top:6px;}
+.no-email-hint{font-size:12px;color:var(--t-m);text-align:center;padding:14px 0;line-height:1.7;}
   </style>
 </head>
 <body>
@@ -1837,6 +1881,23 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
+    <!-- POINTS SECTION -->
+    <p class="sec-lbl">整いポイント</p>
+    <div class="st-group" id="pts-section">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:4px;">
+        <div class="pts-hero">
+          <div>
+            <div class="pts-hero-num" id="pts-amount">—</div>
+            <div class="pts-hero-lbl">pt</div>
+          </div>
+          <div class="pts-hero-lbl" id="pts-email-hint" style="padding-left:4px;">メールアドレスを設定するとポイントが使えます</div>
+        </div>
+        <div class="pts-log-wrap" id="pts-log-wrap" style="width:100%;display:none;">
+          <div id="pts-log-list"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- FREE: アップグレード誘導 -->
     <p class="sec-lbl" data-premium-hide>プレミアムプラン</p>
     <div class="upgrade-banner mb14" data-premium-hide onclick="showUpgradeModal()">
@@ -1965,6 +2026,94 @@ body.night-bg{background:#C8C3BB;}
         <div class="prem-lock-em">🔒</div>
         <div class="prem-lock-t">プレミアムで解放されます</div>
         <div class="prem-lock-s">好きな色にカスタマイズできます</div>
+      </div>
+    </div>
+
+    <!-- X SHARE SECTION -->
+    <p class="sec-lbl">Xでシェアしてポイント獲得</p>
+    <div class="st-group">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
+        <div class="x-share-day-row">
+          <span class="x-share-count-text">今日の投稿</span>
+          <div class="x-share-dots">
+            <div class="x-dot" id="xdot1"></div>
+            <div class="x-dot" id="xdot2"></div>
+            <div class="x-dot" id="xdot3"></div>
+          </div>
+          <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
+        </div>
+        <div class="x-coming-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+          X連携準備中
+        </div>
+        <p class="x-note">
+          X（Twitter）と連携すると、投稿1回につき1ポイント獲得できます（1日最大3回）<br>
+          投稿が成功した場合のみポイントが付与されます<br>
+          共有画面を開いただけではポイントは付与されません
+        </p>
+      </div>
+    </div>
+
+    <!-- REFERRAL SECTION -->
+    <p class="sec-lbl">友達紹介</p>
+    <div class="st-group" id="ref-section">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;" id="ref-content">
+        <div class="no-email-hint" id="ref-no-email">
+          メールアドレスを設定すると<br>招待コードが発行されます
+        </div>
+        <div id="ref-loaded" style="display:none;width:100%;">
+          <!-- 招待コード -->
+          <div class="ref-code-box">
+            <div class="ref-code-inner">
+              <div class="ref-code-label">あなたの招待コード</div>
+              <div class="ref-code-val" id="ref-code-val">—</div>
+            </div>
+            <button class="ref-copy-btn" onclick="copyRefCode()">コピー</button>
+          </div>
+          <!-- 招待URL -->
+          <div class="ref-url-row">
+            <span class="ref-url-text" id="ref-url-text">https://habio.pages.dev/app?ref=...</span>
+            <button class="ref-url-copy" onclick="copyRefUrl()">URLコピー</button>
+          </div>
+          <!-- Xで招待投稿 -->
+          <button class="ref-x-btn" onclick="shareRefOnX()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+            Xで招待URLを投稿する
+          </button>
+          <!-- 報酬説明 -->
+          <div class="ref-reward-grid">
+            <div class="ref-reward-card">
+              <div class="ref-reward-em">👤</div>
+              <div class="ref-reward-pts">+10pt</div>
+              <div class="ref-reward-lbl">友達が登録したとき<br>あなたに</div>
+            </div>
+            <div class="ref-reward-card">
+              <div class="ref-reward-em">🎁</div>
+              <div class="ref-reward-pts">+5pt</div>
+              <div class="ref-reward-lbl">招待された友達に<br>登録時</div>
+            </div>
+            <div class="ref-reward-card">
+              <div class="ref-reward-em">💎</div>
+              <div class="ref-reward-pts">+100pt</div>
+              <div class="ref-reward-lbl">友達がプレミアム<br>7日継続で</div>
+            </div>
+          </div>
+          <!-- 紹介統計 -->
+          <div class="ref-stats-row">
+            <div class="ref-stat-card">
+              <div class="ref-stat-num" id="ref-count">0</div>
+              <div class="ref-stat-lbl">招待した友達</div>
+            </div>
+            <div class="ref-stat-card">
+              <div class="ref-stat-num" id="ref-prem-count">0</div>
+              <div class="ref-stat-lbl">プレミアム達成</div>
+            </div>
+          </div>
+          <p class="ref-note">
+            ※ 紹介日から7日以内に友達がプレミアム登録し、さらに7日間継続した場合にプレミアム報酬が付与されます<br>
+            ※ 自分の招待コードは使用できません
+          </p>
+        </div>
       </div>
     </div>
 
@@ -2738,7 +2887,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings') renderProfile();
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); }
 }
 
 /* ── TOAST ── */
@@ -3750,6 +3899,9 @@ async function checkEmailPremium(){
     if(noteEl) noteEl.textContent = 'プレミアム確認・お知らせに使います';
     showToast('プレミアムが確認できませんでした');
   }
+  // 招待コード処理 & ポイントセクション初期化
+  await processReferral(email);
+  loadPointsReferral();
 }
 
 /* ── PROFILE ── */
@@ -5232,6 +5384,139 @@ function init(){
   }
 }
 init();
+
+/* ══════════════════════════════════════════════════
+   POINTS & REFERRAL SYSTEM
+   ══════════════════════════════════════════════════ */
+
+// URLの ?ref= パラメータを読み取り、localStorageに保存する
+function processRefParam() {
+  const params = new URLSearchParams(location.search);
+  const ref = params.get('ref');
+  if (ref && ref.startsWith('HABIO-')) {
+    Store.set('pending_ref_code', ref.toUpperCase());
+    history.replaceState(null, '', location.pathname);
+  }
+}
+
+// メール確認後に紹介コードを処理する
+async function processReferral(email) {
+  const refCode = Store.get('pending_ref_code', null);
+  if (!refCode) return;
+
+  try {
+    const res = await fetch(`${STRIPE_WORKER}/referral/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, ref_code: refCode }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      Store.set('pending_ref_code', null);
+      showToast('招待コードが適用されました！5ポイント獲得 🎉');
+      loadPointsReferral();
+    } else if (['already_used_referral', 'already_referred', 'self_referral'].includes(data.reason)) {
+      Store.set('pending_ref_code', null);
+      if (data.reason === 'self_referral') showToast('自分の招待コードは使用できません');
+    }
+  } catch { /* ネットワークエラー時はpending_ref_codeを保持して次回リトライ */ }
+}
+
+// ポイント・紹介セクションをAPIからロードして描画する
+async function loadPointsReferral() {
+  const email = Store.get('user_email', '');
+  const amountEl = document.getElementById('pts-amount');
+  const hintEl   = document.getElementById('pts-email-hint');
+  const logWrap  = document.getElementById('pts-log-wrap');
+  const logList  = document.getElementById('pts-log-list');
+  const refLoaded   = document.getElementById('ref-loaded');
+  const refNoEmail  = document.getElementById('ref-no-email');
+
+  if (!email) {
+    if (amountEl) amountEl.textContent = '—';
+    if (hintEl)   hintEl.style.display = '';
+    if (logWrap)  logWrap.style.display = 'none';
+    if (refLoaded)  refLoaded.style.display  = 'none';
+    if (refNoEmail) refNoEmail.style.display = '';
+    return;
+  }
+
+  // メールあり → APIフェッチ
+  if (hintEl) hintEl.style.display = 'none';
+
+  try {
+    const res = await fetch(`${STRIPE_WORKER}/points/me?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    // ポイント表示
+    if (amountEl) amountEl.textContent = (data.total_points || 0).toLocaleString();
+
+    // ポイント履歴
+    if (logList && logWrap) {
+      const log = data.log || [];
+      if (log.length > 0) {
+        logList.innerHTML = log.slice(0, 8).map(e => {
+          const d = new Date(e.created_at);
+          const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
+          const typeIcon = {
+            referral_signup_referrer: '👤', referral_signup_referred: '🎁',
+            referral_premium_referrer: '💎', referral_premium_referred: '✨',
+            x_share: '𝕏',
+          }[e.type] || '⭐';
+          return `<div class="pts-log-item">
+            <span class="pts-log-pts">${typeIcon} +${e.points}pt</span>
+            <span class="pts-log-desc">${e.description}</span>
+            <span class="pts-log-date">${dateStr}</span>
+          </div>`;
+        }).join('');
+        logWrap.style.display = '';
+      } else {
+        logList.innerHTML = '<div class="pts-log-item"><span class="pts-log-desc" style="color:var(--t-l)">まだポイント履歴はありません</span></div>';
+        logWrap.style.display = '';
+      }
+    }
+
+    // 招待セクション
+    const refCode = data.referral_code || '';
+    const refUrl  = data.referral_url  || '';
+    const el = id => document.getElementById(id);
+    if (el('ref-code-val'))  el('ref-code-val').textContent  = refCode;
+    if (el('ref-url-text'))  el('ref-url-text').textContent  = refUrl;
+    if (el('ref-count'))     el('ref-count').textContent     = data.referral_count || 0;
+    if (el('ref-prem-count')) el('ref-prem-count').textContent = data.premium_referral_count || 0;
+
+    if (refLoaded)  refLoaded.style.display  = '';
+    if (refNoEmail) refNoEmail.style.display  = 'none';
+
+  } catch {
+    if (amountEl) amountEl.textContent = '—';
+  }
+}
+
+// 招待コードをクリップボードにコピー
+function copyRefCode() {
+  const code = document.getElementById('ref-code-val')?.textContent || '';
+  if (!code || code === '—') return;
+  navigator.clipboard?.writeText(code).then(() => showToast('招待コードをコピーしました'));
+}
+
+// 招待URLをクリップボードにコピー
+function copyRefUrl() {
+  const url = document.getElementById('ref-url-text')?.textContent || '';
+  if (!url) return;
+  navigator.clipboard?.writeText(url).then(() => showToast('招待URLをコピーしました'));
+}
+
+// Xで招待URLをシェア（intent URL経由）
+function shareRefOnX() {
+  const url = document.getElementById('ref-url-text')?.textContent || 'https://habio.pages.dev/app';
+  const text = `毎日の健康管理をAIがやさしくサポートしてくれる Habio を使ってみました。\n食事・体調・生活習慣の気づきを、無理なく続けられるAI健康サポートです。\n招待コードでアプリを始めると5ポイント獲得できます 🌿\n`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+}
+
+// 起動時に ?ref= を処理
+processRefParam();
 </script>
 </body>
 </html>
