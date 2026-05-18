@@ -3507,6 +3507,7 @@ async function sendMsg(){
   if(typing) typing.style.opacity='1';
   if(/ありがとう|よかった|できた|頑張|嬉し/.test(text)) logWin('💬','Habio と話せた','気持ちを伝えることができました');
   renderChatLimit();
+  maybeShowProductRec(text);
 }
 
 async function quickChat(text){
@@ -3515,6 +3516,28 @@ async function quickChat(text){
   inp.value=text;
   document.getElementById('sendBtn').disabled=false;
   await sendMsg();
+}
+
+// ユーザーのメッセージにキーワードが含まれていたら自動で商品を1件提案する
+function maybeShowProductRec(userMsg){
+  const scores={};
+  REC_DEFS.forEach(d=>{ scores[d.id]=0; });
+  Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
+    kws.forEach(k=>{ if(userMsg.includes(k)) scores[id]=(scores[id]||0)+2; });
+  });
+
+  const sorted=REC_DEFS.slice().sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
+  const best=sorted[0];
+  if(!best||(scores[best.id]||0)===0) return; // キーワード不一致なら出さない
+
+  const lastRecId=Store.get('last_chat_rec_id','');
+  if(best.id===lastRecId) return; // 直前と同じ商品は連続で出さない
+  const link=AFFILIATE_LINKS[best.id];
+  if(!link) return;
+
+  Store.set('last_chat_rec_id',best.id);
+  const msg=`ちなみに、気になっているなら参考になるかもしれません 🌿\n▶ ${best.title}\n${best.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+  setTimeout(()=>appendBubble(msg,false,nowTime()),900);
 }
 
 function quickProductRec(){
