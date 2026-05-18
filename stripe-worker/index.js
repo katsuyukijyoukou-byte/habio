@@ -34,6 +34,9 @@ export default {
     // PR habit action endpoint
     if (request.method === 'POST' && url.pathname === '/pr/action')           return handlePrAction(request, env);
 
+    // Client-side point sync endpoint
+    if (request.method === 'POST' && url.pathname === '/points/record')       return handlePointsRecord(request, env);
+
     return cors(JSON.stringify({ error: 'not found' }), 404);
   },
 };
@@ -405,9 +408,13 @@ async function handleXTweet(request, env) {
   }
 
   const tweetData = await tweetRes.json();
+  console.log('[handleXTweet] tweet response:', JSON.stringify(tweetData).slice(0, 300));
   if (!tweetRes.ok || !tweetData.data?.id) {
-    const errMsg = tweetData.detail || tweetData.errors?.[0]?.message || 'tweet failed';
-    return cors(JSON.stringify({ ok: false, reason: errMsg }), 500);
+    const detail = tweetData.detail || tweetData.errors?.[0]?.message || '';
+    const isCredits = tweetData.type?.includes('usage-capped') || detail.toLowerCase().includes('credits');
+    console.error('[handleXTweet] tweet failed. credits_issue:', isCredits, 'detail:', detail);
+    if (isCredits) return cors(JSON.stringify({ ok: false, reason: 'api_credits_exhausted' }), 503);
+    return cors(JSON.stringify({ ok: false, reason: detail || 'tweet failed' }), 500);
   }
 
   const tweetId = tweetData.data.id;
@@ -466,6 +473,47 @@ async function refreshXToken(refreshToken, clientId, clientSecret) {
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────
+
+// ── /points/record ────────────────────────────────────────────────────────────
+// クライアント側で計算済みのポイントをKVに記録する（習慣タスク・食事記録等）
+async function handlePointsRecord(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email       = (body.email       || '').trim().toLowerCase();
+  const points      = parseInt(body.points || 0, 10);
+  const type        = (body.type        || '').slice(0, 64);
+  const description = (body.description || '').slice(0, 200);
+  const dedupId     = (body.dedup_id    || '').slice(0, 128);
+
+  if (!email)  return cors(JSON.stringify({ error: 'email required' }), 400);
+  if (!type)   return cors(JSON.stringify({ error: 'type required' }), 400);
+  if (!points || points < 1 || points > 6) return cors(JSON.stringify({ error: 'invalid points' }), 400);
+
+  const hash = await hashEmail(email);
+
+  // サーバー側dedup（クライアントが同じ dedup_id で再送してきても二重記録しない）
+  if (dedupId) {
+    const dedupKey = `pts_sync_dedup:${hash}:${dedupId}`;
+    const exists = await env.PREMIUM_KV.get(dedupKey);
+    if (exists) {
+      const user = await env.PREMIUM_KV.get(`u:${hash}`, 'json');
+      console.log('[handlePointsRecord] already recorded:', dedupId);
+      return cors(JSON.stringify({ ok: true, already_recorded: true, total_points: user?.total_points || 0 }));
+    }
+    await env.PREMIUM_KV.put(dedupKey, '1', { expirationTtl: 48 * 3600 });
+  }
+
+  await addPoints(env.PREMIUM_KV, email, type, points, description, null);
+
+  const user = await env.PREMIUM_KV.get(`u:${hash}`, 'json');
+  console.log('[handlePointsRecord] recorded:', { type, points, dedupId, total: user?.total_points });
+
+  return cors(JSON.stringify({
+    ok:           true,
+    total_points: user?.total_points || points,
+  }));
+}
 
 // ── /pr/action ────────────────────────────────────────────────────────────────
 async function handlePrAction(request, env) {

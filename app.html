@@ -3343,6 +3343,7 @@ function toggleHabit(el){
       const earned=addPoints(1,'habit_task_complete','習慣タスク達成ポイント');
       done.push(id);
       Store.set(dedupKey,done);
+      syncPointsToServer(earned,'habit_task_complete','習慣タスク達成ポイント',`habit_${id}_${today()}`);
       const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
       showToast(`${def.em} ${def.name}を記録 ／ ${ptMsg}`);
     } else {
@@ -3431,7 +3432,10 @@ function logFoodItem(id,em,name){
   const descMap={morning:'朝食記録ポイント',noon:'昼食記録ポイント',night:'夕食記録ポイント'};
   if(Store.get(mealDedupKey,'')!==today()){
     Store.set(mealDedupKey,today());
-    const earned=addPoints(1,typeMap[meal]||'meal_record',descMap[meal]||'食事記録ポイント');
+    const mType=typeMap[meal]||'meal_record';
+    const mDesc=descMap[meal]||'食事記録ポイント';
+    const earned=addPoints(1,mType,mDesc);
+    syncPointsToServer(earned,mType,mDesc,`${mType}_${today()}`);
     const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
     showToast(em+' 記録しました！ ／ '+ptMsg);
   } else {
@@ -5542,13 +5546,20 @@ async function claimPrAction(){
       btn.textContent=`✓ 今日のアクション達成！ +${data.points}pt`;
       btn.classList.add('claimed');
       if(hint) hint.textContent=`合計 ${data.total_points.toLocaleString()}pt`;
-      showToast(`健康習慣アクション完了！ +${data.points}pt 獲得`);
+      const ptMsg=data.points>=2?`プレミアム特典で +${data.points}pt 獲得！`:`+${data.points}pt 獲得！`;
+      showToast(`健康習慣アクション完了！ ${ptMsg}`);
       // ローカル記録（同日再呼び出し防止）
       const jstToday=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
       const m=Store.get('pr_actions_today',{});
       m[_recModalCurrentId]=jstToday;
       Store.set('pr_actions_today',m);
-      // ポイント表示を更新
+      // ローカルポイント状態をサーバー応答で更新（ホームカードに即時反映）
+      const todayPtsNow=(Store.get('pts_date','')===today()?Store.get('pts_today',0):0)+data.points;
+      Store.set('pts_date',today());
+      Store.set('pts_today',todayPtsNow);
+      if(data.total_points>getTotalPts()) Store.set('pts_total',data.total_points);
+      renderPointsCard();
+      console.log('[claimPrAction] ok',{pts:data.points,serverTotal:data.total_points,localTotal:getTotalPts()});
       loadPointsReferral();
     } else if(data.reason==='already_claimed_today'){
       btn.textContent='✓ 今日のアクション達成済み';
@@ -5764,19 +5775,41 @@ function getTodayPts(){
 }
 function getTotalPts(){return Store.get('pts_total',0);}
 
+// サーバー（KV）にポイントを非同期で同期する（fire-and-forget）
+function syncPointsToServer(earned, type, description, dedupId){
+  const email=(Store.get('user_email','')||'').trim().toLowerCase();
+  if(!email||!earned||!type) return;
+  const body={email,points:earned,type,description:description||type};
+  if(dedupId) body.dedup_id=dedupId;
+  fetch(`${STRIPE_WORKER}/points/record`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body),
+  }).then(r=>r.json()).then(data=>{
+    console.log('[syncPointsToServer]',{type,earned,dedupId,ok:data.ok,serverTotal:data.total_points});
+    // サーバー合計がローカルより大きければローカルを更新（設定タブ更新はloadPointsReferralに任せる）
+    if(data.ok && data.total_points && data.total_points>getTotalPts()){
+      Store.set('pts_total',data.total_points);
+      renderPointsCard();
+    }
+  }).catch(e=>console.warn('[syncPointsToServer] failed:',e));
+}
+
 function addPoints(n, type, description){
   const isPrem=Store.get('is_premium',false);
   const earned=isPrem?n*2:n;
+  const totalBefore=getTotalPts();
   const todayPts=(Store.get('pts_date','')===today()?Store.get('pts_today',0):0)+earned;
   Store.set('pts_date',today());
   Store.set('pts_today',todayPts);
-  const total=getTotalPts()+earned;
+  const total=totalBefore+earned;
   Store.set('pts_total',total);
   if(type){
     const log=Store.get('pts_local_log',[]);
     log.unshift({type,pts:earned,description:description||`+${earned}pt`,date:today(),ts:new Date().toISOString()});
     Store.set('pts_local_log',log.slice(0,100));
   }
+  console.log('[addPoints]',{type,n,earned,isPrem,totalBefore,totalAfter:total});
   checkPointBadges(total);
   renderPointsCard();
   return earned;
@@ -5916,7 +5949,8 @@ function init(){
   const loginDate=Store.get('pts_login_date','');
   if(loginDate!==today()){
     Store.set('pts_login_date',today());
-    addPoints(1);
+    const loginEarned=addPoints(1,'login_bonus','デイリーログインボーナス');
+    syncPointsToServer(loginEarned,'login_bonus','デイリーログインボーナス',`login_bonus_${today()}`);
   }
   Store.set('last_login_date',today());
   renderPointsCard();
@@ -6001,8 +6035,15 @@ async function loadPointsReferral() {
     const res = await fetch(`${STRIPE_WORKER}/points/me?email=${encodeURIComponent(email)}`);
     const data = await res.json();
 
-    // ポイント表示
-    if (amountEl) amountEl.textContent = (data.total_points || 0).toLocaleString();
+    // ポイント表示（設定タブ）
+    const serverTotal = data.total_points || 0;
+    if (amountEl) amountEl.textContent = serverTotal.toLocaleString();
+    // サーバー合計がローカルより大きければ同期（紹介・Xシェア・PR等がローカルに未反映の場合）
+    if (serverTotal > getTotalPts()) {
+      Store.set('pts_total', serverTotal);
+      renderPointsCard();
+      console.log('[loadPointsReferral] synced local pts from server:', serverTotal);
+    }
 
     // ポイント履歴
     if (logList && logWrap) {
@@ -6194,12 +6235,21 @@ async function postHabioTweet() {
     const data = await res.json();
 
     if (data.ok) {
-      showToast('ツイート成功！ +1pt 獲得しました 🎉');
+      const ptAwarded = data.points_awarded || 1;
+      const ptMsg = ptAwarded >= 2 ? `プレミアム特典で +${ptAwarded}pt 獲得！` : `+${ptAwarded}pt 獲得！`;
+      showToast(`ツイート成功！ ${ptMsg} 🎉`);
+      // ローカルポイントをサーバー成功に合わせて更新（ホームカードに反映）
+      const todayPtsNow = (Store.get('pts_date','')===today() ? Store.get('pts_today',0) : 0) + ptAwarded;
+      Store.set('pts_date', today());
+      Store.set('pts_today', todayPtsNow);
+      renderPointsCard();
       await loadXStatus();
       await loadPointsReferral();
     } else if (data.reason === 'daily_limit_reached') {
       showToast('今日の投稿上限（3回）に達しました');
       await loadXStatus();
+    } else if (data.reason === 'api_credits_exhausted') {
+      showToast('現在X APIの投稿枠が不足しています。しばらくしてからお試しください。');
     } else if (data.reconnect_required) {
       showToast('X連携の認証が切れました。再連携してください');
       const notConn = document.getElementById('x-not-connected');
@@ -6207,7 +6257,8 @@ async function postHabioTweet() {
       if (notConn) notConn.style.display = '';
       if (connEl)  connEl.style.display  = 'none';
     } else {
-      showToast('投稿に失敗しました: ' + (data.reason || '不明なエラー'));
+      showToast('投稿に失敗しました。しばらくしてからお試しください。');
+      console.warn('[postHabioTweet] error:', data.reason);
     }
   } catch {
     showToast('投稿に失敗しました。通信エラー');
