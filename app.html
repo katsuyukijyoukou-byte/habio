@@ -2068,12 +2068,12 @@ body.night-bg{background:#C8C3BB;}
               <div class="ref-code-label">あなたの招待コード</div>
               <div class="ref-code-val" id="ref-code-val">—</div>
             </div>
-            <button class="ref-copy-btn" onclick="copyRefCode()">コピー</button>
+            <button type="button" class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefCode(this)">コピー</button>
           </div>
           <!-- 招待URL -->
           <div class="ref-url-row">
             <span class="ref-url-text" id="ref-url-text">https://habio.pages.dev/app?ref=...</span>
-            <button class="ref-url-copy" onclick="copyRefUrl()">URLコピー</button>
+            <button type="button" class="ref-url-copy" id="ref-url-copy-btn" onclick="copyRefUrl(this)">URLコピー</button>
           </div>
           <!-- Xで招待投稿 -->
           <button class="ref-x-btn" onclick="shareRefOnX()">
@@ -5479,10 +5479,11 @@ async function loadPointsReferral() {
 
     // 招待セクション
     const refCode = data.referral_code || '';
-    const refUrl  = data.referral_url  || '';
+    const refUrl  = refCode ? `https://habio.pages.dev/app?ref=${encodeURIComponent(refCode)}` : '';
+    _currentRefCode = refCode; // コピー関数から参照するためモジュール変数に保持
     const el = id => document.getElementById(id);
-    if (el('ref-code-val'))  el('ref-code-val').textContent  = refCode;
-    if (el('ref-url-text'))  el('ref-url-text').textContent  = refUrl;
+    if (el('ref-code-val'))  el('ref-code-val').textContent  = refCode || '—';
+    if (el('ref-url-text'))  el('ref-url-text').textContent  = refUrl  || '取得中...';
     if (el('ref-count'))     el('ref-count').textContent     = data.referral_count || 0;
     if (el('ref-prem-count')) el('ref-prem-count').textContent = data.premium_referral_count || 0;
 
@@ -5494,25 +5495,78 @@ async function loadPointsReferral() {
   }
 }
 
+// 取得済みの招待コードをモジュール変数に保持する
+let _currentRefCode = '';
+
+// クリップボードへの書き込み（clipboard API + textareaフォールバック）
+async function copyToClipboard(text) {
+  if (!text) return false;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    return true;
+  } catch (err) {
+    console.error('Copy failed:', err);
+    return false;
+  }
+}
+
+// ボタン文言を一時的に変える（2秒後に元に戻す）
+function flashBtn(btn, successLabel, originalLabel) {
+  if (!btn) return;
+  btn.textContent = successLabel;
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = originalLabel; btn.disabled = false; }, 2000);
+}
+
 // 招待コードをクリップボードにコピー
-function copyRefCode() {
-  const code = document.getElementById('ref-code-val')?.textContent || '';
-  if (!code || code === '—') return;
-  navigator.clipboard?.writeText(code).then(() => showToast('招待コードをコピーしました'));
+async function copyRefCode(btn) {
+  if (!_currentRefCode) {
+    showToast('招待コードを取得中です');
+    return;
+  }
+  const ok = await copyToClipboard(_currentRefCode);
+  if (ok) {
+    showToast('招待コードをコピーしました');
+    flashBtn(btn, 'コピー済み ✓', 'コピー');
+  } else {
+    showToast('コピーできませんでした');
+  }
 }
 
 // 招待URLをクリップボードにコピー
-function copyRefUrl() {
-  const url = document.getElementById('ref-url-text')?.textContent || '';
-  if (!url) return;
-  navigator.clipboard?.writeText(url).then(() => showToast('招待URLをコピーしました'));
+async function copyRefUrl(btn) {
+  if (!_currentRefCode) {
+    showToast('招待コードを取得中です');
+    return;
+  }
+  const url = `https://habio.pages.dev/app?ref=${encodeURIComponent(_currentRefCode)}`;
+  const ok = await copyToClipboard(url);
+  if (ok) {
+    showToast('招待URLをコピーしました');
+    flashBtn(btn, 'コピー済み ✓', 'URLコピー');
+  } else {
+    showToast('コピーできませんでした');
+  }
 }
 
 // Xで招待URLをシェア（intent URL経由）
 function shareRefOnX() {
-  const url = document.getElementById('ref-url-text')?.textContent || 'https://habio.pages.dev/app';
+  const refUrl = _currentRefCode
+    ? `https://habio.pages.dev/app?ref=${encodeURIComponent(_currentRefCode)}`
+    : 'https://habio.pages.dev/app';
   const text = `毎日の健康管理をAIがやさしくサポートしてくれる Habio を使ってみました。\n食事・体調・生活習慣の気づきを、無理なく続けられるAI健康サポートです。\n招待コードでアプリを始めると5ポイント獲得できます 🌿\n`;
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(refUrl)}`, '_blank');
 }
 
 // 起動時に ?ref= を処理
