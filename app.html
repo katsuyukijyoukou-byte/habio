@@ -5007,11 +5007,33 @@ function onCancelOverlayClick(e){
 function closeCancelPremiumModal(){
   document.getElementById('cancelOverlay').classList.remove('show');
 }
-function confirmCancelPremium(){
-  Store.set('is_premium',false);
-  Store.set('premium_email','');
-  renderPremiumState();
+async function confirmCancelPremium(){
+  const email = (Store.get('user_email','') || '').trim().toLowerCase();
   closeCancelPremiumModal();
+
+  if(email){
+    showToast('解約処理中…');
+    try{
+      const res = await fetch(`${STRIPE_WORKER}/cancel-subscription`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email}),
+      });
+      const data = await res.json();
+      if(!data.success){
+        showToast('解約処理に失敗しました。しばらくしてから再度お試しください。');
+        return;
+      }
+    } catch {
+      showToast('通信エラーが発生しました。ネットワークを確認してください。');
+      return;
+    }
+  }
+
+  Store.set('is_premium', false);
+  Store.set('user_email', '');
+  Store.set('premium_email', '');
+  renderPremiumState();
   showToast('プレミアムを解約しました。無料プランに戻ります。');
 }
 

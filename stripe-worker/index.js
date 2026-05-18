@@ -26,6 +26,9 @@ export default {
     if (request.method === 'POST' && url.pathname === '/activate') {
       return handleActivate(request, env);
     }
+    if (request.method === 'POST' && url.pathname === '/cancel-subscription') {
+      return handleCancelSubscription(request, env);
+    }
 
     return cors(JSON.stringify({ error: 'not found' }), 404);
   },
@@ -133,6 +136,53 @@ async function handleActivate(request, env) {
 
   await setPremium(env, email, true);
   return cors(JSON.stringify({ premium: true, email }));
+}
+
+// ── /cancel-subscription ──────────────────────────────────────────────────────
+async function handleCancelSubscription(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email = (body.email || '').trim().toLowerCase();
+  if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
+
+  // Stripe でメールアドレスからカスタマーを検索
+  const custRes = await fetch(`https://api.stripe.com/v1/customers?email=${encodeURIComponent(email)}&limit=1`, {
+    headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` },
+  });
+  const custData = await custRes.json();
+  const customer = custData.data?.[0];
+
+  if (customer) {
+    // active / trialing 両方を確認
+    for (const status of ['active', 'trialing']) {
+      const subRes = await fetch(
+        `https://api.stripe.com/v1/subscriptions?customer=${customer.id}&status=${status}&limit=1`,
+        { headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` } }
+      );
+      const subData = await subRes.json();
+      const sub = subData.data?.[0];
+      if (sub) {
+        // Stripe サブスクリプションをすぐにキャンセル（次回請求なし）
+        const cancelRes = await fetch(`https://api.stripe.com/v1/subscriptions/${sub.id}/cancel`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        if (!cancelRes.ok) {
+          const err = await cancelRes.json();
+          return cors(JSON.stringify({ error: err.error?.message || 'stripe cancel failed' }), 500);
+        }
+        break;
+      }
+    }
+  }
+
+  // KV からプレミアム権限を削除
+  await setPremium(env, email, false);
+  return cors(JSON.stringify({ success: true }));
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────
