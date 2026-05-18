@@ -1,0 +1,6 @@
+.wrangler/
+stripe-worker/.wrangler/
+logs/
+node_modules/
+*.env
+.env*

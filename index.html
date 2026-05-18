@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Habio — 気合いじゃなくていい。続けられる健康習慣へ。</title>
-  <meta name="description" content="責めない。比べない。あなたのペースで続けられる健康習慣サポート。AIが毎日やさしく寄り添います。">
+  <title>Habio — 食事制限より、"生活リズム"を整える。</title>
+  <meta name="description" content="体重計に縛られない。カロリーを数えない。毎日の小さな積み重ねで、生活リズムを整えていく健康習慣AIアプリ。まずは無料で。">
   <meta name="theme-color" content="#72B994">
   <!-- OGP -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Habio — 気合いじゃなくていい。続けられる健康習慣へ。">
-  <meta property="og:description" content="責めない。比べない。AIが毎日そっと寄り添う、健康習慣アプリ。まずは無料で。">
+  <meta property="og:title" content="Habio — 食事制限より、"生活リズム"を整える。">
+  <meta property="og:description" content="体重計に縛られず、無理な制限もなし。AIが毎日そっと寄り添い、生活リズムを整える習慣をサポートします。まずは無料で。">
   <meta property="og:image" content="https://habio.app/og-image.png">
   <meta property="og:url" content="https://habio.app">
   <meta name="twitter:card" content="summary_large_image">
@@ -1040,6 +1040,54 @@ footer{
   margin-top:28px;line-height:1.9;
 }
 
+/* ── Hero Change Cards ── */
+.hero-changes{
+  display:flex;gap:10px;margin:26px 0 32px;
+  flex-wrap:wrap;
+}
+.hc-card{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1.5px solid var(--g-l);
+  border-radius:var(--r-f);padding:8px 18px;
+  font-size:13px;font-weight:600;color:var(--t);
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(114,185,148,.12);
+  transition:transform .2s ease;
+}
+.hc-card:hover{transform:translateY(-2px);}
+.hc-em{font-size:17px;}
+
+/* ── Mission Section ── */
+.mission{background:linear-gradient(135deg,#EEF8F3 0%,#F9F9F7 100%);}
+.mission-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(185px,1fr));
+  gap:20px;margin-top:48px;
+}
+.miss-c{
+  background:var(--card);border-radius:var(--r-m);
+  padding:30px 22px;text-align:center;
+  box-shadow:var(--sh-soft);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.miss-c:hover{transform:translateY(-4px);box-shadow:var(--sh-mid);}
+.miss-em{font-size:38px;margin-bottom:14px;}
+.miss-h{font-size:15px;font-weight:700;color:var(--t);margin-bottom:10px;}
+.miss-b{font-size:13px;color:var(--t-m);line-height:1.9;}
+.mission-foot{
+  margin-top:48px;text-align:center;
+  padding:36px 28px;background:#fff;
+  border-radius:var(--r-l);
+  border:2px solid var(--g-l);
+}
+.mission-foot-t{font-size:20px;font-weight:700;color:var(--t);margin-bottom:8px;}
+.mission-foot-s{font-size:14px;color:var(--t-m);}
+
+@media(max-width:640px){
+  .mission-grid{grid-template-columns:repeat(2,1fr);}
+  .hero-changes{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+}
+
   </style>
 </head>
 <body>
@@ -1049,7 +1097,7 @@ footer{
   ============================================================ -->
 <div class="float-cta" id="floatCta" style="gap:0;flex-direction:column;padding:0;overflow:hidden;">
   <a href="app.html" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;color:#fff;text-decoration:none;font-size:15px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.2);">
-    🌱 まずは無料で試してみる
+    🌱 まずは無料で整えてみる
   </a>
   <a href="app.html" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:500;">
     📱 アプリを体験する
@@ -1063,7 +1111,7 @@ footer{
 <header>
   <div class="h-in">
     <a class="logo" href="#">Habio <span class="logo-s">健康習慣サポート</span></a>
-    <a class="h-btn" href="app.html">まずは無料で試してみる</a>
+    <a class="h-btn" href="app.html">まずは無料で整えてみる</a>
   </div>
 </header>
 
@@ -1080,24 +1128,28 @@ footer{
 
       <!-- Copy -->
       <div>
-        <div class="hero-eyebrow">🌿 「頑張れない日」を前提に設計されたAI</div>
+        <div class="hero-eyebrow">🌿 生活リズムを整える、習慣AIアプリ</div>
 
         <h1 class="hero-title">
-          気合いじゃ<br>なくていい。<br>
-          <span class="ac">続けられる仕組み</span>が、<br>あなたを変える。
+          食事制限より、<br>
+          <span class="ac">"生活リズム"</span>を整える。
           <span class="soft">
-            頑張れない日があっても、大丈夫。<br>
-            Habio がそっと、一緒に歩きます。
+            体重計に縛られず、カロリーを数えず、<br>
+            毎日を少しずつ整えていく。
           </span>
         </h1>
 
-        <p class="hero-desc">
-          食事・運動・生活習慣を、AIが<strong>あなたに合わせて</strong>やさしくサポート。<br>
-          完璧じゃなくていい。少しずつで、ちゃんと変われる。
-        </p>
+        <!-- 5 change cards -->
+        <div class="hero-changes">
+          <div class="hc-card"><span class="hc-em">💧</span>水を飲む</div>
+          <div class="hc-card"><span class="hc-em">🌙</span>早く寝る</div>
+          <div class="hc-card"><span class="hc-em">🚶</span>少し歩く</div>
+          <div class="hc-card"><span class="hc-em">🥗</span>野菜を足す</div>
+          <div class="hc-card"><span class="hc-em">🌿</span>深呼吸する</div>
+        </div>
 
         <div class="hero-ctas">
-          <a class="btn btn-p" href="app.html">まずは無料で試してみる →</a>
+          <a class="btn btn-p" href="app.html">まずは無料で整えてみる →</a>
           <a class="btn btn-app" href="app.html">📱 アプリを体験する</a>
         </div>
         <p class="hero-note">クレジットカード不要 &nbsp;·&nbsp; いつでも解約可能</p>
@@ -1124,6 +1176,59 @@ footer{
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+  MISSION（目指すもの）
+  ============================================================ -->
+<section class="sec mission">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">Habio が目指す未来</div>
+      <h2 class="stitle">
+        Habioが目指すのは、<br>
+        <span class="ac">"短期で痩せる"</span>ことではありません。
+      </h2>
+      <p class="ssub">
+        3ヶ月後も、1年後も、あなたが"自分らしく"続けられていること。<br>
+        毎日の小さな積み重ねが、本物の変化をつくります。
+      </p>
+    </div>
+
+    <div class="mission-grid rv">
+      <div class="miss-c">
+        <div class="miss-em">🌀</div>
+        <div class="miss-h">生活リズムが整う</div>
+        <div class="miss-b">毎日の睡眠・食事・水分が自然に整い、体が本来の力を取り戻していきます。</div>
+      </div>
+      <div class="miss-c">
+        <div class="miss-em">💪</div>
+        <div class="miss-h">体が軽くなる</div>
+        <div class="miss-b">無理な制限なしに、動ける体・疲れにくい体が少しずつ戻ってきます。</div>
+      </div>
+      <div class="miss-c">
+        <div class="miss-em">😊</div>
+        <div class="miss-h">気分が安定する</div>
+        <div class="miss-b">習慣が安定すると、心の波も小さくなります。イライラや落ち込みが減ってきます。</div>
+      </div>
+      <div class="miss-c">
+        <div class="miss-em">😴</div>
+        <div class="miss-h">よく眠れるようになる</div>
+        <div class="miss-b">生活リズムの改善が、睡眠の質を高めます。翌朝の目覚めが変わってきます。</div>
+      </div>
+      <div class="miss-c">
+        <div class="miss-em">🔄</div>
+        <div class="miss-h">自然と続けられる</div>
+        <div class="miss-b">頑張らなくても続く状態に。それがHabioの考える、本当の習慣化です。</div>
+      </div>
+    </div>
+
+    <div class="mission-foot rv">
+      <p class="mission-foot-t">すべては、"続けること"から始まる。</p>
+      <p class="mission-foot-s">小さな変化の積み重ねが、1年後のあなたを変えます。</p>
     </div>
   </div>
 </section>
@@ -1263,7 +1368,7 @@ footer{
         <div class="why-em">🤗</div>
         <div class="why-h">責めない。怒らない。</div>
         <div class="why-b">
-          サボった日があっても、Habio は一切責めません。「また明日から」と、やさしく一緒に再スタートします。自己嫌悪のループを、終わらせましょう。
+          休んだ日があっても、Habio は一切責めません。「また明日から」と、やさしく一緒に再スタートします。自己嫌悪のループを、終わらせましょう。
         </div>
         <div class="why-q">「頑張れなかった日も、責めずに続けられる。」</div>
       </div>
@@ -1520,7 +1625,7 @@ footer{
       <div class="feat-c"><div class="feat-ic g">🥗</div><div class="feat-nm">食事アドバイス</div><div class="feat-bd">コンビニ・外食でもOK。今の生活に合った、無理のない提案をします。制限ではなく、バランスを整えます。</div></div>
       <div class="feat-c"><div class="feat-ic b">🚶</div><div class="feat-nm">軽い運動提案</div><div class="feat-bd">ジム不要。すき間時間の3分から。あなたができることだけを提案します。</div></div>
       <div class="feat-c"><div class="feat-ic p">💬</div><div class="feat-nm">続かなくなる前に、声をかける</div><div class="feat-bd">朝・昼・夜、挫折しそうなタイミングを先読みして、そっと声をかけます。通知ではなく、寄り添いです。</div></div>
-      <div class="feat-c"><div class="feat-ic e">🔄</div><div class="feat-nm">頑張れない日も、ゼロにしない</div><div class="feat-bd">サボった翌日も、責めません。「1つだけ」の小さな行動から、また一緒に始めます。</div></div>
+      <div class="feat-c"><div class="feat-ic e">🔄</div><div class="feat-nm">頑張れない日も、ゼロにしない</div><div class="feat-bd">お休みした翌日も、責めません。「1つだけ」の小さな行動から、また一緒に始めます。</div></div>
       <div class="feat-c"><div class="feat-ic g">🌙</div><div class="feat-nm">生活習慣の改善</div><div class="feat-bd">睡眠・水分・生活リズム。体全体のバランスをやさしく整えます。</div></div>
       <div class="feat-c"><div class="feat-ic b">📝</div><div class="feat-nm">習慣の振り返り</div><div class="feat-bd">続けた記録を可視化。小さな積み重ねが見えると、もっと続けたくなります。</div></div>
     </div>
@@ -1627,7 +1732,7 @@ footer{
       <div class="persona-c">
         <div class="persona-em">🔄</div>
         <div class="persona-nm">何度も挫折してきた方</div>
-        <div class="persona-bd">サボった翌日も責めない。「また今日から」と言ってくれる存在が、一番必要だったかもしれない。</div>
+        <div class="persona-bd">お休みした翌日も責めない。「また今日から」と言ってくれる存在が、一番必要だったかもしれない。</div>
       </div>
 
     </div>
@@ -1645,99 +1750,71 @@ footer{
     <p>あなたの習慣を、もう少し整えるために。<br>Habio と一緒に使いたい方へ、選択肢のひとつとしてご紹介します。</p>
     <p class="affiliate-note">※ 以下は楽天アフィリエイトを利用した広告リンクです（PR）</p>
 
-    <div class="affiliate-grid">
-
-      <!-- ① キラーバーナー2 -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/hFz0dn" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg" alt="キラーバーナー2" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">🔥</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR</div>
-            <div class="affiliate-title">倖田來未 開発 キラーバーナー2</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- ② 筋膜リリースガン -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/h5yeu5" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg" alt="筋膜リリースガン" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">💆</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR</div>
-            <div class="affiliate-title">筋膜リリースガン ミニ</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- ③ シトルリン・アルギニン -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/hgZsnR" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg" alt="シトルリン アルギニン" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">💪</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR</div>
-            <div class="affiliate-title">シトルリン・アルギニン・マカ・亜鉛</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- ④ C COFFEE -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/hkvUAU" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg" alt="C COFFEE" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">☕</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR</div>
-            <div class="affiliate-title">C COFFEE ダイエットコーヒー</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- ⑤ サウナベルト -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/h5qSXb" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg" alt="サウナベルト" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">🧖</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR</div>
-            <div class="affiliate-title">サウナベルト（温活サポート）</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- ⑥ カロリンピュア -->
-      <div class="affiliate-card">
-        <a href="https://a.r10.to/hgTpBU" target="_blank" rel="nofollow sponsored noopener">
-          <div class="affiliate-img-wrap">
-            <img src="https://thumbnail.image.rakuten.co.jp/@0_mall/nayamikaiketsulab/cabinet/item/calorine/imgrc0110454977.jpg" alt="カロリンピュア" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
-            <div class="affiliate-img-em">🌿</div>
-          </div>
-          <div class="affiliate-body">
-            <div class="affiliate-label">PR｜機能性表示食品</div>
-            <div class="affiliate-title">カロリンピュア（エラグ酸）</div>
-            <span class="affiliate-cta">楽天で詳細を見る →</span>
-          </div>
-        </a>
-      </div>
-
-    </div><!-- /affiliate-grid -->
+    <div class="affiliate-grid" id="affiliate-grid"></div>
+    <script>
+    (function(){
+      // 商品を増やす場合はここに追記するだけでOK
+      var LP_PRODUCTS=[
+        {name:'倖田來未 開発 キラーバーナー2',        url:'https://a.r10.to/hFz0dn', img:'@0_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg',                        em:'🔥', label:'PR'},
+        {name:'筋膜リリースガン ミニ',                url:'https://a.r10.to/h5yeu5', img:'@0_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg',                          em:'💆', label:'PR'},
+        {name:'シトルリン・アルギニン・マカ・亜鉛',  url:'https://a.r10.to/hgZsnR', img:'@0_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg',                        em:'💪', label:'PR'},
+        {name:'C COFFEE ダイエットコーヒー',          url:'https://a.r10.to/hkvUAU', img:'@0_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg',                          em:'☕', label:'PR'},
+        {name:'サウナベルト（温活サポート）',          url:'https://a.r10.to/h5qSXb', img:'@0_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg',            em:'🧖', label:'PR'},
+        {name:'カロリンピュア（エラグ酸）',            url:'https://a.r10.to/hgTpBU', img:'@0_mall/nayamikaiketsulab/cabinet/item/calorine/imgrc0110454977.jpg',                  em:'🌿', label:'PR｜機能性表示食品'},
+        {name:'RELX EMSベルト（腹筋ベルト）',         url:'https://a.r10.to/hPblsN', img:'@0_mall/excitech/cabinet/relx/emsbelt/emsbelt_1.jpg',                                   em:'⚡', label:'PR'},
+        {name:'こんにゃくラーメン24食',               url:'https://a.r10.to/h5hfA1', img:'@0_mall/k222/cabinet/01687546/diet/food2/221000new-samune06.jpg',                        em:'🍜', label:'PR'},
+        {name:'スリモアコーヒー（機能性表示食品）',   url:'https://a.r10.to/hkkSnq', img:'@0_mall/shinnihonseiyaku/cabinet/item/slimorecoffee/ice/thumb_rank.jpg',                 em:'☕', label:'PR｜機能性表示食品'},
+        {name:'わたしのプロテインダイエット',          url:'https://a.r10.to/hkx6Or', img:'@0_mall/womenjapan/cabinet/images4/mpd_1_01.jpg',                                       em:'🥤', label:'PR'},
+        {name:'おからクッキー',                        url:'https://a.r10.to/hghgvc', img:'@0_mall/shinrindo/cabinet/10228353/okaraba50-line200-.jpg',                              em:'🍪', label:'PR'},
+        {name:'バンビウォータースムージー',            url:'https://a.r10.to/hg54gR', img:'@0_mall/bambi-water/cabinet/page/bambissmoothie/bss_th00_241107.jpg',                   em:'🥗', label:'PR'},
+        {name:'バンビウォータープロテインシェイク',   url:'https://a.r10.to/hkQ9vF', img:'@0_mall/bambi-water/cabinet/page/bps/bps_th00_2412.jpg',                                 em:'🥤', label:'PR'},
+        {name:'NADLE振動マシン',                                url:'https://a.r10.to/hRZZie', img:'@0_mall/w-k-j/cabinet/10651312/11.jpg',                                                           em:'📳', label:'PR'},
+        {name:'NIPLUX NECK RELAX（EMS×温熱 首ケア）',         url:'https://a.r10.to/hg5Car',  img:'@0_mall/nissoplus/cabinet/item/neck_relax/main/250417_nr01.jpg',                               em:'🦒', label:'PR'},
+        {name:'カロリー・塩分調整食 冷凍弁当10食',             url:'https://a.r10.to/hPlorJ',  img:'@0_mall/slc-123/cabinet/cal_kari/imgrc0123592032.jpg',                                         em:'🥡', label:'PR'},
+        {name:'ヨガマット 厚手（ストレッチ・ピラティス）',     url:'https://a.r10.to/hYHpdt',  img:'@0_mall/dabada/cabinet/04904787/10mm/yoga-mat10_tmb1.jpg',                                     em:'🧘', label:'PR'},
+        {name:'筋膜ローラー（全身・ふくらはぎ）',             url:'https://a.r10.to/hkWjYV',  img:'@0_mall/dots-yamanakain/cabinet/10167916/imgrc0117871264.jpg',                                em:'🦵', label:'PR'},
+        {name:'バランスボール（エクササイズ）',                url:'https://a.r10.to/TKQpY0',  img:'@0_mall/kodawari-ichiban/cabinet/ex2/11315852/yogaball_1.jpg',                                 em:'⚽', label:'PR'},
+        {name:'フォームローラー（筋膜リリース）',              url:'https://a.r10.to/h5joGu',  img:'@0_mall/auc-risecreation/cabinet/product/top/y0355_01_a.jpg',                                 em:'🪵', label:'PR'},
+        {name:'ネルカラ 睡眠サポートサプリ（GABA）',           url:'https://a.r10.to/hgImdS',  img:'@0_mall/healthyplus/cabinet/biiino/item/10906954/nerukara_800-800.jpg',                       em:'🌙', label:'PR'},
+        {name:'しずみん（休息・睡眠ケアサプリ）',             url:'https://a.r10.to/hPT7Dj',  img:'@0_mall/yakusho/cabinet/shizumin/sizumin_1set.jpg',                                           em:'😴', label:'PR'},
+        {name:'グッドネル 睡眠サプリ（GABA・グリシン）',      url:'https://a.r10.to/h5vcJf',  img:'@0_gold/aequalis/thum/goodneru_thum_r.jpg',                                                    em:'💤', label:'PR'},
+        {name:'ピローミスト（安眠アロマスプレー）',            url:'https://a.r10.to/hg5iyi',  img:'@0_mall/mariko-s/cabinet/12427273/12427294/1.jpg',                                            em:'💧', label:'PR'},
+        {name:'ハグモッチ（快眠まくら）',                      url:'https://a.r10.to/hPTr4I',  img:'@0_mall/luckyspread/cabinet/07240546/10248259/imgrc0078419063.jpg',                            em:'🛏', label:'PR'},
+        {name:'Suyamee アイマスク（遮光99.99%）',             url:'https://a.r10.to/hoQX5R',  img:'@0_mall/hibiwa/cabinet/10549764/10659795/12608328/suyamee_251220.jpg',                        em:'🫣', label:'PR'},
+        {name:'美粉屋ちょーぐると（乳酸菌・腸活）',           url:'https://a.r10.to/hYNToN',  img:'@0_mall/kyunan/cabinet/bikonaya/chogurt/cho-glt.jpg',                                         em:'🦠', label:'PR'},
+        {name:'酪酸菌サプリ（腸活・ダイエット）',             url:'https://a.r10.to/h5PL44',  img:'@0_mall/oga/cabinet/item_img/241226_rak_1000_03.jpg',                                         em:'🌿', label:'PR'},
+        {name:'コレウスフォルスコリ ダイエットサプリ',         url:'https://a.r10.to/hPeSlb',  img:'@0_mall/oga/cabinet/item_img/shohin/241128_fr_2_01.jpg',                                     em:'🌱', label:'PR'},
+        {name:'ココラクト フェムケアサプリ（乳酸菌）',         url:'https://a.r10.to/h5mWuT',  img:'@0_mall/wellsuppli/cabinet/itemimage/cocolact/cocolact_30_new.jpg',                          em:'🌸', label:'PR'},
+        {name:'すっぽん小町（コラーゲンサプリ）',             url:'https://a.r10.to/hP9EeO',  img:'@0_mall/teinei-tsuhan/cabinet/product/komachi/introduction_image/imgrc0124429512.jpg',        em:'✨', label:'PR'},
+        {name:'キユーピー ヒアロモイスチャー240',              url:'https://a.r10.to/h8spxf',  img:'@0_mall/kewpie-blueflag/cabinet/13131066/14_main_new01.jpg',                                  em:'💧', label:'PR'},
+        {name:'エルリス リポソームビタミンC',                  url:'https://a.r10.to/hkixIX',  img:'@0_mall/bosii/cabinet/elliss/10692140/imgrc0176490346.jpg',                                   em:'🍋', label:'PR'},
+        {name:'美粉屋みらいのこうそ（酵素ドリンク）',          url:'https://a.r10.to/hgJSqN',  img:'@0_mall/kyunan/cabinet/bikonaya/mirainokoso/thum_mk_01.jpg',                                  em:'🌿', label:'PR'},
+        {name:'モリンガ100% タブレット（国産・農薬不使用）',   url:'https://a.r10.to/h5JBSk',  img:'@0_mall/nachurin/cabinet/moringa/tablet/tablet-002-01.jpg',                                   em:'🥬', label:'PR'},
+        {name:'サラリッチEX（血糖値ケアサプリ）',             url:'https://a.r10.to/hFYNLh',  img:'@0_mall/itsumococo/cabinet/10604426/10604698/imgrc0116875193.jpg',                            em:'🩸', label:'PR'},
+        {name:'大正製薬 コレステロール・中性脂肪ケア',         url:'https://a.r10.to/hgP81Y',  img:'@0_mall/taisho-directshop/cabinet/tmb/koresute.jpg',                                          em:'💊', label:'PR｜機能性表示食品'},
+        {name:'プーアール茶（機能性表示食品）',                url:'https://a.r10.to/h5BItn',  img:'@0_mall/arahata/cabinet/product/11991580/puerh-thumb-2x30.jpg',                               em:'🍵', label:'PR｜機能性表示食品'},
+        {name:'FANCL ビタミンBサプリ',                         url:'https://a.r10.to/h5vTP4',  img:'@0_mall/fancl-shop/cabinet/item-img/5500-5999/5526.jpg',                                      em:'💊', label:'PR'},
+        {name:'バランスアミノ酸サプリ（EAA・BCAA）',          url:'https://a.r10.to/h5tp51',  img:'@0_mall/oga/cabinet/item_img/carousel/am/210716c_am_lp07.jpg',                                em:'💪', label:'PR'},
+        {name:'ヒハツサプリ（むくみ・冷え）',                  url:'https://a.r10.to/h5MjW9',  img:'@0_mall/tsuhanhonpo-corp/cabinet/06617381/hht_emb.jpg',                                       em:'🦶', label:'PR｜機能性表示食品'},
+        {name:'むくMix-ZERO（むくみケアサプリ）',              url:'https://a.r10.to/h5qE2k',  img:'@0_mall/oga/cabinet/abtest/241202_mx_4_03.jpg',                                               em:'🌊', label:'PR'},
+        {name:'美温活 はらまき（吸湿発熱・日本製）',           url:'https://a.r10.to/hY3zlx',  img:'@0_mall/fukuske/cabinet/250910/57-37-4012f.jpg',                                              em:'🧣', label:'PR'},
+        {name:'金時生姜サプリ（温活・冷え対策）',              url:'https://a.r10.to/h5FqwK',  img:'@0_mall/saintlabo/cabinet/08197333/13169962/samune8.jpg',                                     em:'🫚', label:'PR'},
+        {name:'ヒマラヤ岩塩 魔法のバスソルト',                url:'https://a.r10.to/hgg5Vf',  img:'@0_mall/bathlier/cabinet/2000-01/2000-090302-r101.jpg',                                       em:'🛁', label:'PR'},
+        {name:'ホットタブ 重炭酸入浴剤',                       url:'https://a.r10.to/hPe6Lt',  img:'@0_mall/hottabstore/cabinet/wellness/lp/09831043/wellness_samune.jpg',                        em:'♨', label:'PR'},
+        {name:'ウォーキングシューズ（軽量・男女兼用）',        url:'https://a.r10.to/h5Ez9n',  img:'@0_mall/topgift/cabinet/g24444.jpg',                                                          em:'👟', label:'PR'},
+        {name:'HUAWEI WATCH FIT 4 Pro（スマートウォッチ）',   url:'https://a.r10.to/h5pcyJ',  img:'@0_mall/huawei-official/cabinet/12229881/fit4pro-id-scale3blt.jpg',                           em:'⌚', label:'PR'},
+        {name:'TARZAアミノ酸クエン酸ウォーター',               url:'https://a.r10.to/h8Nw0I',  img:'@0_mall/tarza/cabinet/top/03_sei.jpg',                                                        em:'🥤', label:'PR'},
+        {name:'アシュワガンダオイル（ストレスケア）',          url:'https://a.r10.to/h50OMY',  img:'@0_mall/shanthilanka/cabinet/oil/ashwagandaoil_main.jpg',                                     em:'🌿', label:'PR'},
+      ];
+      // Fisher-Yates shuffle → 先頭3件
+      for(var i=LP_PRODUCTS.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=LP_PRODUCTS[i];LP_PRODUCTS[i]=LP_PRODUCTS[j];LP_PRODUCTS[j]=t;}
+      var picks=LP_PRODUCTS.slice(0,3);
+      var BASE='https://thumbnail.image.rakuten.co.jp/';
+      document.getElementById('affiliate-grid').innerHTML=picks.map(function(p){
+        return '<div class="affiliate-card"><a href="'+p.url+'" target="_blank" rel="nofollow sponsored noopener"><div class="affiliate-img-wrap"><img src="'+BASE+p.img+'" alt="'+p.name+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display=\'none\'"><div class="affiliate-img-em">'+p.em+'</div></div><div class="affiliate-body"><div class="affiliate-label">'+p.label+'</div><div class="affiliate-title">'+p.name+'</div><span class="affiliate-cta">楽天で詳細を見る →</span></div></a></div>';
+      }).join('');
+    })();
+    </script>
 
     <p class="affiliate-footer-note">
       【PR・広告】楽天アフィリエイトを利用しています<br>
@@ -1854,7 +1931,7 @@ footer{
 
       <div class="p-c paid">
         <div class="p-rec">おすすめ</div>
-        <div class="p-tier">もっと寄り添ってほしい方へ</div>
+        <div class="p-tier">もっと深く、自分のリズムを知りたい方へ。</div>
         <div class="p-name">プレミアムプラン</div>
         <div class="p-row">
           <div><span class="p-num">¥980</span><span class="p-per"> / 月</span></div>
@@ -1862,11 +1939,11 @@ footer{
         </div>
         <ul class="p-list">
           <li><span class="ck">✓</span> 無料プランのすべて</li>
-          <li><span class="ck">✓</span> パーソナライズ習慣提案</li>
-          <li><span class="ck">✓</span> 毎月の習慣ふりかえりレポート</li>
-          <li><span class="ck">✓</span> AI声かけ回数の増加</li>
-          <li><span class="ck">✓</span> 食事・運動の詳細アドバイス</li>
-          <li><span class="ck">✓</span> 優先サポート対応</li>
+          <li><span class="ck">✓</span> 整いポイント 2倍獲得</li>
+          <li><span class="ck">✓</span> 継続バッジ複数枚獲得</li>
+          <li><span class="ck">✓</span> AIトーク スタイル全解放</li>
+          <li><span class="ck">✓</span> カラーテーマ カスタマイズ</li>
+          <li><span class="ck">✓</span> 取り組み期間の詳細設定</li>
         </ul>
         <a class="btn btn-p" href="app.html">7日間、無料で試してみる →</a>
       </div>
@@ -1989,12 +2066,12 @@ footer{
         <span style="font-size:.65em;font-weight:400;color:var(--t-m);">その感覚が、本物の変化の始まりです。</span>
       </h2>
       <p class="final-s">
-        「痩せ方が分からない」のではない。<br>
-        ただ、<strong>続けられる仕組みが、なかっただけ。</strong><br>
+        食事制限でも気合いでもない。<br>
+        ただ、<strong>毎日の生活リズムを、少しずつ整えるだけ。</strong><br>
         Habio が、その仕組みになります。
       </p>
       <div class="final-ctas">
-        <a class="btn btn-p fb" href="app.html">あなたのペースで始める（無料）</a>
+        <a class="btn btn-p fb" href="app.html">まずは無料で整えてみる →</a>
         <a class="btn btn-app" href="app.html" style="min-height:52px;font-size:14px;">📱 アプリを体験する</a>
       </div>
       <p class="final-n">クレジットカード不要 &nbsp;·&nbsp; いつでも解約可能</p>

@@ -77,15 +77,6 @@ body.night-bg{background:#C8C3BB;}
   }
 }
 
-/* ── STATUS BAR ── */
-#statusbar{
-  height:44px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 28px;font-size:13px;font-weight:600;color:var(--t);
-  background:var(--bg);position:relative;z-index:10;
-  transition:background var(--trans-dur);
-}
-.sb-r{display:flex;align-items:center;gap:6px;}
 
 #night-banner{
   display:none;
@@ -353,6 +344,8 @@ body.night-bg{background:#C8C3BB;}
   -webkit-tap-highlight-color:transparent;
 }
 .chip:active{background:var(--g-p);border-color:var(--g);color:var(--t-g);}
+.chip-rec{background:var(--g-p);border-color:var(--g);color:var(--t-g);font-weight:700;}
+.chip-rec:active{background:var(--g);color:#fff;}
 
 .chat-input-area{
   padding:10px 16px 12px;background:var(--card);
@@ -1185,6 +1178,253 @@ body.night-bg{background:#C8C3BB;}
   font-size:11px;color:var(--t-l);
   text-align:center;margin-top:12px;padding:0 22px;line-height:1.9;
 }
+
+/* ── GOAL BANNER ── */
+.goal-banner{
+  margin:0 22px 12px;
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-m);padding:11px 16px;
+  display:none;align-items:center;gap:12px;
+  cursor:pointer;transition:all var(--trans-dur);
+  -webkit-tap-highlight-color:transparent;
+}
+.goal-banner.visible{display:flex;}
+.goal-banner:active{transform:scale(.97);}
+.goal-banner-em{font-size:18px;flex-shrink:0;}
+.goal-banner-body{flex:1;min-width:0;}
+.goal-banner-lbl{font-size:9px;font-weight:700;color:var(--t-g);letter-spacing:.1em;text-transform:uppercase;}
+.goal-banner-text{font-size:12px;font-weight:600;color:var(--t);line-height:1.45;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.goal-banner-sleep{font-size:11px;color:var(--t-m);margin-top:3px;}
+.goal-banner-edit{font-size:11px;color:var(--t-l);flex-shrink:0;}
+
+/* ── STYLE PICKER SHEET ── */
+.style-sheet-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.42);
+  z-index:600;opacity:0;pointer-events:none;
+  transition:opacity .3s ease;display:flex;align-items:flex-end;
+}
+.style-sheet-overlay.show{opacity:1;pointer-events:all;}
+.style-sheet{
+  background:var(--card);width:100%;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:0 0 44px;
+  transform:translateY(100%);
+  transition:transform .38s cubic-bezier(.32,.72,0,1);
+}
+.style-sheet-overlay.show .style-sheet{transform:translateY(0);}
+.style-sheet-handle{width:36px;height:4px;border-radius:var(--r-f);background:var(--border);margin:14px auto 0;}
+.style-sheet-title{font-size:16px;font-weight:700;color:var(--t);padding:16px 22px 4px;text-align:center;}
+.style-sheet-sub{font-size:12px;color:var(--t-m);text-align:center;padding:0 22px 12px;line-height:1.75;}
+.style-option{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 22px;border-top:1px solid var(--border);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background var(--trans-dur);
+}
+.style-option:active{background:var(--bg);}
+.style-option.selected{background:var(--g-p);}
+.style-option-em{font-size:22px;flex-shrink:0;width:30px;text-align:center;}
+.style-option-body{flex:1;}
+.style-option-name{font-size:14px;font-weight:600;color:var(--t);}
+.style-option-desc{font-size:11px;color:var(--t-l);margin-top:2px;line-height:1.6;}
+.style-option-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.style-option-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--t-l);display:flex;align-items:center;justify-content:center;font-size:10px;transition:all var(--trans-dur);}
+.style-option.selected .style-option-check{background:var(--g);border-color:var(--g);color:#fff;}
+.style-prem-badge{background:linear-gradient(135deg,#E8A030,#D48020);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:var(--r-f);letter-spacing:.04em;}
+
+/* ── SLEEP GOAL BUTTONS ── */
+.sleep-btns{display:flex;gap:8px;padding:8px 20px 14px;flex-wrap:wrap;}
+.sleep-btn{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-f);
+  padding:9px 18px;font-size:14px;font-weight:600;color:var(--t-m);
+  cursor:pointer;transition:all var(--trans-dur);-webkit-tap-highlight-color:transparent;
+}
+.sleep-btn.sel{background:var(--g-p);border-color:var(--g);color:var(--t-g);}
+.sleep-btn:active{transform:scale(.93);}
+
+/* ── SWATCH ENHANCED ── */
+.theme-swatches{display:flex;gap:10px;padding:12px 20px 18px;flex-wrap:wrap;}
+.swatch{
+  width:40px;height:40px;border-radius:50%;
+  cursor:pointer;border:3px solid transparent;
+  transition:border-color var(--trans-dur),transform var(--trans-dur),box-shadow var(--trans-dur);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.swatch.sel{border-color:var(--t);box-shadow:0 0 0 2px var(--bg-w),0 0 0 4px var(--t);}
+.swatch:active{transform:scale(.84);}
+
+/* ── PRO BADGE ── */
+.pro-badge{background:linear-gradient(135deg,#E8A030,#D48020);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:var(--r-f);letter-spacing:.04em;flex-shrink:0;}
+
+/* ── ONB TEXTAREA ── */
+.onb-textarea{
+  width:100%;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:var(--r-l);
+  padding:14px 18px;font-size:15px;color:var(--t);
+  resize:none;outline:none;min-height:72px;
+  transition:border-color var(--trans-dur),background var(--trans-dur);
+  line-height:1.7;font-family:inherit;
+}
+.onb-textarea:focus{border-color:var(--g-l);background:var(--bg-w);}
+.onb-textarea::placeholder{color:var(--t-l);}
+
+/* ── CURRENT GOAL DISPLAY IN SETTINGS ── */
+.goal-display-card{
+  margin:0 22px 14px;background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-m);padding:14px 18px;
+  display:none;
+}
+.goal-display-card.visible{display:block;}
+.goal-display-lbl{font-size:10px;font-weight:700;color:var(--t-g);letter-spacing:.1em;margin-bottom:6px;}
+.goal-display-text{font-size:14px;font-weight:600;color:var(--t);line-height:1.65;}
+.goal-display-sub{font-size:12px;color:var(--t-m);margin-top:6px;}
+
+/* ── PREMIUM FEATURE MODAL ── */
+.pf-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);
+  z-index:500;opacity:0;pointer-events:none;
+  transition:opacity .35s ease;display:flex;align-items:flex-end;
+}
+.pf-overlay.show{opacity:1;pointer-events:all;}
+.pf-modal{
+  background:var(--card);width:100%;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  transform:translateY(100%);transition:transform .38s cubic-bezier(.32,1,.4,1);
+  max-height:88vh;overflow-y:auto;scrollbar-width:none;padding-bottom:40px;
+}
+.pf-modal::-webkit-scrollbar{display:none;}
+.pf-overlay.show .pf-modal{transform:translateY(0);}
+.pf-handle{width:36px;height:4px;border-radius:var(--r-f);background:var(--border);margin:14px auto 18px;}
+.pf-title{font-size:17px;font-weight:700;color:var(--t);padding:0 22px 4px;}
+.pf-sub{font-size:12px;color:var(--t-m);padding:0 22px 20px;}
+/* 30-day habit grid */
+.habit30-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;padding:0 22px 24px;}
+.h30-cell{
+  aspect-ratio:1;border-radius:6px;background:var(--border);
+  position:relative;
+}
+.h30-cell.lv1{background:color-mix(in srgb,var(--g) 30%,var(--border));}
+.h30-cell.lv2{background:color-mix(in srgb,var(--g) 60%,var(--border));}
+.h30-cell.lv3{background:var(--g);}
+.h30-cell.is-today{box-shadow:0 0 0 2px var(--g-d);}
+.h30-legend{display:flex;align-items:center;gap:6px;padding:0 22px 16px;font-size:11px;color:var(--t-m);}
+.h30-legend-swatch{width:12px;height:12px;border-radius:3px;}
+/* mood list */
+.mood-analysis-list{padding:0 22px;}
+.ma-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.ma-row:last-child{border-bottom:none;}
+.ma-date{font-size:11px;color:var(--t-m);width:36px;flex-shrink:0;}
+.ma-mood{font-size:20px;width:28px;text-align:center;}
+.ma-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.ma-bar{height:100%;border-radius:4px;background:var(--g);transition:width .4s ease;}
+.ma-label{font-size:11px;color:var(--t-m);width:32px;text-align:right;flex-shrink:0;}
+/* AI report */
+.ai-report-area{padding:0 22px;}
+.ai-report-btn{
+  width:100%;padding:14px;border-radius:var(--r-m);
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:opacity .2s;
+}
+.ai-report-btn:active{opacity:.8;}
+.ai-report-output{
+  margin-top:16px;padding:16px;background:var(--bg);border-radius:var(--r-m);
+  font-size:14px;line-height:1.8;color:var(--t);white-space:pre-wrap;min-height:60px;
+}
+
+/* ── POINTS CARD ── */
+.points-card{
+  display:flex;align-items:center;
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  border-radius:var(--r-l);padding:14px 16px;
+  margin:0 16px 14px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(89,160,126,.25);
+  transition:transform .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.points-card:active{transform:scale(.98);}
+.points-item{flex:1;text-align:center;}
+.points-num{font-size:18px;font-weight:700;color:#fff;line-height:1.2;}
+.points-lbl{font-size:10px;color:rgba(255,255,255,.8);margin-top:2px;font-weight:500;}
+.points-divider{width:1px;height:32px;background:rgba(255,255,255,.25);}
+
+/* ── REWARDS MODAL ── */
+.rewards-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+  z-index:90;display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+}
+.rewards-overlay.show{opacity:1;pointer-events:all;}
+.rewards-sheet{
+  width:100%;max-height:88%;background:var(--bg-w);
+  border-radius:var(--r-l) var(--r-l) 0 0;
+  overflow-y:auto;padding:0 0 32px;
+  transform:translateY(30px);transition:transform .35s cubic-bezier(.25,.85,.25,1);
+}
+.rewards-overlay.show .rewards-sheet{transform:translateY(0);}
+.rewards-handle{width:40px;height:4px;background:var(--t-l);border-radius:var(--r-f);margin:14px auto 0;}
+.rewards-title{font-size:17px;font-weight:700;color:var(--t);padding:16px 20px 8px;}
+.rewards-pts-banner{
+  margin:0 16px 16px;padding:14px 18px;
+  background:linear-gradient(135deg,var(--g-p),var(--blue-p));
+  border-radius:var(--r-l);display:flex;gap:20px;align-items:center;
+}
+.rwpb-total{font-size:26px;font-weight:700;color:var(--g);}
+.rwpb-lbl{font-size:11px;color:var(--t-m);margin-top:2px;}
+.rewards-sec-lbl{font-size:11px;font-weight:700;color:var(--t-l);letter-spacing:.08em;padding:0 20px;margin-bottom:10px;}
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px;margin-bottom:20px;}
+.badge-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 6px;background:var(--card);border-radius:var(--r-m);
+  box-shadow:var(--sh1);text-align:center;
+}
+.badge-item.locked{opacity:.4;filter:grayscale(1);}
+.badge-em{font-size:26px;}
+.badge-nm{font-size:10px;font-weight:600;color:var(--t);line-height:1.3;}
+.badge-pts{font-size:9px;color:var(--t-l);margin-top:1px;}
+.rewards-coming{
+  margin:8px 16px 0;padding:18px;text-align:center;
+  background:var(--bg);border-radius:var(--r-l);
+  font-size:13px;color:var(--t-m);line-height:1.8;
+}
+
+/* ── COMEBACK MODAL ── */
+.comeback-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(6px);
+  z-index:95;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+}
+.comeback-overlay.show{opacity:1;pointer-events:all;}
+.comeback-modal{
+  background:var(--card);border-radius:var(--r-xl);
+  padding:36px 28px;text-align:center;width:86%;max-width:340px;
+  transform:scale(.85);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 20px 60px rgba(0,0,0,.18);
+}
+.comeback-overlay.show .comeback-modal{transform:scale(1);}
+.comeback-em{font-size:52px;margin-bottom:12px;}
+.comeback-title{font-size:19px;font-weight:700;color:var(--t);line-height:1.55;margin-bottom:8px;}
+.comeback-msg{font-size:13px;color:var(--t-m);line-height:1.9;margin-bottom:24px;}
+.comeback-btn{
+  width:100%;padding:14px;border-radius:var(--r-f);
+  background:linear-gradient(135deg,var(--g),var(--g-d));
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;border:none;
+}
+
+/* ── BADGE TOAST (point badge earned) ── */
+.badge-earn-toast{
+  position:absolute;top:72px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:linear-gradient(135deg,#E8A030,#D48020);color:#fff;
+  font-size:13px;font-weight:700;padding:10px 20px;
+  border-radius:var(--r-f);white-space:nowrap;
+  box-shadow:0 4px 16px rgba(232,160,48,.4);
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .3s ease,transform .3s ease;
+}
+.badge-earn-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
   </style>
 </head>
 <body>
@@ -1199,23 +1439,6 @@ body.night-bg{background:#C8C3BB;}
     </div>
   </div>
 
-  <!-- STATUS BAR -->
-  <div id="statusbar">
-    <span id="sbTime">9:41</span>
-    <div class="sb-r">
-      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--t)">
-        <rect x="0" y="4" width="3" height="8" rx="1" opacity=".35"/>
-        <rect x="4.5" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/>
-        <rect x="9" y="1" width="3" height="11" rx="1" opacity=".8"/>
-        <rect x="13.5" y="0" width="2.5" height="12" rx="1"/>
-      </svg>
-      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
-        <rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="var(--t)" stroke-opacity=".3"/>
-        <rect x="2" y="2" width="15" height="8" rx="2" fill="var(--t)"/>
-        <path d="M23 4.5V7.5" stroke="var(--t)" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
 
   <div id="night-banner">🌙 おやすみモード — ゆっくり休んでください</div>
 
@@ -1245,6 +1468,38 @@ body.night-bg{background:#C8C3BB;}
           </div>
           <div class="streak-badge" id="streakBadge">🔥 0日</div>
         </div>
+      </div>
+    </div>
+
+    <div class="goal-banner" id="goalBannerHome" data-goal-banner onclick="goTab('settings')">
+      <div class="goal-banner-em">🎯</div>
+      <div class="goal-banner-body">
+        <div class="goal-banner-lbl">YOUR GOAL</div>
+        <div class="goal-banner-text" id="goalBannerHomeText"></div>
+        <div class="goal-banner-sleep" id="goalBannerHomeSleep"></div>
+      </div>
+      <div class="goal-banner-edit">設定 ›</div>
+    </div>
+
+    <div class="points-card" onclick="openRewardsModal()">
+      <div class="points-item">
+        <div class="points-num" id="pointsToday">+0</div>
+        <div class="points-lbl">今日の整いPt</div>
+      </div>
+      <div class="points-divider"></div>
+      <div class="points-item">
+        <div class="points-num" id="pointsTotal">0</div>
+        <div class="points-lbl">累計Pt</div>
+      </div>
+      <div class="points-divider"></div>
+      <div class="points-item">
+        <div class="points-num" id="pointsStreak">0日</div>
+        <div class="points-lbl">連続ログイン</div>
+      </div>
+      <div class="points-divider"></div>
+      <div class="points-item">
+        <div class="points-num" id="pointsNextBadge">10pt</div>
+        <div class="points-lbl">次のバッジまで</div>
       </div>
     </div>
 
@@ -1319,13 +1574,28 @@ body.night-bg{background:#C8C3BB;}
         <div class="chat-hd-status"><span class="chat-dot"></span> いつでも話しかけてください</div>
       </div>
     </div>
+    <div class="goal-banner" id="goalBannerChat" data-goal-banner onclick="goTab('settings')" style="margin:10px 16px 0;border-radius:var(--r-m);">
+      <div class="goal-banner-em">🎯</div>
+      <div class="goal-banner-body">
+        <div class="goal-banner-lbl">YOUR GOAL</div>
+        <div class="goal-banner-text" id="goalBannerChatText"></div>
+      </div>
+      <div class="goal-banner-edit">設定 ›</div>
+    </div>
     <div class="chat-msgs" id="chatMsgs"></div>
     <div class="chips-row">
+      <button class="chip chip-rec" onclick="quickProductRec()">🛍 健康グッズ</button>
       <button class="chip" onclick="quickChat('今日は疲れました')">😮‍💨 疲れた</button>
       <button class="chip" onclick="quickChat('食事について相談したい')">🥗 食事の相談</button>
       <button class="chip" onclick="quickChat('運動ができなかった')">🚶 運動できなかった</button>
       <button class="chip" onclick="quickChat('よく眠れなかった')">🌙 眠れなかった</button>
       <button class="chip" onclick="quickChat('今日がんばったことを聞いてほしい')">✨ 聞いてほしい</button>
+    </div>
+    <div id="chatLimitBanner" style="display:none;padding:10px 16px 0;">
+      <div style="background:var(--bg);border-radius:var(--r-m);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <span id="chatLimitText" style="font-size:12px;color:var(--t-m);"></span>
+        <button onclick="showUpgradeModal()" style="font-size:11px;font-weight:700;color:var(--t-g);background:var(--g-p);border:none;border-radius:var(--r-f);padding:5px 10px;cursor:pointer;flex-shrink:0;">無制限にする →</button>
+      </div>
     </div>
     <div class="chat-input-area">
       <textarea class="chat-input" id="chatInput" placeholder="Habio に話しかける…" rows="1" oninput="onInputChange(this)"></textarea>
@@ -1353,7 +1623,15 @@ body.night-bg{background:#C8C3BB;}
         </div>
       </div>
     </div>
-    <div style="height:16px;"></div>
+    <div class="goal-banner" id="goalBannerHabits" data-goal-banner onclick="goTab('settings')">
+      <div class="goal-banner-em">🎯</div>
+      <div class="goal-banner-body">
+        <div class="goal-banner-lbl">YOUR GOAL</div>
+        <div class="goal-banner-text" id="goalBannerHabitsText"></div>
+      </div>
+      <div class="goal-banner-edit">設定 ›</div>
+    </div>
+    <div style="height:6px;"></div>
     <div class="cal-wrap" id="habitCal">
       <div class="cal-header">
         <div class="cal-title">今週の記録</div>
@@ -1432,6 +1710,23 @@ body.night-bg{background:#C8C3BB;}
       <div class="wins-title">小さな「できた」</div>
       <div class="wins-date" id="winsDate"></div>
     </div>
+    <div style="margin:0 16px 14px;display:flex;gap:10px;">
+      <div onclick="openRewardsModal()" style="flex:1;background:linear-gradient(135deg,#E8A030,#D48020);border-radius:var(--r-l);padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+        <span style="font-size:22px;">🎖️</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;">整いバッジ</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.8);margin-top:1px;" id="winsPageBadgeCount">0枚獲得</div>
+        </div>
+        <span style="margin-left:auto;color:rgba(255,255,255,.7);font-size:16px;">›</span>
+      </div>
+      <div style="flex:1;background:var(--card);border-radius:var(--r-l);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh1);">
+        <span style="font-size:22px;">✨</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--t);">累計ポイント</div>
+          <div style="font-size:11px;color:var(--t-m);margin-top:1px;" id="winsPageTotalPts">0 pt</div>
+        </div>
+      </div>
+    </div>
     <p class="sec-lbl">今日</p>
     <div id="today-wins-list"></div>
     <div class="wins-close">
@@ -1464,9 +1759,9 @@ body.night-bg{background:#C8C3BB;}
           <div class="profile-stat-num" id="statTotalWins">0</div>
           <div class="profile-stat-lbl">合計できた</div>
         </div>
-        <div class="profile-stat">
-          <div class="profile-stat-num" id="statWeekRate">0%</div>
-          <div class="profile-stat-lbl">今週の継続率</div>
+        <div class="profile-stat accent">
+          <div class="profile-stat-num" id="statTotalPts">0</div>
+          <div class="profile-stat-lbl">整いポイント</div>
         </div>
         <div class="profile-stat">
           <div class="profile-stat-num" id="statStreak">0日</div>
@@ -1475,16 +1770,27 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
-    <p class="sec-lbl">プレミアムプラン</p>
-    <div class="upgrade-banner mb14" onclick="showUpgradeModal()">
+    <!-- FREE: アップグレード誘導 -->
+    <p class="sec-lbl" data-premium-hide>プレミアムプラン</p>
+    <div class="upgrade-banner mb14" data-premium-hide onclick="showUpgradeModal()">
       <div class="upgrade-banner-top">
         <div class="upgrade-em">💎</div>
         <div>
-          <div class="upgrade-title">もっと寄り添ってほしい方へ</div>
-          <div class="upgrade-sub">7日間、無料でお試しできます</div>
+          <div class="upgrade-title">もっと深く、自分のリズムを知りたい方へ。</div>
+          <div class="upgrade-sub">整いポイント2倍・バッジ複数獲得・7日間無料</div>
         </div>
       </div>
       <button class="upgrade-cta">プレミアムを試してみる →</button>
+    </div>
+    <!-- PREMIUM: ステータス表示 -->
+    <div data-premium-show style="display:none;margin:0 22px 16px;">
+      <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:var(--r-l);padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(124,58,237,.3);">
+        <div style="font-size:28px;">💎</div>
+        <div>
+          <div style="color:#fff;font-weight:700;font-size:15px;">プレミアム会員</div>
+          <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:2px;">整いポイント2倍・全スタイル・バッジ複数獲得</div>
+        </div>
+      </div>
     </div>
 
     <p class="sec-lbl">お知らせ</p>
@@ -1501,49 +1807,67 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
-    <p class="sec-lbl">習慣の設定</p>
+    <p class="sec-lbl">目標・習慣の設定</p>
+    <div class="goal-display-card" id="goalDisplayCard">
+      <div class="goal-display-lbl">🎯 あなたの目標</div>
+      <div class="goal-display-text" id="goalDisplayText"></div>
+      <div class="goal-display-sub" id="goalDisplaySub"></div>
+    </div>
     <div class="st-group">
-      <div class="st-row">
-        <div class="st-em">✏️</div>
-        <div class="st-info"><div class="st-name">習慣をカスタマイズ</div><div class="st-note">自分に合った習慣を選べます</div></div>
+      <div class="st-row" onclick="openGoalSetup()">
+        <div class="st-em">🌟</div>
+        <div class="st-info"><div class="st-name">今の生活・理想の自分</div><div class="st-note" id="goalSetupNote">目標を設定して習慣をカスタマイズ</div></div>
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
-      <div class="st-row">
-        <div class="st-em">⏱️</div>
-        <div class="st-info"><div class="st-name">睡眠の目標時間</div><div class="st-note">体内時計を整えます</div></div>
-        <div class="st-r"><span class="st-val">7時間</span><span class="st-arr">›</span></div>
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;">
+          <div class="st-em">🌙</div>
+          <div class="st-info"><div class="st-name">睡眠の目標時間</div><div class="st-note">毎晩の目安を設定します</div></div>
+          <div class="st-r"><span class="st-val" id="sleepGoalVal">7時間</span></div>
+        </div>
+        <div class="sleep-btns" id="sleepBtns">
+          <button class="sleep-btn" data-h="6" onclick="setSleepGoal(6)">6時間</button>
+          <button class="sleep-btn" data-h="7" onclick="setSleepGoal(7)">7時間</button>
+          <button class="sleep-btn" data-h="8" onclick="setSleepGoal(8)">8時間</button>
+          <button class="sleep-btn" data-h="9" onclick="setSleepGoal(9)">9時間</button>
+        </div>
+      </div>
+      <div class="st-row" onclick="openPeriodSetting()">
+        <div class="st-em">⏳</div>
+        <div class="st-info"><div class="st-name">取り組み期間の設定</div><div class="st-note" id="periodNote">目標達成までの期間を設定します</div></div>
+        <div class="st-r"><span class="pro-badge" id="periodProBadge">PRO</span><span class="st-val" id="periodVal" style="display:none;"></span><span class="st-arr">›</span></div>
       </div>
     </div>
 
     <p class="sec-lbl">Habio の話し方</p>
     <div class="st-group">
-      <div class="st-row">
+      <div class="st-row" onclick="openStyleSheet()">
         <div class="st-em">💬</div>
-        <div class="st-info"><div class="st-name">話し方のスタイル</div><div class="st-note">いまより優しく or 少し明るく</div></div>
-        <div class="st-r"><span class="st-val">やさしめ</span><span class="st-arr">›</span></div>
+        <div class="st-info"><div class="st-name">話し方のスタイル</div><div class="st-note" id="styleNote">Habio のトーンを選べます</div></div>
+        <div class="st-r"><span class="st-val" id="styleVal">やさしめ</span><span class="st-arr">›</span></div>
       </div>
     </div>
 
     <p class="sec-lbl">プレミアムで見えること</p>
     <div class="prem-preview-wrap mb14">
       <div class="prem-preview-inner">
-        <div class="st-row" style="border-bottom:1px solid var(--border);">
+        <div class="st-row" style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openPremiumFeature('habit30')">
           <div class="st-em">📊</div>
           <div class="st-info"><div class="st-name">過去30日の習慣グラフ</div><div class="st-note">継続パターンが一目でわかります</div></div>
           <div class="st-r"><span class="st-arr">›</span></div>
         </div>
-        <div class="st-row" style="border-bottom:1px solid var(--border);">
+        <div class="st-row" style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openPremiumFeature('moodsleep')">
           <div class="st-em">🧠</div>
           <div class="st-info"><div class="st-name">睡眠 × 気分の関連分析</div><div class="st-note">あなたのパターンを可視化します</div></div>
           <div class="st-r"><span class="st-arr">›</span></div>
         </div>
-        <div class="st-row">
+        <div class="st-row" style="cursor:pointer;" onclick="openPremiumFeature('report')">
           <div class="st-em">✨</div>
           <div class="st-info"><div class="st-name">AI週次コーチングレポート</div><div class="st-note">もっと深く、振り返れます</div></div>
           <div class="st-r"><span class="st-arr">›</span></div>
         </div>
       </div>
-      <div class="prem-preview-lock" onclick="showUpgradeModal()">
+      <div class="prem-preview-lock" data-premium-hide onclick="showUpgradeModal()">
         <div class="prem-lock-em">🔒</div>
         <div class="prem-lock-t">プレミアムで解放されます</div>
         <div class="prem-lock-s">より深く振り返れます</div>
@@ -1551,22 +1875,49 @@ body.night-bg{background:#C8C3BB;}
     </div>
 
     <p class="sec-lbl">テーマカラー</p>
-    <div class="st-group">
-      <div class="st-row" style="cursor:default;">
-        <div class="st-em">🎨</div>
-        <div class="st-info"><div class="st-name">カラーテーマ</div><div class="st-note">お好みの色を選んでください</div></div>
+    <div class="prem-preview-wrap mb14" id="themeWrap">
+      <div class="prem-preview-inner" id="themeInner">
+        <div class="st-group" style="margin:0;box-shadow:none;border-radius:0;">
+          <div class="st-row" style="cursor:default;">
+            <div class="st-em">🎨</div>
+            <div class="st-info"><div class="st-name">カラーテーマ</div><div class="st-note">タップして色を変えられます</div></div>
+          </div>
+          <div class="theme-swatches" id="themeSwatches">
+            <button class="swatch" data-color="#72B994" style="background:#72B994;" aria-label="グリーン" onclick="setThemeColor('#72B994')"></button>
+            <button class="swatch" data-color="#7AB0D4" style="background:#7AB0D4;" aria-label="ブルー" onclick="setThemeColor('#7AB0D4')"></button>
+            <button class="swatch" data-color="#B49CD4" style="background:#B49CD4;" aria-label="パープル" onclick="setThemeColor('#B49CD4')"></button>
+            <button class="swatch" data-color="#D4956C" style="background:#D4956C;" aria-label="オレンジ" onclick="setThemeColor('#D4956C')"></button>
+            <button class="swatch" data-color="#D49AB4" style="background:#D49AB4;" aria-label="ピンク" onclick="setThemeColor('#D49AB4')"></button>
+            <button class="swatch" data-color="#74B8B8" style="background:#74B8B8;" aria-label="ティール" onclick="setThemeColor('#74B8B8')"></button>
+            <button class="swatch" data-color="#9AB89A" style="background:#9AB89A;" aria-label="セージ" onclick="setThemeColor('#9AB89A')"></button>
+            <button class="swatch" data-color="#C4956A" style="background:#C4956A;" aria-label="ブラウン" onclick="setThemeColor('#C4956A')"></button>
+          </div>
+        </div>
       </div>
-      <div class="theme-swatches" id="themeSwatches">
-        <div class="swatch" data-color="#72B994" style="background:#72B994;"></div>
-        <div class="swatch" data-color="#7AB0D4" style="background:#7AB0D4;"></div>
-        <div class="swatch" data-color="#B49CD4" style="background:#B49CD4;"></div>
-        <div class="swatch" data-color="#D4956C" style="background:#D4956C;"></div>
-        <div class="swatch" data-color="#9AB89A" style="background:#9AB89A;"></div>
+      <div class="prem-preview-lock" id="themeLock" onclick="showUpgradeModal()">
+        <div class="prem-lock-em">🔒</div>
+        <div class="prem-lock-t">プレミアムで解放されます</div>
+        <div class="prem-lock-s">好きな色にカスタマイズできます</div>
       </div>
     </div>
 
     <p class="sec-lbl">アカウント</p>
     <div class="st-group">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;padding-bottom:8px;">
+          <div class="st-em">✉️</div>
+          <div class="st-info">
+            <div class="st-name">メールアドレス</div>
+            <div class="st-note" id="emailNote">プレミアム確認・お知らせに使います</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;width:100%;padding:0 4px 0 2px;">
+          <input id="settingsEmail" type="email" placeholder="your@email.com" inputmode="email" autocomplete="email"
+            style="flex:1;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg);color:var(--t);outline:none;min-width:0;">
+          <button onclick="checkEmailPremium()"
+            style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">確認</button>
+        </div>
+      </div>
       <div class="st-row" onclick="window.location.href='index.html'">
         <div class="st-em">🌐</div>
         <div class="st-info"><div class="st-name">サービスサイトへ戻る</div><div class="st-note">Habio のランディングページ</div></div>
@@ -1671,6 +2022,8 @@ body.night-bg{background:#C8C3BB;}
       <div class="onb-dot" id="onbDot1"></div>
       <div class="onb-dot" id="onbDot2"></div>
       <div class="onb-dot" id="onbDot3"></div>
+      <div class="onb-dot" id="onbDot4"></div>
+      <div class="onb-dot" id="onbDot5"></div>
     </div>
     <div class="onb-screens-wrap">
 
@@ -1691,17 +2044,19 @@ body.night-bg{background:#C8C3BB;}
         </div>
       </div>
 
-      <!-- Step 1: Q1 気になること -->
+      <!-- Step 1: 今の生活 -->
       <div class="onb-screen" id="onb-s1">
         <div class="onb-inner">
-          <div class="onb-em">🤔</div>
-          <div class="onb-title">最近、気になっていることは？</div>
-          <div class="onb-sub">一番近いものを選んでください</div>
+          <div class="onb-em">📋</div>
+          <div class="onb-title">今の生活で<br>気になっていることは？</div>
+          <div class="onb-sub">あてはまるものを選んでください</div>
           <div class="onb-options">
-            <div class="onb-option" onclick="selectOnbOpt(this,'q1','weight')"><span class="onb-option-em">⚖️</span>体重・体型のこと</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q1','diet')"><span class="onb-option-em">🥗</span>食事のバランス</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q1','habit')"><span class="onb-option-em">🔄</span>習慣が続かないこと</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q1','stress')"><span class="onb-option-em">😮‍💨</span>ストレス・疲れ</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','exercise')"><span class="onb-option-em">🪑</span>運動不足・体が重い</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','food')"><span class="onb-option-em">🍔</span>食事が乱れがち</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','sleep')"><span class="onb-option-em">😴</span>睡眠が足りていない</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','stress')"><span class="onb-option-em">😮‍💨</span>ストレス・疲れが多い</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','water')"><span class="onb-option-em">💧</span>水分・栄養の習慣がない</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_current','rhythm')"><span class="onb-option-em">⏰</span>生活リズムが乱れている</div>
           </div>
           <div class="onb-spacer"></div>
           <button class="onb-btn" id="onbBtn1" onclick="onbNext()" disabled>次へ →</button>
@@ -1709,16 +2064,19 @@ body.night-bg{background:#C8C3BB;}
         </div>
       </div>
 
-      <!-- Step 2: Q2 忙しさ -->
+      <!-- Step 2: 理想の自分 -->
       <div class="onb-screen" id="onb-s2">
         <div class="onb-inner">
-          <div class="onb-em">⏰</div>
-          <div class="onb-title">1日はどのくらい<br>忙しいですか？</div>
-          <div class="onb-sub">Habio のアドバイスをあなたに合わせます</div>
+          <div class="onb-em">🌟</div>
+          <div class="onb-title">理想の自分に<br>近いものはどれですか？</div>
+          <div class="onb-sub">一番めざしたいものを選んでください</div>
           <div class="onb-options">
-            <div class="onb-option" onclick="selectOnbOpt(this,'q2','busy')"><span class="onb-option-em">🏃</span>かなり忙しい</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q2','normal')"><span class="onb-option-em">🚶</span>まあまあ</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q2','free')"><span class="onb-option-em">🧘</span>比較的ゆとりがある</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','exercise')"><span class="onb-option-em">🏃</span>体を動かす習慣をつくりたい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','food')"><span class="onb-option-em">🥗</span>食事のバランスを整えたい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','sleep')"><span class="onb-option-em">🌙</span>よく眠れるようになりたい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','stress')"><span class="onb-option-em">🧘</span>ストレスを減らして穏やかになりたい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','water')"><span class="onb-option-em">💧</span>水分・栄養を毎日意識したい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','rhythm')"><span class="onb-option-em">🌅</span>生活全体のリズムを整えたい</div>
           </div>
           <div class="onb-spacer"></div>
           <button class="onb-btn" id="onbBtn2" onclick="onbNext()" disabled>次へ →</button>
@@ -1726,29 +2084,52 @@ body.night-bg{background:#C8C3BB;}
         </div>
       </div>
 
-      <!-- Step 3: Q3 続かなかった理由 -->
+      <!-- Step 3: 睡眠目標 -->
       <div class="onb-screen" id="onb-s3">
-        <div class="onb-inner">
-          <div class="onb-em">💭</div>
-          <div class="onb-title">今まで続かなかったのは<br>なぜだと思いますか？</div>
-          <div class="onb-sub">正直に教えてください。責めたりしません</div>
-          <div class="onb-options">
-            <div class="onb-option" onclick="selectOnbOpt(this,'q3','perfect')"><span class="onb-option-em">🎯</span>完璧を目指しすぎてしまう</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q3','motive')"><span class="onb-option-em">🪫</span>やる気が続かない</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q3','forget')"><span class="onb-option-em">😅</span>忙しくて忘れてしまう</div>
-            <div class="onb-option" onclick="selectOnbOpt(this,'q3','nostart')"><span class="onb-option-em">🌀</span>何から始めればいいか分からない</div>
+        <div class="onb-inner" style="align-items:center;text-align:center;">
+          <div class="onb-em">🌙</div>
+          <div class="onb-title">目標の睡眠時間は<br>どのくらいですか？</div>
+          <div class="onb-sub">毎晩の目安として設定します。<br>後から変更できます。</div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">
+            <button class="sleep-btn" id="onbSleep6" onclick="selectOnbSleep(6)">6時間</button>
+            <button class="sleep-btn sel" id="onbSleep7" onclick="selectOnbSleep(7)">7時間</button>
+            <button class="sleep-btn" id="onbSleep8" onclick="selectOnbSleep(8)">8時間</button>
+            <button class="sleep-btn" id="onbSleep9" onclick="selectOnbSleep(9)">9時間</button>
           </div>
           <div class="onb-spacer"></div>
-          <button class="onb-btn" id="onbBtn3" onclick="onbNext()" disabled>Habio をはじめる →</button>
+          <button class="onb-btn" id="onbBtn3" onclick="onbNext()">次へ →</button>
+          <div class="onb-skip" onclick="onbSkip()">スキップして始める</div>
         </div>
       </div>
 
-      <!-- Step 4: Completion -->
+      <!-- Step 4: 忙しさ -->
       <div class="onb-screen" id="onb-s4">
-        <div class="onb-inner" style="align-items:center;justify-content:center;text-align:center;">
-          <div class="onb-em">🌿</div>
-          <div class="onb-title" id="onbCompleteTitle">準備ができました</div>
-          <div class="onb-sub" id="onbCompleteMsg">一緒に、あなたのペースで始めましょう。<br>完璧じゃなくていいんです。</div>
+        <div class="onb-inner">
+          <div class="onb-em">⏰</div>
+          <div class="onb-title">1日はどのくらい<br>忙しいですか？</div>
+          <div class="onb-sub">Habio のアドバイスをあなたに合わせます</div>
+          <div class="onb-options">
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_busy','busy')"><span class="onb-option-em">🏃</span>かなり忙しい</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_busy','normal')"><span class="onb-option-em">🚶</span>まあまあ</div>
+            <div class="onb-option" onclick="selectOnbOpt(this,'q_busy','free')"><span class="onb-option-em">🧘</span>比較的ゆとりがある</div>
+          </div>
+          <div class="onb-spacer"></div>
+          <button class="onb-btn" id="onbBtn4" onclick="onbNext()" disabled>Habio をはじめる →</button>
+          <div class="onb-skip" onclick="onbSkip()">スキップして始める</div>
+        </div>
+      </div>
+
+      <!-- Step 5: 完了・目標表示 -->
+      <div class="onb-screen" id="onb-s5">
+        <div class="onb-inner" style="align-items:center;text-align:center;">
+          <div class="onb-em">🎯</div>
+          <div class="onb-title" id="onbCompleteTitle">あなたの目標</div>
+          <div style="width:100%;background:linear-gradient(135deg,var(--g-p),var(--blue-p));border-radius:var(--r-l);padding:20px;margin:8px 0 16px;text-align:left;">
+            <div style="font-size:10px;font-weight:700;color:var(--t-g);letter-spacing:.1em;margin-bottom:8px;">HABIO GOAL</div>
+            <div id="onbGoalText" style="font-size:16px;font-weight:700;color:var(--t);line-height:1.65;"></div>
+            <div id="onbSleepGoalText" style="font-size:12px;color:var(--t-m);margin-top:8px;"></div>
+          </div>
+          <div class="onb-sub" id="onbCompleteMsg" style="margin-bottom:0;">一緒に、あなたのペースで始めましょう。<br>完璧じゃなくていいんです。</div>
           <div class="onb-spacer"></div>
           <button class="onb-btn" onclick="onbFinish()" style="max-width:280px;">Habio を使い始める →</button>
         </div>
@@ -1767,6 +2148,45 @@ body.night-bg{background:#C8C3BB;}
       <button class="streak-modal-btn" onclick="closeStreakModal()">ありがとう 🌱</button>
     </div>
   </div>
+
+  <!-- REWARDS MODAL -->
+  <div class="rewards-overlay" id="rewardsOverlay" onclick="onRewardsOverlayClick(event)">
+    <div class="rewards-sheet" id="rewardsSheet">
+      <div class="rewards-handle"></div>
+      <div class="rewards-title">🎖️ 整いバッジ & ポイント</div>
+      <div class="rewards-pts-banner">
+        <div>
+          <div class="rwpb-total" id="rwTotalPts">0 pt</div>
+          <div class="rwpb-lbl">累計整いポイント</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-size:13px;font-weight:700;color:var(--t);" id="rwBadgeCount">0 / 10 獲得</div>
+          <div style="font-size:10px;color:var(--t-m);margin-top:2px;">バッジ獲得状況</div>
+        </div>
+      </div>
+      <div class="rewards-sec-lbl">POINT BADGES — 10pt ごとに獲得</div>
+      <div class="badges-grid" id="pointBadgesGrid"></div>
+      <div class="rewards-sec-lbl">STREAK BADGES — 継続で獲得</div>
+      <div class="badges-grid" id="streakBadgesGrid"></div>
+      <div class="rewards-coming">
+        🎁 リワード機能<br>
+        <span style="font-size:11px;">バッジが10枚以上たまると、リワードと交換できるようになります（準備中）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMEBACK MODAL -->
+  <div class="comeback-overlay" id="comebackOverlay">
+    <div class="comeback-modal">
+      <div class="comeback-em">🌿</div>
+      <div class="comeback-title" id="comebackTitle">おかえりなさい。<br>また一緒に始めましょう。</div>
+      <div class="comeback-msg" id="comebackMsg">少し間が空いても大丈夫。<br>また今日から、少しずつ整えていきましょう。</div>
+      <button class="comeback-btn" onclick="closeComebackModal()">ありがとう、始めます 🌱</button>
+    </div>
+  </div>
+
+  <!-- BADGE TOAST -->
+  <div class="badge-earn-toast" id="badgeEarnToast"></div>
 
   <!-- REC DETAIL MODAL -->
   <div class="rec-modal-overlay" id="recModalOverlay" onclick="onRecModalOverlayClick(event)">
@@ -1836,8 +2256,14 @@ body.night-bg{background:#C8C3BB;}
           <span class="modal-price-num">¥980</span><span class="modal-price-per"> / 月</span>
           <div><span class="modal-price-trial">🎁 7日間は完全無料</span></div>
         </div>
+        <div style="padding:0 20px 8px;">
+          <input id="upgradeEmail" type="email" placeholder="メールアドレスを入力"
+            style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd;font-size:15px;font-family:inherit;outline:none;box-sizing:border-box;"
+            autocomplete="email" inputmode="email">
+          <div id="upgradeEmailErr" style="color:#e05;font-size:12px;margin-top:4px;min-height:16px;"></div>
+        </div>
         <div class="modal-cta-wrap">
-          <button class="modal-cta" onclick="handleUpgradeCta()">7日間、無料で試してみる →</button>
+          <button class="modal-cta" id="upgradeCtaBtn" onclick="handleUpgradeCta()">7日間、無料で試してみる →</button>
         </div>
         <div class="modal-foot">
           クレジットカード不要・いつでも解約可能<br>
@@ -1846,6 +2272,119 @@ body.night-bg{background:#C8C3BB;}
         <div style="height:20px;"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- STYLE PICKER SHEET -->
+<div style="position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;z-index:620;" id="styleSheetRoot">
+  <div style="width:100%;max-width:390px;max-height:844px;position:relative;pointer-events:none;" id="styleSheetInner">
+    <div class="style-sheet-overlay" id="styleSheetOverlay" onclick="closeStyleSheet(event)">
+      <div class="style-sheet">
+        <div class="style-sheet-handle"></div>
+        <div class="style-sheet-title">話し方のスタイル</div>
+        <div class="style-sheet-sub">どんなスタイルでも、Habio はあなたに寄り添います。</div>
+        <div id="styleOptions">
+          <div class="style-option" data-style="gentle" onclick="selectStyle('gentle')">
+            <div class="style-option-em">🌸</div>
+            <div class="style-option-body">
+              <div class="style-option-name">やさしめ</div>
+              <div class="style-option-desc">ふんわり優しく、そっと寄り添います。迷ったらこれ。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-style="normal" onclick="selectStyle('normal')">
+            <div class="style-option-em">😊</div>
+            <div class="style-option-body">
+              <div class="style-option-name">普通</div>
+              <div class="style-option-desc">フレンドリーな友人のように、自然な距離感で話します。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-style="firm" onclick="selectStyle('firm')">
+            <div class="style-option-em">💪</div>
+            <div class="style-option-body">
+              <div class="style-option-name">きつめ</div>
+              <div class="style-option-desc">はっきり言ってほしい方向け。遠回しにせず、でも思いやりはある。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-style="sparta" onclick="selectStyle('sparta','prem')">
+            <div class="style-option-em">🔥</div>
+            <div class="style-option-body">
+              <div class="style-option-name">スパルタ</div>
+              <div class="style-option-desc">厳しい口調で率直に。でも内心は深く応援している。</div>
+            </div>
+            <div class="style-option-right"><span class="style-prem-badge">PRO</span><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-style="tsundere" onclick="selectStyle('tsundere','prem')">
+            <div class="style-option-em">😤</div>
+            <div class="style-option-body">
+              <div class="style-option-name">ツンデレ</div>
+              <div class="style-option-desc">素っ気なく見えるけど、本当は心配している。たまに優しさが滲む。</div>
+            </div>
+            <div class="style-option-right"><span class="style-prem-badge">PRO</span><div class="style-option-check"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERIOD SETTING SHEET -->
+<div style="position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-end;pointer-events:none;z-index:620;" id="periodSheetRoot">
+  <div style="width:100%;max-width:390px;max-height:844px;position:relative;pointer-events:none;" id="periodSheetInner">
+    <div class="style-sheet-overlay" id="periodSheetOverlay" onclick="closePeriodSheet(event)">
+      <div class="style-sheet">
+        <div class="style-sheet-handle"></div>
+        <div class="style-sheet-title">取り組み期間の設定</div>
+        <div class="style-sheet-sub">目標に向けて取り組む期間を選んでください。</div>
+        <div id="periodOptions">
+          <div class="style-option" data-period="7"  onclick="selectPeriod(7)">
+            <div class="style-option-em">📅</div>
+            <div class="style-option-body">
+              <div class="style-option-name">1週間</div>
+              <div class="style-option-desc">まず短期で試したい方に。まずは7日間続けてみましょう。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-period="14" onclick="selectPeriod(14)">
+            <div class="style-option-em">🗓️</div>
+            <div class="style-option-body">
+              <div class="style-option-name">2週間</div>
+              <div class="style-option-desc">習慣が少し定着しはじめる期間です。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-period="30" onclick="selectPeriod(30)">
+            <div class="style-option-em">🌱</div>
+            <div class="style-option-body">
+              <div class="style-option-name">1ヶ月</div>
+              <div class="style-option-desc">習慣が身につく目安の期間です。おすすめ。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+          <div class="style-option" data-period="90" onclick="selectPeriod(90)">
+            <div class="style-option-em">🏆</div>
+            <div class="style-option-body">
+              <div class="style-option-name">3ヶ月</div>
+              <div class="style-option-desc">体と心に変化を感じられる本格的な期間です。</div>
+            </div>
+            <div class="style-option-right"><div class="style-option-check"></div></div>
+          </div>
+        </div>
+        <div style="height:16px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM FEATURE MODAL -->
+<div class="pf-overlay" id="pfOverlay" onclick="closePfModal(event)">
+  <div class="pf-modal" id="pfModal">
+    <div class="pf-handle"></div>
+    <div class="pf-title" id="pfTitle"></div>
+    <div class="pf-sub" id="pfSub"></div>
+    <div id="pfBody"></div>
   </div>
 </div>
 
@@ -1907,14 +2446,6 @@ function applyNightMode(){
 applyNightMode();
 setInterval(applyNightMode,60000);
 
-/* ── STATUS BAR CLOCK ── */
-function updateStatusClock(){
-  const n=new Date();
-  const el=document.getElementById('sbTime');
-  if(el) el.textContent=n.getHours()+':'+pad(n.getMinutes());
-}
-updateStatusClock();
-setInterval(updateStatusClock,10000);
 
 /* ── STREAK ── */
 function calcStreak(wins){
@@ -2033,6 +2564,12 @@ async function generateAIResponse(userMessage, context=null){
     hour: ctx.hour||new Date().getHours(),
     todayMood: ctx.todayMood||null,
     mealsCount: (ctx.meals||[]).length,
+    talkStyle: Store.get('talk_style','gentle'),
+    goal: generateGoalText(
+      Store.get('onb_answers',{}).q_current||'',
+      Store.get('onb_answers',{}).q_ideal||'',
+      Store.get('sleep_goal',7)
+    ),
   };
 
   // Send last 6 messages as history (3 exchanges)
@@ -2083,7 +2620,7 @@ function goTab(name){
   const tab=document.querySelector('[data-scr="'+name+'"]');
   if(scr) scr.classList.add('active');
   if(tab) tab.classList.add('active');
-  if(name==='chat') setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80);
+  if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
@@ -2107,7 +2644,7 @@ const CIRC=2*Math.PI*32; // r=32 → ≈201
 function updateProgressRing(){
   const wins=Store.get('wins',[]);
   const todayDone=wins.filter(w=>w.date===today()).length;
-  const total=6;
+  const total=HABIT_DEFS.length||3;
   const pct=Math.min(todayDone/total,1);
   const ring=document.getElementById('homeRing');
   if(ring) ring.style.strokeDasharray=`${pct*CIRC} ${CIRC}`;
@@ -2251,6 +2788,7 @@ function doStep(){
   const em=document.getElementById('stepEm')?.textContent||'✨';
   logWin(em,name+'ができた','今日の小さな一歩');
   showToast('✓ 記録しました！');
+  addPoints(1);
 }
 function restoreStep(){
   if(Store.get('step_done_date')===today()){
@@ -2269,7 +2807,9 @@ function logWin(em,title,note=''){
   renderWins();
   updateProgressRing();
   updateHabitProgress();
-  checkStreakMilestone(calcStreak(wins));
+  const currentStreak=calcStreak(wins);
+  checkStreakMilestone(currentStreak);
+  checkStreakBadges(currentStreak);
 }
 
 function renderHomeWins(){
@@ -2300,6 +2840,12 @@ function renderWins(){
   if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>少し整いました。';
   const habioMsg=document.getElementById('winsHabioMsg');
   if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
+  // Update wins page badge/pts counters
+  const allBadges=[...Store.get('badges_pts',[]),...Store.get('badges_streak',[])];
+  const wpb=document.getElementById('winsPageBadgeCount');
+  if(wpb) wpb.textContent=allBadges.length+'枚獲得';
+  const wpp=document.getElementById('winsPageTotalPts');
+  if(wpp) wpp.textContent=getTotalPts()+' pt';
 }
 
 function winCardHTML(w){
@@ -2311,14 +2857,35 @@ function winCardHTML(w){
 }
 
 /* ── HABITS ── */
-const HABIT_DEFS=[
-  {id:'water', em:'💧',name:'水を飲む',   note:'1日2杯から始めよう', winNote:'水分を意識できました'},
-  {id:'breath',em:'🌿',name:'深呼吸する', note:'ゆっくり3回だけ',    winNote:'心が少し落ち着きました'},
-  {id:'walk',  em:'🚶',name:'少し歩く',   note:'3分でもOK',           winNote:'体を動かせました'},
-  {id:'veg',   em:'🥗',name:'野菜を1品',  note:'コンビニでも大丈夫',  winNote:'バランスを意識できました'},
-  {id:'sleep', em:'🌙',name:'早めに寝る', note:'昨日より30分でもOK',  winNote:'体を休める準備ができました'},
-  {id:'sun',   em:'☀️',name:'朝日を浴びる',note:'窓を開けるだけでOK', winNote:'体内時計が整いはじめます'},
-];
+const ALL_HABITS={
+  water:    {em:'💧',name:'水を飲む',         note:'1日8杯を目標に',       winNote:'水分補給できました'},
+  breath:   {em:'🌿',name:'深呼吸する',       note:'ゆっくり3回だけ',      winNote:'心が少し落ち着きました'},
+  walk:     {em:'🚶',name:'少し歩く',         note:'3分でもOK',             winNote:'体を動かせました'},
+  veg:      {em:'🥗',name:'野菜を1品',        note:'コンビニでも大丈夫',    winNote:'バランスを意識できました'},
+  sleep:    {em:'🌙',name:'早めに寝る',       note:'昨日より30分でもOK',   winNote:'体を休める準備ができました'},
+  sun:      {em:'☀️',name:'朝日を浴びる',    note:'窓を開けるだけでOK',   winNote:'体内時計が整いはじめます'},
+  stretch:  {em:'🧘',name:'ストレッチする',   note:'朝3分だけ',             winNote:'柔軟性が少し上がります'},
+  breakfast:{em:'🍳',name:'朝食を食べる',     note:'小さくてもOK',           winNote:'1日のエネルギーが整います'},
+  noscreen: {em:'📵',name:'スマホを早めに置く',note:'寝る30分前に',          winNote:'目が休まります'},
+  good:     {em:'✨',name:'小さな「よかった」を探す',note:'1つだけでOK',   winNote:'気持ちが少し楽になります'},
+};
+const HABIT_SETS={
+  default:  ['water','breath','walk'],
+  exercise: ['walk','stretch','water'],
+  food:     ['veg','breakfast','water'],
+  sleep:    ['sleep','noscreen','breath'],
+  stress:   ['breath','walk','good'],
+  water:    ['water','veg','breakfast'],
+  rhythm:   ['water','sleep','walk'],
+};
+const ALL_HABIT_NAMES=new Set(Object.values(ALL_HABITS).map(h=>h.name+'ができた'));
+let HABIT_DEFS=HABIT_SETS.default.map(id=>({id,...ALL_HABITS[id]}));
+
+function refreshHabitDefs(){
+  const ideal=Store.get('onb_answers',{}).q_ideal||'default';
+  const set=HABIT_SETS[ideal]||HABIT_SETS.default;
+  HABIT_DEFS=set.map(id=>({id,...ALL_HABITS[id]}));
+}
 
 function initHabits(){
   const lastDate=Store.get('habit_date','');
@@ -2353,6 +2920,7 @@ function toggleHabit(el){
   if(nowDone){
     logWin(def.em,def.name+'ができた',def.winNote);
     showToast(def.em+' '+def.name+'を記録しました！');
+    addPoints(1);
   }
   updateHabitEnc();
   updateHabitProgress();
@@ -2430,6 +2998,11 @@ function logFoodItem(id,em,name){
   renderFoodLog();
   logWin(em,name+'を食べた','食事の記録');
   showToast(em+' 記録しました！');
+  // 1pt per day for food logging (not per item)
+  if(Store.get('pts_food_date','')!==today()){
+    Store.set('pts_food_date',today());
+    addPoints(1);
+  }
 }
 
 function deleteFoodItem(idx){
@@ -2563,11 +3136,77 @@ function appendBubble(text,isMe,time,save=true,dateStr=null){
   }
 }
 
+const FREE_CHAT_LIMIT = 10;
+
+function getDaysSinceStart(){
+  const start=Store.get('start_date',today());
+  return Math.floor((new Date(today())-new Date(start))/(1000*60*60*24));
+}
+
+function getChatCount(){
+  const saved=Store.get('chat_count',{});
+  if(saved.date!==today()) return 0;
+  return saved.count||0;
+}
+
+function incChatCount(){
+  const count=getChatCount()+1;
+  Store.set('chat_count',{date:today(),count});
+  return count;
+}
+
+function renderChatLimit(){
+  const isPrem=Store.get('is_premium',false);
+  const banner=document.getElementById('chatLimitBanner');
+  const limitText=document.getElementById('chatLimitText');
+  const inp=document.getElementById('chatInput');
+  const sendBtn=document.getElementById('sendBtn');
+  if(!banner) return;
+
+  // 最初の7日間は無制限
+  if(isPrem || getDaysSinceStart()<7){
+    banner.style.display='none';
+    if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
+    return;
+  }
+
+  const used=getChatCount();
+  const remaining=Math.max(0, FREE_CHAT_LIMIT-used);
+
+  if(remaining<=0){
+    banner.style.display='block';
+    if(limitText) limitText.textContent='今日の無料回数（10回）を使い切りました';
+    if(inp){ inp.disabled=true; inp.placeholder='プレミアムで無制限に話せます'; }
+    if(sendBtn) sendBtn.disabled=true;
+  } else if(remaining<=3){
+    banner.style.display='block';
+    if(limitText) limitText.textContent=`今日あと${remaining}回話せます（無料：10回/日）`;
+    if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
+  } else {
+    banner.style.display='none';
+    if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
+  }
+}
+
 async function sendMsg(){
+  const isPrem=Store.get('is_premium',false);
+  if(!isPrem && getDaysSinceStart()>=7 && getChatCount()>=FREE_CHAT_LIMIT){
+    showUpgradeModal();
+    return;
+  }
+
   const inp=document.getElementById('chatInput');
   if(!inp) return;
   const text=inp.value.trim();
   if(!text) return;
+
+  if(!isPrem) incChatCount();
+  // 1pt per day for using chat
+  if(Store.get('pts_chat_date','')!==today()){
+    Store.set('pts_chat_date',today());
+    addPoints(1);
+  }
+
   appendBubble(text,true,nowTime());
   inp.value=''; inp.style.height='';
   document.getElementById('sendBtn').disabled=true;
@@ -2582,6 +3221,7 @@ async function sendMsg(){
   appendBubble(res.text,false,nowTime());
   if(typing) typing.style.opacity='1';
   if(/ありがとう|よかった|できた|頑張|嬉し/.test(text)) logWin('💬','Habio と話せた','気持ちを伝えることができました');
+  renderChatLimit();
 }
 
 async function quickChat(text){
@@ -2590,6 +3230,38 @@ async function quickChat(text){
   inp.value=text;
   document.getElementById('sendBtn').disabled=false;
   await sendMsg();
+}
+
+function quickProductRec(){
+  // 直近20件の会話テキストをまとめてスコアリング
+  const chatText=Store.get('chat_history',[]).slice(-20).map(m=>m.text||'').join(' ');
+  const scores={};
+  REC_DEFS.forEach(d=>{ scores[d.id]=0; });
+  Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
+    kws.forEach(k=>{ if(chatText.includes(k)) scores[id]=(scores[id]||0)+2; });
+  });
+
+  // スコア降順→同点はランダム
+  const sorted=REC_DEFS.slice().sort((a,b)=>{
+    const diff=(scores[b.id]||0)-(scores[a.id]||0);
+    return diff!==0?diff:Math.random()-0.5;
+  });
+
+  // すでに直前で紹介した商品は2番手にずらす（連打対策）
+  const lastRecId=Store.get('last_rec_id','');
+  const picks=sorted.filter(d=>d.id!==lastRecId);
+  const pick=picks.length?picks[0]:sorted[0];
+  Store.set('last_rec_id',pick.id);
+
+  const link=AFFILIATE_LINKS[pick.id];
+  const hasCtx=(scores[pick.id]||0)>0;
+  const intro=hasCtx
+    ?'今の会話の流れから、これが合いそうかなと思いました 🌿'
+    :'ご参考に、Habio おすすめのアイテムをひとつご紹介します 🌿';
+
+  const msg=`${intro}\n\nひとつ選択肢としてご紹介します 🌿\n▶ ${pick.title}\n${pick.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+  appendBubble(msg,false,nowTime());
+  logRecEvent('rec_chip_'+pick.id);
 }
 
 function onInputChange(el){
@@ -2626,16 +3298,20 @@ function resetData(){
 /* ── THEME ── */
 function initThemeSwatches(){
   const saved=Store.get('theme_color','#72B994');
-  document.querySelectorAll('.swatch').forEach(sw=>{
-    sw.classList.toggle('sel',sw.dataset.color===saved);
-    sw.addEventListener('click',()=>{
-      document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
-      sw.classList.add('sel');
-      applyTheme(sw.dataset.color);
-      Store.set('theme_color',sw.dataset.color);
-    });
+  document.querySelectorAll('#themeSwatches .swatch').forEach(sw=>{
+    sw.classList.toggle('sel', sw.dataset.color===saved);
   });
   applyTheme(saved);
+}
+
+function setThemeColor(hex){
+  if(!Store.get('is_premium',false)){ showUpgradeModal(); return; }
+  document.querySelectorAll('#themeSwatches .swatch').forEach(s=>s.classList.remove('sel'));
+  const sw=document.querySelector(`#themeSwatches .swatch[data-color="${hex}"]`);
+  if(sw) sw.classList.add('sel');
+  applyTheme(hex);
+  Store.set('theme_color',hex);
+  showToast('カラーテーマを変更しました');
 }
 function applyTheme(hex){
   const app=document.getElementById('app');
@@ -2660,6 +3336,10 @@ function showUpgradeModal(){
   const overlay=document.getElementById('upgradeOverlay');
   if(root) root.style.pointerEvents='all';
   if(overlay) overlay.classList.add('show');
+  const emailEl=document.getElementById('upgradeEmail');
+  const errEl=document.getElementById('upgradeEmailErr');
+  if(emailEl && !emailEl.value) emailEl.value=Store.get('user_email','');
+  if(errEl) errEl.textContent='';
 }
 function closeUpgradeModal(event,force=false){
   if(!force&&event&&event.target!==document.getElementById('upgradeOverlay')) return;
@@ -2668,9 +3348,295 @@ function closeUpgradeModal(event,force=false){
   if(overlay) overlay.classList.remove('show');
   setTimeout(()=>{if(root)root.style.pointerEvents='none';},400);
 }
-function handleUpgradeCta(){
-  closeUpgradeModal(null,true);
-  showToast('準備中です。もう少しお待ちください 🌱');
+const STRIPE_WORKER = 'https://habio-stripe.katsuyuki-jyoukou.workers.dev';
+
+async function handleUpgradeCta(){
+  const emailEl = document.getElementById('upgradeEmail');
+  const errEl   = document.getElementById('upgradeEmailErr');
+  const btn      = document.getElementById('upgradeCtaBtn');
+  const email    = (emailEl?.value || '').trim();
+
+  if(errEl) errEl.textContent = '';
+
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    if(errEl) errEl.textContent = 'メールアドレスを正しく入力してください';
+    emailEl?.focus();
+    return;
+  }
+
+  Store.set('user_email', email);
+
+  if(btn){ btn.disabled=true; btn.textContent='処理中…'; }
+  try{
+    const res = await fetch(`${STRIPE_WORKER}/create-checkout`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email,
+        successUrl: `${location.origin}${location.pathname}?premium=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl:  `${location.origin}${location.pathname}?premium=cancel`,
+      }),
+    });
+    const data = await res.json();
+    if(data.url){
+      location.href = data.url;
+    } else {
+      if(errEl) errEl.textContent = data.error || 'エラーが発生しました。もう一度お試しください。';
+    }
+  } catch(e){
+    if(errEl) errEl.textContent = 'ネットワークエラーが発生しました。';
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='7日間、無料で試してみる →'; }
+  }
+}
+
+async function checkPremiumStatus(email){
+  try{
+    const res = await fetch(`${STRIPE_WORKER}/verify`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email}),
+    });
+    const data = await res.json();
+    return data.premium === true;
+  } catch { return false; }
+}
+
+async function initPremiumState(){
+  const params = new URLSearchParams(location.search);
+
+  if(params.get('premium') === 'success'){
+    history.replaceState(null,'', location.pathname);
+    const sessionId = params.get('session_id');
+    if(sessionId){
+      try{
+        const res = await fetch(`${STRIPE_WORKER}/activate`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({session_id: sessionId}),
+        });
+        const data = await res.json();
+        if(data.premium && data.email){
+          Store.set('is_premium', true);
+          Store.set('user_email', data.email);
+          renderPremiumState();
+          showToast('プレミアムプランへようこそ！ 💎');
+          return;
+        }
+      } catch(e){}
+    }
+    showToast('決済を確認中です。少し経ってからご確認ください 🌱');
+    return;
+  }
+
+  if(params.get('premium') === 'cancel'){
+    history.replaceState(null,'', location.pathname);
+    return;
+  }
+
+  const savedEmail = Store.get('user_email','');
+  if(savedEmail && !Store.get('is_premium', false)){
+    const ok = await checkPremiumStatus(savedEmail);
+    if(ok){ Store.set('is_premium', true); renderPremiumState(); }
+  }
+}
+
+function renderPremiumState(){
+  const isPrem = Store.get('is_premium', false);
+  document.querySelectorAll('[data-premium-hide]').forEach(el => {
+    el.style.display = isPrem ? 'none' : '';
+  });
+  document.querySelectorAll('[data-premium-show]').forEach(el => {
+    el.style.display = isPrem ? '' : 'none';
+  });
+  // PRO badges on style options: hide when premium
+  document.querySelectorAll('.style-prem-badge').forEach(el => {
+    el.style.display = isPrem ? 'none' : '';
+  });
+  // Unlock premium preview sections (features + theme)
+  ['.prem-preview-inner', '#themeInner'].forEach(sel=>{
+    const el=document.querySelector(sel);
+    if(el){
+      el.style.filter        = isPrem ? 'none' : '';
+      el.style.pointerEvents = isPrem ? 'auto' : '';
+      el.style.userSelect    = isPrem ? 'auto' : '';
+    }
+  });
+  const themeLock=document.getElementById('themeLock');
+  if(themeLock) themeLock.style.display=isPrem?'none':'';
+  // Pre-fill email input
+  const emailEl = document.getElementById('settingsEmail');
+  if(emailEl && !emailEl.value) emailEl.value = Store.get('user_email','');
+  refreshPeriodUI();
+}
+
+/* ── PREMIUM FEATURE MODAL ── */
+function openPremiumFeature(feature){
+  if(!Store.get('is_premium',false)){
+    showUpgradeModal();
+    return;
+  }
+  const overlay=document.getElementById('pfOverlay');
+  const title=document.getElementById('pfTitle');
+  const sub=document.getElementById('pfSub');
+  const body=document.getElementById('pfBody');
+  if(!overlay) return;
+
+  if(feature==='habit30'){
+    title.textContent='📊 過去30日の習慣グラフ';
+    sub.textContent='色が濃いほど習慣達成率が高い日です';
+    body.innerHTML=build30DayGrid();
+  } else if(feature==='moodsleep'){
+    title.textContent='🧠 睡眠 × 気分の関連分析';
+    sub.textContent='直近14日間の気分と睡眠目標の傾向です';
+    body.innerHTML=buildMoodAnalysis();
+  } else if(feature==='report'){
+    title.textContent='✨ AI週次コーチングレポート';
+    sub.textContent='今週の振り返りをAIがまとめます';
+    body.innerHTML=`<div class="ai-report-area">
+      <button class="ai-report-btn" onclick="generatePremiumReport()">レポートを生成する →</button>
+      <div class="ai-report-output" id="aiReportOutput" style="display:none;"></div>
+    </div>`;
+  }
+
+  overlay.classList.add('show');
+}
+
+function closePfModal(e){
+  const modal=document.getElementById('pfModal');
+  if(e&&modal&&modal.contains(e.target)) return;
+  document.getElementById('pfOverlay')?.classList.remove('show');
+}
+
+function build30DayGrid(){
+  const wins=Store.get('wins',[]);
+  const now=new Date();
+  let cells='';
+  const labels=['今日','-1','-2'];
+  for(let i=29;i>=0;i--){
+    const d=new Date(now);
+    d.setDate(now.getDate()-i);
+    d.setHours(0,0,0,0);
+    const ds=toDateStr(d);
+    const count=wins.filter(w=>w.date===ds&&ALL_HABIT_NAMES.has(w.title)).length;
+    const lv=count===0?'':count<=2?'lv1':count<=4?'lv2':'lv3';
+    const isToday=i===0?' is-today':'';
+    const title=`${d.getMonth()+1}/${d.getDate()} (${count}/${HABIT_DEFS.length||3})`;
+    cells+=`<div class="h30-cell ${lv}${isToday}" title="${title}"></div>`;
+  }
+  return `<div class="habit30-grid">${cells}</div>
+    <div class="h30-legend">
+      <div class="h30-legend-swatch" style="background:var(--border);"></div><span>0</span>
+      <div class="h30-legend-swatch lv1" style="background:color-mix(in srgb,var(--g) 30%,var(--border));"></div><span>1-2</span>
+      <div class="h30-legend-swatch lv2" style="background:color-mix(in srgb,var(--g) 60%,var(--border));"></div><span>3-4</span>
+      <div class="h30-legend-swatch lv3" style="background:var(--g);"></div><span>5-6</span>
+    </div>`;
+}
+
+const MOOD_VALS={'とても良い':5,'いい感じ':4,'ふつう':3,'まあまあ':2,'つかれた':1};
+const MOOD_LABELS={'とても良い':'最高','いい感じ':'良い','ふつう':'普通','まあまあ':'まあまあ','つかれた':'つかれた'};
+const MOOD_EM={'とても良い':'✨','いい感じ':'😊','ふつう':'🙂','まあまあ':'😐','つかれた':'😴'};
+
+function buildMoodAnalysis(){
+  const hist=Store.get('mood_history',[]).slice(0,14);
+  if(!hist.length) return '<p style="padding:0 22px;color:var(--t-m);font-size:14px;">まだ気分の記録がありません。ホームから記録してみましょう。</p>';
+  const max=5;
+  const rows=hist.map(m=>{
+    const val=MOOD_VALS[m.mood]||3;
+    const pct=Math.round(val/max*100);
+    const em=MOOD_EM[m.mood]||'😐';
+    const lbl=MOOD_LABELS[m.mood]||'';
+    const d=new Date(m.date);
+    const dateStr=`${d.getMonth()+1}/${d.getDate()}`;
+    return `<div class="ma-row">
+      <div class="ma-date">${dateStr}</div>
+      <div class="ma-mood">${em}</div>
+      <div class="ma-bar-wrap"><div class="ma-bar" style="width:${pct}%"></div></div>
+      <div class="ma-label">${lbl}</div>
+    </div>`;
+  }).join('');
+
+  const vals=hist.map(m=>MOOD_VALS[m.mood]||3);
+  const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+  const trend=vals.length>=2?(vals[0]>vals[vals.length-1]?'📈 最近は気分が上向きです':'📉 少し疲れ気味かもしれません'):'';
+
+  return `<div style="padding:0 22px 12px;display:flex;gap:16px;">
+    <div style="background:var(--bg);border-radius:var(--r-m);padding:12px 16px;flex:1;text-align:center;">
+      <div style="font-size:11px;color:var(--t-m);">平均スコア</div>
+      <div style="font-size:22px;font-weight:700;color:var(--g);margin-top:4px;">${avg}<span style="font-size:13px;color:var(--t-m);">/5</span></div>
+    </div>
+    <div style="background:var(--bg);border-radius:var(--r-m);padding:12px 16px;flex:2;display:flex;align-items:center;font-size:13px;color:var(--t-m);">${trend}</div>
+  </div>
+  <div class="mood-analysis-list">${rows}</div>`;
+}
+
+async function generatePremiumReport(){
+  const btn=document.querySelector('.ai-report-btn');
+  const out=document.getElementById('aiReportOutput');
+  if(!btn||!out) return;
+  btn.disabled=true;
+  btn.textContent='生成中…';
+  out.style.display='block';
+  out.textContent='';
+
+  const wins=Store.get('wins',[]);
+  const weekStats=calcWeekStats(0);
+  const lastStats=calcWeekStats(1);
+  const moodHist=Store.get('mood_history',[]).slice(0,7);
+  const goal=document.getElementById('goalBannerHomeText')?.textContent||'';
+  const sleepGoal=Store.get('sleep_goal',7);
+
+  const prompt=`あなたはHabioの健康コーチです。以下のユーザーデータを元に、今週の振り返りレポートを日本語で書いてください。
+- 今週の習慣達成日数: ${weekStats.activeDays}/7日
+- 先週の習慣達成日数: ${lastStats.activeDays}/7日
+- 今週の気分履歴: ${moodHist.map(m=>m.mood).join(', ')||'記録なし'}
+- 目標睡眠: ${sleepGoal}時間/夜
+- ユーザーの目標: ${goal||'未設定'}
+
+レポートは以下の構成で、温かく励ます文体で200文字以内にまとめてください：
+1. 今週の一言まとめ
+2. 良かった点
+3. 来週へのアドバイス`;
+
+  try{
+    const ctx={messages:[{role:'user',content:prompt}],talkStyle:Store.get('talk_style','gentle')};
+    const res=await fetch('https://habio-chat.katsuyuki-jyoukou.workers.dev/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(ctx),
+    });
+    const data=await res.json();
+    out.textContent=data.reply||data.text||'レポートを生成できませんでした。';
+  } catch(e){
+    out.textContent='エラーが発生しました。もう一度お試しください。';
+  } finally {
+    btn.disabled=false;
+    btn.textContent='もう一度生成する →';
+  }
+}
+
+async function checkEmailPremium(){
+  const emailEl = document.getElementById('settingsEmail');
+  const noteEl  = document.getElementById('emailNote');
+  const email   = (emailEl?.value || '').trim().toLowerCase();
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    showToast('メールアドレスを正しく入力してください');
+    return;
+  }
+  Store.set('user_email', email);
+  if(noteEl) noteEl.textContent = '確認中...';
+  const ok = await checkPremiumStatus(email);
+  if(ok){
+    Store.set('is_premium', true);
+    renderPremiumState();
+    if(noteEl) noteEl.textContent = '💎 プレミアム会員として確認済み';
+    showToast('プレミアムを確認しました 💎');
+  } else {
+    Store.set('is_premium', false);
+    renderPremiumState();
+    if(noteEl) noteEl.textContent = 'プレミアム確認・お知らせに使います';
+    showToast('プレミアムが確認できませんでした');
+  }
 }
 
 /* ── PROFILE ── */
@@ -2698,10 +3664,17 @@ function renderProfile(){
   if(metaEl) metaEl.textContent='Habio を使いはじめて '+days+'日目';
   const tw=document.getElementById('statTotalWins');
   if(tw) tw.textContent=wins.length;
-  const wr=document.getElementById('statWeekRate');
-  if(wr) wr.textContent=wkRate+'%';
+  const tp=document.getElementById('statTotalPts');
+  if(tp) tp.textContent=getTotalPts()+'pt';
   const st=document.getElementById('statStreak');
   if(st) st.textContent=streak+'日';
+
+  // Style & sleep
+  const style=Store.get('talk_style','gentle');
+  const styleValEl=document.getElementById('styleVal');
+  if(styleValEl) styleValEl.textContent=STYLE_NAMES[style]||'やさしめ';
+  refreshSleepGoalUI();
+  renderSettingsGoal();
 }
 
 /* ── HABIT CALENDAR ── */
@@ -2726,8 +3699,8 @@ function renderHabitCal(){
     d.setDate(monday.getDate()+i);
     const ds=toDateStr(d);
     const dayWins=wins.filter(w=>w.date===ds);
-    const habitDone=dayWins.filter(w=>HABIT_DEFS.some(h=>w.title===h.name+'ができた')).length;
-    days.push({d,ds,isToday:ds===today(),isFuture:d>now,count:habitDone,total:HABIT_DEFS.length});
+    const habitDone=dayWins.filter(w=>ALL_HABIT_NAMES.has(w.title)).length;
+    days.push({d,ds,isToday:ds===today(),isFuture:d>now,count:habitDone,total:HABIT_DEFS.length||3});
   }
 
   calDays.innerHTML=days.map((day,i)=>{
@@ -2780,6 +3753,10 @@ function calcWeekStats(weeksAgo){
   const habitCounts={};
   HABIT_DEFS.forEach(h=>{
     habitCounts[h.id]=ww.filter(w=>w.title===h.name+'ができた').length;
+  });
+  // Also count any habit from all possible habits (handles goal changes)
+  Object.entries(ALL_HABITS).forEach(([id,h])=>{
+    if(!(id in habitCounts)) habitCounts[id]=ww.filter(w=>w.title===h.name+'ができた').length;
   });
   return {activeDays,habitCounts};
 }
@@ -2866,18 +3843,28 @@ function closeWeeklyReview(){
 
 /* ── ONBOARDING ── */
 let onbStep=0;
+let onbFromSettings=false;
 const onbAnswers={};
+
+const ONB_STEPS=6; // 0-5
 
 function initOnboarding(){
   const overlay=document.getElementById('onbOverlay');
   if(!overlay) return;
-  if(Store.get('onb_done')){overlay.style.display='none';return;}
+  if(Store.get('onb_done')&&!onbFromSettings){overlay.style.display='none';return;}
+  const saved=Store.get('onb_answers',{});
+  Object.assign(onbAnswers,saved);
   onbStep=0;
   updateOnbDots();
+  // Pre-select saved sleep goal
+  const sg=Store.get('sleep_goal',7);
+  document.querySelectorAll('[id^="onbSleep"]').forEach(b=>{
+    b.classList.toggle('sel',parseInt(b.id.replace('onbSleep',''))===sg);
+  });
 }
 
 function updateOnbDots(){
-  for(let i=0;i<4;i++){
+  for(let i=0;i<ONB_STEPS;i++){
     const d=document.getElementById('onbDot'+i);
     if(d) d.classList.toggle('active',i<=onbStep);
   }
@@ -2891,6 +3878,14 @@ function selectOnbOpt(el,q,val){
   if(btn) btn.disabled=false;
 }
 
+function selectOnbSleep(h){
+  Store.set('sleep_goal',h);
+  document.querySelectorAll('[id^="onbSleep"]').forEach(b=>{
+    b.classList.toggle('sel',parseInt(b.id.replace('onbSleep',''))===h);
+  });
+  refreshSleepGoalUI();
+}
+
 function onbNext(){
   const curr=document.getElementById('onb-s'+onbStep);
   if(!curr) return;
@@ -2902,21 +3897,86 @@ function onbNext(){
   onbStep=nextStep;
   updateOnbDots();
   setTimeout(()=>next.classList.add('active'),40);
-  if(onbStep===4) buildOnbComplete();
+  if(onbStep===ONB_STEPS-1) buildOnbComplete();
 }
 
 function buildOnbComplete(){
-  const MAP={
-    perfect:{title:'完璧じゃなくていいんです',msg:'Habio は「続けられる量」を一緒に探します。\n今日できることだけ、少しずつ。'},
-    motive: {title:'やる気より、仕組みが大切です',msg:'やる気がなくても続けられるよう、\nHabio が毎日そっと寄り添います。'},
-    forget: {title:'Habio が覚えています',msg:'忙しい日も、Habio が忘れずにいます。\nあなたは気づいた時だけでOKです。'},
-    nostart:{title:'一緒に見つけましょう',msg:'最初の一歩は一番小さくていい。\nHabio があなたに合った始め方を一緒に考えます。'},
-  };
-  const m=MAP[onbAnswers.q3]||{title:'準備ができました',msg:'一緒に、あなたのペースで始めましょう。\n完璧じゃなくていいんです。'};
+  const cur=onbAnswers.q_current||'';
+  const ideal=onbAnswers.q_ideal||'';
+  const sg=Store.get('sleep_goal',7);
+  const goalText=generateGoalText(cur,ideal,sg);
   const t=document.getElementById('onbCompleteTitle');
+  const g=document.getElementById('onbGoalText');
+  const sl=document.getElementById('onbSleepGoalText');
   const s=document.getElementById('onbCompleteMsg');
-  if(t) t.textContent=m.title;
-  if(s) s.innerHTML=m.msg.replace(/\n/g,'<br>');
+  if(t) t.textContent='あなたの目標が決まりました';
+  if(g) g.textContent=goalText;
+  if(sl) sl.textContent='目標睡眠時間 '+sg+'時間 / 夜';
+  if(s) s.innerHTML='一緒に、あなたのペースで始めましょう。<br>完璧じゃなくていいんです。';
+}
+
+function generateGoalText(cur,ideal,sleepHr){
+  const MAP={
+    exercise:{
+      exercise:'毎日少しずつ体を動かす習慣をつくる',
+      food:    '食事と運動を組み合わせて体を整える',
+      sleep:   '体を動かして、よく眠れる体をつくる',
+      stress:  '運動でストレスを解消し、元気を取り戻す',
+      '':      '毎日少しずつ体を動かす習慣をつくる',
+    },
+    food:{
+      exercise:'食事バランスを整えて、動ける体をつくる',
+      food:    '毎日の食事を少しずつ整える',
+      sleep:   '食事を整えて、質の良い睡眠を手に入れる',
+      stress:  '食事を見直して、体の内側から整える',
+      '':      '毎日の食事を少しずつ整える',
+    },
+    sleep:{
+      exercise:'睡眠の質を上げて、活力ある毎日をつくる',
+      food:    '睡眠を整えて、食欲のコントロールも改善する',
+      sleep:   `毎晩${sleepHr}時間、質の良い睡眠を手に入れる`,
+      stress:  'よく眠れる習慣でストレスを和らげる',
+      '':      `毎晩${sleepHr}時間、ぐっすり眠れる体をつくる`,
+    },
+    stress:{
+      exercise:'ストレスを手放して、心地よく体を動かす',
+      food:    'ストレスを減らして、食事を楽しめる体に',
+      sleep:   'ストレスを和らげて、深く眠れる体をつくる',
+      stress:  '毎日の小さな習慣でストレスを和らげる',
+      '':      '毎日の小さな習慣でストレスを和らげる',
+    },
+  };
+  if(ideal&&MAP[cur]?.[ideal]) return MAP[cur][ideal];
+  if(ideal==='exercise') return '毎日少しずつ体を動かす習慣をつくる';
+  if(ideal==='food')     return '毎日の食事を少しずつ整える';
+  if(ideal==='sleep')    return `毎晩${sleepHr}時間、ぐっすり眠れる体をつくる`;
+  if(ideal==='stress')   return '毎日の小さな習慣でストレスを和らげる';
+  return '自分のペースで、健康な毎日を積み重ねる';
+}
+
+function openGoalSetup(){
+  const overlay=document.getElementById('onbOverlay');
+  if(!overlay) return;
+  onbFromSettings=true;
+  const saved=Store.get('onb_answers',{});
+  Object.assign(onbAnswers,saved);
+  overlay.style.display='';
+  overlay.style.opacity='';
+  overlay.classList.remove('done');
+  document.querySelectorAll('.onb-screen').forEach(s=>s.classList.remove('active','exit'));
+  onbStep=1;
+  updateOnbDots();
+  const s1=document.getElementById('onb-s1');
+  if(s1) s1.classList.add('active');
+  // Re-select saved answers
+  ['q_current','q_ideal'].forEach(q=>{
+    const val=saved[q];
+    if(!val) return;
+    const opt=document.querySelector(`[onclick*="selectOnbOpt"][onclick*="${q}"][onclick*="${val}"]`);
+    if(opt){ opt.classList.add('selected'); }
+  });
+  const btn=document.getElementById('onbBtn1');
+  if(btn&&saved.q_current) btn.disabled=false;
 }
 
 function onbSkip(){onbFinish();}
@@ -2926,19 +3986,28 @@ function onbFinish(){
   Store.set('onb_answers',onbAnswers);
   const overlay=document.getElementById('onbOverlay');
   if(overlay){overlay.classList.add('done');setTimeout(()=>overlay.style.display='none',540);}
-  setPersonalizedFirstChat();
+  refreshHabitDefs();
+  initHabits();
+  renderGoalBanner();
+  renderSettingsGoal();
+  if(onbFromSettings){
+    onbFromSettings=false;
+    setTimeout(()=>goTab('settings'),200);
+  } else {
+    setPersonalizedFirstChat();
+  }
 }
 
 function setPersonalizedFirstChat(){
   if(Store.get('chat_history',[]).length>0) return;
   const MAP={
-    perfect:'はじめまして。Habio です 🌱\n\n「完璧にやろう」と思わなくて大丈夫ですよ。\n今日できることだけ、一緒に少しずつやってみましょう。\n\nいつでも話しかけてください。',
-    motive: 'はじめまして。Habio です 🌱\n\nやる気がない日も、ここに来てくれれば十分です。\n大事なのは、続けようとしていること。\nそれだけで十分ですよ。',
-    forget: 'はじめまして。Habio です 🌱\n\n忙れても大丈夫。また気づいた時に来てください。\n「また戻ってこられた」、それ自体が継続です。',
-    nostart:'はじめまして。Habio です 🌱\n\n何から始めればいいか分からない？\nまずは「水を1杯飲む」だけでOKです 💧\n一緒に、最初の一歩を踏み出しましょう。',
+    exercise:'はじめまして。Habio です 🌱\n\n体を動かす習慣、一緒につくっていきましょう。\nまずは「3分だけ歩く」から始めてみましょう。\n\nいつでも話しかけてください。',
+    food:    'はじめまして。Habio です 🌱\n\n食事バランスを整えていきましょう。\n制限より、野菜を1品増やすことから始めましょうか。\n\nいつでも話しかけてください。',
+    sleep:   'はじめまして。Habio です 🌱\n\nよく眠れるように、一緒に整えていきましょう。\nまずはスマホを早めに置くところから始めてみましょう。\n\nいつでも話しかけてください。',
+    stress:  'はじめまして。Habio です 🌱\n\nストレスを和らげる習慣、一緒に探しましょう。\n深呼吸3回から始めてみましょうか。\n\nいつでも話しかけてください。',
   };
   const def='はじめまして。Habio です 🌱\n\nあなたのペースで、一緒に進みましょう。\n焦らなくていいですよ。\n\nいつでも話しかけてください。';
-  const msg=MAP[onbAnswers.q3]||def;
+  const msg=MAP[onbAnswers.q_ideal]||def;
   Store.set('chat_history',[{text:msg,me:false,time:nowTime(),ts:new Date().toISOString()}]);
   const msgs=document.getElementById('chatMsgs');
   if(msgs){
@@ -2949,6 +4018,156 @@ function setPersonalizedFirstChat(){
     tr.innerHTML='<div class="m-av-sm">🌱</div><div class="typing-bbl"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
     msgs.appendChild(tr);
   }
+}
+
+/* ── GOAL BANNER ── */
+function renderGoalBanner(){
+  const answers=Store.get('onb_answers',{});
+  const sg=Store.get('sleep_goal',7);
+  const goalText=generateGoalText(answers.q_current||'',answers.q_ideal||'',sg);
+  const hasGoal=!!(answers.q_ideal||answers.q_current);
+  const banners=[
+    {banner:'goalBannerHome',text:'goalBannerHomeText',sleep:'goalBannerHomeSleep'},
+    {banner:'goalBannerChat',text:'goalBannerChatText',sleep:null},
+    {banner:'goalBannerHabits',text:'goalBannerHabitsText',sleep:null},
+  ];
+  banners.forEach(({banner,text,sleep})=>{
+    const el=document.getElementById(banner);
+    const t=document.getElementById(text);
+    if(!el) return;
+    if(!hasGoal){el.classList.remove('visible');return;}
+    el.classList.add('visible');
+    if(t) t.textContent=goalText;
+    if(sleep){const s=document.getElementById(sleep);if(s)s.textContent='目標睡眠 '+sg+'時間 / 夜';}
+  });
+}
+
+function renderSettingsGoal(){
+  const answers=Store.get('onb_answers',{});
+  const sg=Store.get('sleep_goal',7);
+  const hasGoal=!!(answers.q_ideal||answers.q_current);
+  const card=document.getElementById('goalDisplayCard');
+  const text=document.getElementById('goalDisplayText');
+  const sub=document.getElementById('goalDisplaySub');
+  const note=document.getElementById('goalSetupNote');
+  if(card){card.classList.toggle('visible',hasGoal);}
+  if(hasGoal){
+    const goalText=generateGoalText(answers.q_current||'',answers.q_ideal||'',sg);
+    if(text) text.textContent=goalText;
+    if(sub) sub.textContent='目標睡眠 '+sg+'時間 / 夜';
+    if(note) note.textContent='設定済み — タップして変更';
+  } else {
+    if(note) note.textContent='目標を設定して習慣をカスタマイズ';
+  }
+}
+
+/* ── SLEEP GOAL ── */
+function setSleepGoal(h){
+  Store.set('sleep_goal',h);
+  refreshSleepGoalUI();
+  renderGoalBanner();
+  renderSettingsGoal();
+}
+
+function refreshSleepGoalUI(){
+  const h=Store.get('sleep_goal',7);
+  const val=document.getElementById('sleepGoalVal');
+  if(val) val.textContent=h+'時間';
+  document.querySelectorAll('#sleepBtns .sleep-btn').forEach(b=>{
+    b.classList.toggle('sel',parseInt(b.dataset.h)===h);
+  });
+}
+
+/* ── STYLE SHEET ── */
+/* ── PERIOD SETTING ── */
+const PERIOD_LABELS={7:'1週間',14:'2週間',30:'1ヶ月',90:'3ヶ月'};
+
+function openPeriodSetting(){
+  if(!Store.get('is_premium',false)){ showUpgradeModal(); return; }
+  const root=document.getElementById('periodSheetRoot');
+  const ov=document.getElementById('periodSheetOverlay');
+  if(root) root.style.pointerEvents='all';
+  if(ov){ ov.style.pointerEvents='all'; ov.classList.add('show'); }
+  refreshPeriodSheet();
+}
+
+function closePeriodSheet(e){
+  const sheet=document.querySelector('#periodSheetOverlay .style-sheet');
+  if(e&&sheet&&sheet.contains(e.target)) return;
+  const root=document.getElementById('periodSheetRoot');
+  const ov=document.getElementById('periodSheetOverlay');
+  if(ov) ov.classList.remove('show');
+  setTimeout(()=>{ if(root) root.style.pointerEvents='none'; },400);
+}
+
+function selectPeriod(days){
+  Store.set('goal_period', days);
+  refreshPeriodSheet();
+  refreshPeriodUI();
+  closePeriodSheet(null);
+  showToast(`取り組み期間を${PERIOD_LABELS[days]}に設定しました`);
+}
+
+function refreshPeriodSheet(){
+  const cur=Store.get('goal_period',0);
+  document.querySelectorAll('#periodOptions .style-option').forEach(el=>{
+    const p=parseInt(el.dataset.period);
+    el.classList.toggle('selected', p===cur);
+    const chk=el.querySelector('.style-option-check');
+    if(chk) chk.textContent=p===cur?'✓':'';
+  });
+}
+
+function refreshPeriodUI(){
+  const days=Store.get('goal_period',0);
+  const badge=document.getElementById('periodProBadge');
+  const val=document.getElementById('periodVal');
+  const note=document.getElementById('periodNote');
+  const isPrem=Store.get('is_premium',false);
+  if(badge) badge.style.display=isPrem?'none':'';
+  if(val){ val.style.display=days&&isPrem?'':'none'; val.textContent=PERIOD_LABELS[days]||''; }
+  if(note) note.textContent=days&&isPrem?`${PERIOD_LABELS[days]}で取り組み中`:'目標達成までの期間を設定します';
+}
+
+const STYLE_NAMES={gentle:'やさしめ',normal:'普通',firm:'きつめ',sparta:'スパルタ',tsundere:'ツンデレ'};
+
+function openStyleSheet(){
+  const root=document.getElementById('styleSheetRoot');
+  const ov=document.getElementById('styleSheetOverlay');
+  if(root) root.style.pointerEvents='all';
+  if(ov) ov.classList.add('show');
+  refreshStyleSheet();
+}
+
+function closeStyleSheet(event,force=false){
+  if(!force&&event&&event.target!==document.getElementById('styleSheetOverlay')) return;
+  const root=document.getElementById('styleSheetRoot');
+  const ov=document.getElementById('styleSheetOverlay');
+  if(ov) ov.classList.remove('show');
+  setTimeout(()=>{if(root)root.style.pointerEvents='none';},400);
+}
+
+function refreshStyleSheet(){
+  const cur=Store.get('talk_style','gentle');
+  document.querySelectorAll('#styleOptions .style-option').forEach(el=>{
+    el.classList.toggle('selected',el.dataset.style===cur);
+    const chk=el.querySelector('.style-option-check');
+    if(chk) chk.textContent=el.dataset.style===cur?'✓':'';
+  });
+}
+
+function selectStyle(style,premOnly){
+  if(premOnly && !Store.get('is_premium',false)){
+    closeStyleSheet(null,true);
+    showUpgradeModal();
+    return;
+  }
+  Store.set('talk_style',style);
+  refreshStyleSheet();
+  const valEl=document.getElementById('styleVal');
+  if(valEl) valEl.textContent=STYLE_NAMES[style]||style;
+  closeStyleSheet(null,true);
+  showToast('話し方を「'+STYLE_NAMES[style]+'」に変更しました');
 }
 
 /* ── STREAK MODAL ── */
@@ -3021,13 +4240,57 @@ function generateFoodAiComment(logs){
 
 /* ── AFFILIATE RECOMMEND ── */
 const AFFILIATE_LINKS = {
-  slimmanage:   "https://a.r10.to/h5BVog",
-  metabolism:   "https://a.r10.to/hgTpBU",
-  exercise:     "https://a.r10.to/h5yeu5",
-  diet:         "https://a.r10.to/hkvUAU",
-  killerburner: "https://a.r10.to/hFz0dn",
-  saunabelt:    "https://a.r10.to/h5qSXb",
-  citrulline:   "https://a.r10.to/hgZsnR",
+  slimmanage:    "https://a.r10.to/h5BVog",
+  metabolism:    "https://a.r10.to/hgTpBU",
+  exercise:      "https://a.r10.to/h5yeu5",
+  diet:          "https://a.r10.to/hkvUAU",
+  killerburner:  "https://a.r10.to/hFz0dn",
+  saunabelt:     "https://a.r10.to/h5qSXb",
+  citrulline:    "https://a.r10.to/hgZsnR",
+  emsbelt:       "https://a.r10.to/hPblsN",
+  konnyaku:      "https://a.r10.to/h5hfA1",
+  slimorecoffee: "https://a.r10.to/hkkSnq",
+  protein:       "https://a.r10.to/hkx6Or",
+  okara:         "https://a.r10.to/hghgvc",
+  smoothie:      "https://a.r10.to/hg54gR",
+  proteinshake:  "https://a.r10.to/hkQ9vF",
+  vibration:     "https://a.r10.to/hRZZie",
+  neckrelax:     "https://a.r10.to/hg5Car",
+  frozenbox:     "https://a.r10.to/hPlorJ",
+  yogamat:       "https://a.r10.to/hYHpdt",
+  massageroller: "https://a.r10.to/hkWjYV",
+  balanceball:   "https://a.r10.to/TKQpY0",
+  foamroller:    "https://a.r10.to/h5joGu",
+  nerukara:      "https://a.r10.to/hgImdS",
+  shizumin:      "https://a.r10.to/hPT7Dj",
+  goodneru:      "https://a.r10.to/h5vcJf",
+  pillowmist:    "https://a.r10.to/hg5iyi",
+  hugmochi:      "https://a.r10.to/hPTr4I",
+  eyemask:       "https://a.r10.to/hoQX5R",
+  lacto:         "https://a.r10.to/hYNToN",
+  rakusankin:    "https://a.r10.to/h5PL44",
+  forskohlii:    "https://a.r10.to/hPeSlb",
+  cocolact:      "https://a.r10.to/h5mWuT",
+  supponcmachi:  "https://a.r10.to/hP9EeO",
+  hyalo:         "https://a.r10.to/h8spxf",
+  vitaminc:      "https://a.r10.to/hkixIX",
+  kouso:         "https://a.r10.to/hgJSqN",
+  moringa:       "https://a.r10.to/h5JBSk",
+  bloodsugar:    "https://a.r10.to/hFYNLh",
+  cholesterol:   "https://a.r10.to/hgP81Y",
+  puerhtea:      "https://a.r10.to/h5BItn",
+  vitaminb:      "https://a.r10.to/h5vTP4",
+  aminoacid:     "https://a.r10.to/h5tp51",
+  hihatsu:       "https://a.r10.to/h5MjW9",
+  mukumix:       "https://a.r10.to/h5qE2k",
+  haramaki:      "https://a.r10.to/hY3zlx",
+  ginger:        "https://a.r10.to/h5FqwK",
+  bathsalt:      "https://a.r10.to/hgg5Vf",
+  hottab:        "https://a.r10.to/hPe6Lt",
+  walkshoe:      "https://a.r10.to/h5Ez9n",
+  smartwatch:    "https://a.r10.to/h5pcyJ",
+  sportsdrink:   "https://a.r10.to/h8Nw0I",
+  ashwaganda:    "https://a.r10.to/h50OMY",
 };
 
 const REC_DEFS = [
@@ -3178,7 +4441,266 @@ const REC_DEFS = [
       ctaLabel:'楽天市場でシトルリンを見る',
     },
   },
+  {
+    id:'emsbelt',
+    em:'⚡',
+    tag:'PR｜運動サポート',
+    title:'ながら運動に。EMSで腹筋にアプローチ。',
+    desc:'貼るだけで腹筋にアプローチできるEMSベルト。日常のすき間時間に取り入れやすいアイテムです。',
+    cta:'詳しく見る',
+    modal:{
+      em:'⚡',
+      product:'RELX EMSベルト（楽天市場）',
+      title:'ながら時間に、EMSで腹筋ケア',
+      sub:'家事・仕事中など、すき間時間にEMSで腹筋にアプローチできるベルトをご紹介します。',
+      points:[
+        {em:'⚡',t:'EMS刺激で腹筋へ',s:'電気刺激（EMS）で腹筋に働きかけるアイテムです。'},
+        {em:'📦',t:'着けるだけ・ながら使用',s:'服の上から装着して、日常のすき間時間に使えます。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）\n使用感には個人差があります。',
+      ctaLabel:'楽天市場でRELX EMSベルトを見る',
+    },
+  },
+  {
+    id:'konnyaku',
+    em:'🍜',
+    tag:'PR｜食事サポート',
+    title:'糖質が気になる方へ。こんにゃくラーメン。',
+    desc:'低カロリーなこんにゃく麺を使ったラーメンセット。食事改善を続けたい方の選択肢に。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🍜',
+      product:'こんにゃくラーメン24食（楽天市場）',
+      title:'糖質を意識した食事の選択肢として',
+      sub:'こんにゃく麺を使ったラーメンセット。食事内容を意識している方向けにご紹介します。',
+      points:[
+        {em:'🍜',t:'こんにゃく麺使用',s:'低カロリーのこんにゃく麺を使ったラーメンです。'},
+        {em:'📦',t:'まとめ買いで続けやすく',s:'24食セットで、食事改善を継続しやすい設計です。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の参考として、選択肢のひとつとしてご紹介します。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でこんにゃくラーメンを見る',
+    },
+  },
+  {
+    id:'slimorecoffee',
+    em:'☕',
+    tag:'PR｜機能性表示食品',
+    title:'毎日のコーヒーが、体重ケアのサポートに。',
+    desc:'クロロゲン酸配合の機能性表示食品。コーヒーが好きな方の習慣にプラスしやすいアイテムです。',
+    cta:'詳しく見る',
+    modal:{
+      em:'☕',
+      product:'スリモアコーヒー（楽天市場）',
+      title:'コーヒー好きの方の体重ケアに',
+      sub:'クロロゲン酸配合の機能性表示食品のコーヒーをご紹介します。毎日の習慣に取り入れやすい形です。',
+      points:[
+        {em:'📋',t:'機能性表示食品',s:'消費者庁に届出済み。体重を減らす機能が報告されています。'},
+        {em:'☕',t:'コーヒーとして楽しめる',s:'毎日のコーヒー習慣に自然に取り入れやすい形です。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の選択肢として参考にしてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n疾患がある方・妊娠中の方は事前に医師にご相談ください。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でスリモアコーヒーを見る',
+    },
+  },
+  {
+    id:'protein',
+    em:'🥤',
+    tag:'PR｜食事サポート',
+    title:'置き換えダイエットに。プロテインタイプの習慣づくり。',
+    desc:'1食置き換えに使いやすいプロテインダイエット。食事改善をサポートするアイテムです。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🥤',
+      product:'わたしのプロテインダイエット（楽天市場）',
+      title:'置き換え食としての選択肢として',
+      sub:'食事の一部をプロテインに置き換えたい方向けのアイテムをご紹介します。',
+      points:[
+        {em:'🥤',t:'1食置き換えタイプ',s:'食事改善の一部として取り入れやすい置き換えタイプです。'},
+        {em:'💪',t:'たんぱく質でサポート',s:'プロテインを中心に、食事バランスを整えたい方向けです。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の参考として参考にしてください。'},
+      ],
+      notice:'※ 本商品は医薬品ではありません。効果には個人差があります。\n※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でプロテインダイエットを見る',
+    },
+  },
+  {
+    id:'okara',
+    em:'🍪',
+    tag:'PR｜間食サポート',
+    title:'間食を少し見直してみませんか？おからクッキー。',
+    desc:'ヘルシー志向の間食として人気のおからクッキーを、選択肢のひとつとしてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🍪',
+      product:'おからクッキー（楽天市場）',
+      title:'間食の選択肢を少し変えてみませんか？',
+      sub:'おから素材のクッキーを、間食改善の選択肢としてご紹介します。',
+      points:[
+        {em:'🍪',t:'おから素材のクッキー',s:'おからを使ったヘルシー志向のクッキーです。'},
+        {em:'🌿',t:'間食の見直しに',s:'ちょっとした間食を変えることで、日々の食事習慣が変わります。'},
+        {em:'📦',t:'Habio からのご紹介',s:'気になる方の参考として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でおからクッキーを見る',
+    },
+  },
+  {
+    id:'smoothie',
+    em:'🥗',
+    tag:'PR｜栄養サポート',
+    title:'野菜・フルーツを手軽に。バンビウォータースムージー。',
+    desc:'飲みやすいスムージーで、毎日の栄養補給をサポート。忙しい日でも続けやすい形です。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🥗',
+      product:'バンビウォータースムージー（楽天市場）',
+      title:'手軽に栄養補給できるスムージー',
+      sub:'飲むだけで野菜・フルーツの栄養が摂れるスムージーをご紹介します。',
+      points:[
+        {em:'🥗',t:'手軽に野菜・フルーツ',s:'忙しい朝でも飲むだけで栄養補給できます。'},
+        {em:'🌿',t:'継続しやすい形',s:'飲みやすさを重視した設計で続けやすいアイテムです。'},
+        {em:'📦',t:'Habio からのご紹介',s:'気になる方の参考として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でスムージーを見る',
+    },
+  },
+  {
+    id:'proteinshake',
+    em:'🥤',
+    tag:'PR｜栄養サポート',
+    title:'プロテインシェイクで、たんぱく質を手軽に補給。',
+    desc:'運動後や食事補助に。飲みやすいプロテインシェイクを選択肢のひとつとしてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'🥤',
+      product:'バンビウォータープロテインシェイク（楽天市場）',
+      title:'手軽なたんぱく質補給に',
+      sub:'プロテインシェイクで、毎日のたんぱく質摂取を手軽にサポートするアイテムをご紹介します。',
+      points:[
+        {em:'🥤',t:'たんぱく質を手軽に',s:'シェイクタイプで、食事補助やトレーニング後に取り入れやすいです。'},
+        {em:'🌿',t:'飲みやすい設計',s:'プロテイン特有のクセが少なく、続けやすい設計です。'},
+        {em:'📦',t:'Habio からのご紹介',s:'気になる方の参考として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）',
+      ctaLabel:'楽天市場でプロテインシェイクを見る',
+    },
+  },
+  {
+    id:'vibration',
+    em:'📳',
+    tag:'PR｜運動サポート',
+    title:'乗るだけ全身運動。振動マシンで習慣をつくる。',
+    desc:'テレビを見ながらでも使える振動マシンを、手軽な運動習慣の選択肢としてご紹介します。',
+    cta:'詳しく見る',
+    modal:{
+      em:'📳',
+      product:'NADLE振動マシン（楽天市場）',
+      title:'乗るだけで全身に振動刺激',
+      sub:'乗るだけで使える振動マシン。ながら時間を活用した運動習慣のご紹介です。',
+      points:[
+        {em:'📳',t:'乗るだけ・ながら運動',s:'テレビや動画を見ながら、気軽に使えるマシンです。'},
+        {em:'💪',t:'全身への振動刺激',s:'立った状態で乗るだけで、全身に振動刺激を与えます。'},
+        {em:'🌿',t:'Habio からのご紹介',s:'気になる方の参考として参考にしてください。'},
+      ],
+      notice:'※ 楽天市場のページへ移動します（広告）\n使用感には個人差があります。',
+      ctaLabel:'楽天市場でNADLE振動マシンを見る',
+    },
+  },
+  { id:'neckrelax',     em:'🦒', tag:'PR｜首ケア',          title:'首コリが気になる方へ。EMS×温熱の首ケアアイテム。',            desc:'EMSと温熱機能で首をケアするアイテム。デスクワークや長時間スマホを使う方に。',          cta:'楽天で詳細を見る' },
+  { id:'frozenbox',     em:'🥡', tag:'PR｜食事管理',         title:'カロリー・塩分が気になる方向けの宅配弁当。',                   desc:'カロリーと塩分を調整した冷凍弁当10食セット。食事管理をラクに続けたい方に。',            cta:'楽天で詳細を見る' },
+  { id:'yogamat',       em:'🧘', tag:'PR｜ストレッチ・ヨガ', title:'ストレッチやヨガに。厚手ヨガマット。',                         desc:'膝や肘にやさしい10mm厚のヨガマット。ストレッチ・ピラティスを習慣にしたい方に。',      cta:'楽天で詳細を見る' },
+  { id:'massageroller', em:'🦵', tag:'PR｜ストレッチ',       title:'ふくらはぎのむくみに。全身使えるマッサージローラー。',          desc:'整骨院オリジナル説明書付き。全身の筋膜リリースやふくらはぎのケアに。',                  cta:'楽天で詳細を見る' },
+  { id:'balanceball',   em:'⚽', tag:'PR｜エクササイズ',     title:'骨盤・体幹を意識した習慣づくりに。バランスボール。',            desc:'ポンプ・説明書付きで届いてすぐ使えます。座りながらでも体幹トレーニングに。',            cta:'楽天で詳細を見る' },
+  { id:'foamroller',    em:'🪵', tag:'PR｜ストレッチ',       title:'筋膜リリースをもっと手軽に。フォームローラー。',                desc:'コンパクトなストレッチポール。お風呂上がりのセルフケアや運動後のほぐしに。',             cta:'楽天で詳細を見る' },
+  { id:'nerukara',      em:'🌙', tag:'PR｜睡眠サポート',     title:'GABA・テアニン配合。眠りの質を整えるサプリ。',                 desc:'機能性表示食品。ストレスや疲労感を和らげ、睡眠の質向上をサポートします。',               cta:'楽天で詳細を見る' },
+  { id:'shizumin',      em:'😴', tag:'PR｜睡眠・休息',       title:'夜の休息を、少し整えてみませんか？',                           desc:'漢方製薬会社共同開発のサプリ。疲れやだるさが気になる方の休息ケアに。',                  cta:'楽天で詳細を見る' },
+  { id:'goodneru',      em:'💤', tag:'PR｜睡眠サポート',     title:'GABA・グリシン配合の睡眠サポートサプリ。',                     desc:'ストレス緩和と睡眠の質向上をサポート。国内製造の睡眠ケアサプリです。',                  cta:'楽天で詳細を見る' },
+  { id:'pillowmist',    em:'💧', tag:'PR｜安眠グッズ',       title:'枕に一吹きで眠りやすい香りに。ピローミスト。',                  desc:'ラベンダーのアロマスプレー。アルコールフリーで肌に優しく、快眠をサポートします。',       cta:'楽天で詳細を見る' },
+  { id:'hugmochi',      em:'🛏', tag:'PR｜快眠グッズ',       title:'30万人の眠りを変えた。ハグモッチ枕。',                         desc:'医師の92%が推奨。いびき対策・肩・首のサポートができる高さ調整可能な枕です。',            cta:'楽天で詳細を見る' },
+  { id:'eyemask',       em:'🫣', tag:'PR｜快眠グッズ',       title:'遮光99.99%で完全な暗闇を。快眠アイマスク。',                   desc:'3D立体設計で目に圧迫感なし。旅行・仮眠・就寝時の質の良い眠りをサポートします。',       cta:'楽天で詳細を見る' },
+  { id:'lacto',         em:'🦠', tag:'PR｜腸活サポート',     title:'腸内環境を整えたい方へ。1兆9293億個の乳酸菌。',               desc:'複合乳酸菌とビフィズス菌を配合。腸活・便秘が気になる方の習慣に取り入れやすい。',        cta:'楽天で詳細を見る' },
+  { id:'rakusankin',    em:'🌿', tag:'PR｜腸活サポート',     title:'酪酸菌で腸内フローラを整えませんか？',                         desc:'酪酸菌・乳酸菌・ビフィズス菌・食物繊維を配合した腸活サポートサプリメント。',             cta:'楽天で詳細を見る' },
+  { id:'forskohlii',    em:'🌱', tag:'PR｜食物繊維サプリ',   title:'イヌリン＋フォルスコリで習慣づくりを。',                        desc:'食物繊維のイヌリンとコレウスフォルスコリを配合。腸活ダイエットをサポートします。',       cta:'楽天で詳細を見る' },
+  { id:'cocolact',      em:'🌸', tag:'PR｜フェムケア',       title:'腸活×フェムケアに。ラクトフェリン配合サプリ。',               desc:'ラクトバチルス・ラクトフェリン配合。女性の腸内環境とデリケートゾーンのケアに。',        cta:'楽天で詳細を見る' },
+  { id:'supponcmachi',  em:'✨', tag:'PR｜美容サプリ',       title:'コラーゲン補給に。すっぽん小町。',                             desc:'スッポン×コラーゲン配合の美容サプリ。肌・爪・髪の美容習慣をサポートします。',          cta:'楽天で詳細を見る' },
+  { id:'hyalo',         em:'💧', tag:'PR｜美容サプリ',       title:'肌の乾燥が気になる方へ。ヒアルロン酸サプリ。',                 desc:'キユーピー製ヒアルロン酸サプリ。うるおいをサポートする高純度ヒアルロン酸配合。',        cta:'楽天で詳細を見る' },
+  { id:'vitaminc',      em:'🍋', tag:'PR｜美容サプリ',       title:'飲むビタミンC美容液。リポソームビタミンC。',                   desc:'高吸収のリポソーム型ビタミンC。肌荒れ・美容を意識している方の習慣に。',                 cta:'楽天で詳細を見る' },
+  { id:'kouso',         em:'🌿', tag:'PR｜酵素サポート',     title:'ファスティングのお供に。酵素ドリンク。',                        desc:'長期熟成酵素100,000mg配合。ファスティング・断食中の栄養補給サポートに。',               cta:'楽天で詳細を見る' },
+  { id:'moringa',       em:'🥬', tag:'PR｜スーパーフード',   title:'モリンガで毎日の栄養をサポート。',                             desc:'鹿児島県産・農薬不使用のモリンガ100%タブレット。豊富な栄養素が含まれます。',            cta:'楽天で詳細を見る' },
+  { id:'bloodsugar',    em:'🩸', tag:'PR｜血糖値ケア',       title:'食後の血糖値が気になる方へ。',                                 desc:'菊芋由来イヌリン・サラシア配合のサプリ。食後の血糖値上昇が気になる方に。',               cta:'楽天で詳細を見る' },
+  { id:'cholesterol',   em:'💊', tag:'PR｜機能性表示食品',   title:'コレステロール・中性脂肪が気になる方へ。大正製薬。',           desc:'消費者庁届出済みの機能性表示食品。LDLコレステロールと中性脂肪をダブルケア。',            cta:'楽天で詳細を見る' },
+  { id:'puerhtea',      em:'🍵', tag:'PR｜機能性表示食品',   title:'毎日のお茶習慣に。ダイエットプーアール茶。',                   desc:'機能性表示食品のプーアール茶。脂肪の吸収を抑える効果が報告されています。',               cta:'楽天で詳細を見る' },
+  { id:'vitaminb',      em:'💊', tag:'PR｜ビタミンサプリ',   title:'毎日の栄養補給に。FANCLビタミンBサプリ。',                    desc:'ビタミンB群・葉酸・ビオチン配合。疲れを感じやすい方の栄養補給習慣に。',                 cta:'楽天で詳細を見る' },
+  { id:'aminoacid',     em:'💪', tag:'PR｜アミノ酸サプリ',   title:'運動をサポートするアミノ酸（EAA・BCAA）。',                   desc:'EAA・BCAA配合の必須アミノ酸サプリ。運動習慣がある方の体づくりをサポート。',             cta:'楽天で詳細を見る' },
+  { id:'hihatsu',       em:'🦶', tag:'PR｜機能性表示食品',   title:'足のむくみや冷えが気になる方へ。',                             desc:'ヒハツ由来ピペリン類配合の機能性表示食品。下半身の血流ケアをサポートします。',           cta:'楽天で詳細を見る' },
+  { id:'mukumix',       em:'🌊', tag:'PR｜むくみサポート',   title:'むくみが気になる方の習慣に。むくMix-ZERO。',                  desc:'L-シトルリン・カリウム・クランベリー配合。むくみが気になる方の毎日の習慣に。',           cta:'楽天で詳細を見る' },
+  { id:'haramaki',      em:'🧣', tag:'PR｜温活グッズ',       title:'冷えが気になる方に。吸湿発熱腹巻き。',                         desc:'日本製の吸湿発熱素材の腹巻き。体を芯から温めてくれる温活インナーです。',                 cta:'楽天で詳細を見る' },
+  { id:'ginger',        em:'🫚', tag:'PR｜温活サプリ',       title:'冷え対策に。金時生姜サプリ。',                                 desc:'国産加工・無添加の金時生姜サプリ。ジンゲロール配合で体を温める習慣に。',                 cta:'楽天で詳細を見る' },
+  { id:'bathsalt',      em:'🛁', tag:'PR｜バスケア',         title:'ミネラル豊富なヒマラヤ岩塩のバスソルト。',                     desc:'800gたっぷり入りのバスソルト。半身浴・デトックスに取り入れやすいバスグッズです。',      cta:'楽天で詳細を見る' },
+  { id:'hottab',        em:'♨', tag:'PR｜入浴剤',            title:'重炭酸泉で深部から温まる。ホットタブ。',                       desc:'医薬部外品の重炭酸入浴剤。血行促進・睡眠の質改善・肩こりや疲れのケアに。',              cta:'楽天で詳細を見る' },
+  { id:'walkshoe',      em:'👟', tag:'PR｜ウォーキング',     title:'軽量で歩きやすい。ウォーキングシューズ。',                     desc:'男女兼用の軽量スポーツシューズ。外反母趾対応・滑り止め付きで安心して歩けます。',        cta:'楽天で詳細を見る' },
+  { id:'smartwatch',    em:'⌚', tag:'PR｜健康管理',         title:'歩数・睡眠・心電図まで。スマートウォッチ。',                   desc:'HUAWEI WATCH FIT 4 Pro。医療承認取得の心電図機能・高精度睡眠測定搭載。',               cta:'楽天で詳細を見る' },
+  { id:'sportsdrink',   em:'🥤', tag:'PR｜水分補給',         title:'運動中の水分補給に。アミノ酸×クエン酸ウォーター。',           desc:'TARZAのBCAA+クエン酸配合スポーツドリンク粉末。運動中の水分・栄養補給に。',              cta:'楽天で詳細を見る' },
+  { id:'ashwaganda',    em:'🌿', tag:'PR｜ストレスケア',     title:'ストレスや不安が気になる方へ。アシュワガンダ。',               desc:'アシュワガンダオイル。インド伝承医学で使われてきたストレスケアのアイテムです。',         cta:'楽天で詳細を見る' },
 ];
+
+// チャット会話キーワード → 商品スコアリング用マップ
+const REC_KEYWORDS = {
+  slimmanage:    ['夜','睡眠','生活習慣','リズム','スリム'],
+  metabolism:    ['体重','体脂肪','脂肪','太','カロリ','痩せ','ダイエット'],
+  exercise:      ['筋肉','筋膜','マッサージ','コリ','疲れ','ほぐ'],
+  diet:          ['食欲','朝食','朝ごはん'],
+  killerburner:  ['バーナー','燃焼','引き締め'],
+  saunabelt:     ['サウナ','発汗','温活','ウォーキング'],
+  citrulline:    ['活力','精力','マカ','亜鉛','アルギニン','シトルリン'],
+  emsbelt:       ['EMS','腹筋','ながら運動'],
+  konnyaku:      ['ラーメン','麺','こんにゃく','糖質'],
+  slimorecoffee: ['コーヒー','スリモア','クロロゲン'],
+  protein:       ['プロテイン','タンパク質','置き換え'],
+  okara:         ['おから','クッキー','間食','お菓子'],
+  smoothie:      ['スムージー','青汁','野菜'],
+  proteinshake:  ['プロテインシェイク','シェイク'],
+  vibration:     ['振動','ぶるぶる'],
+  neckrelax:     ['首','首コリ','ネック','肩こり'],
+  frozenbox:     ['宅配弁当','減塩','制限食','塩分'],
+  yogamat:       ['ヨガ','ストレッチ','ピラティス','柔軟'],
+  massageroller: ['ローラー','ふくらはぎ','筋膜ローラー'],
+  balanceball:   ['バランスボール','ヨガボール','体幹'],
+  foamroller:    ['フォームローラー','ストレッチポール'],
+  nerukara:      ['GABA','テアニン','不眠','寝つき'],
+  shizumin:      ['だるい','休息','疲れ','COQ10'],
+  goodneru:      ['グリシン','睡眠','不眠','ぐっすり'],
+  pillowmist:    ['アロマ','ラベンダー','安眠'],
+  hugmochi:      ['枕','まくら','いびき'],
+  eyemask:       ['アイマスク','遮光','快眠'],
+  lacto:         ['乳酸菌','腸活','便秘','ビフィズス菌'],
+  rakusankin:    ['酪酸菌','腸内フローラ','善玉菌'],
+  forskohlii:    ['イヌリン','フォルスコリ','食物繊維'],
+  cocolact:      ['フェムケア','デリケート','妊活'],
+  supponcmachi:  ['コラーゲン','スッポン','美肌'],
+  hyalo:         ['ヒアルロン酸','乾燥肌','うるおい'],
+  vitaminc:      ['ビタミンC','肌荒れ','美白','肌'],
+  kouso:         ['酵素','ファスティング','断食'],
+  moringa:       ['モリンガ','スーパーフード'],
+  bloodsugar:    ['血糖値','血糖','菊芋','サラシア'],
+  cholesterol:   ['コレステロール','LDL','中性脂肪'],
+  puerhtea:      ['プーアール','ダイエット茶'],
+  vitaminb:      ['ビタミンB','葉酸','栄養'],
+  aminoacid:     ['アミノ酸','BCAA','EAA'],
+  hihatsu:       ['ヒハツ','むくみ','足のむくみ'],
+  mukumix:       ['むくみ','カリウム','クランベリー'],
+  haramaki:      ['腹巻き','冷え','冷え性'],
+  ginger:        ['生姜','しょうが','冷え対策'],
+  bathsalt:      ['バスソルト','岩塩','入浴'],
+  hottab:        ['重炭酸','入浴剤','温活'],
+  walkshoe:      ['ウォーキング','歩く','運動靴'],
+  smartwatch:    ['スマートウォッチ','万歩計','歩数'],
+  sportsdrink:   ['スポーツドリンク','水分','クエン酸'],
+  ashwaganda:    ['ストレス','アシュワガンダ','不安'],
+};
 
 /* ── REC LOGGING ── */
 function logRecEvent(event){
@@ -3254,48 +4776,39 @@ function renderRecommendCards(){
   const {streak,meals,hour}=buildAIContext();
   const onbA=Store.get('onb_answers',{});
 
-  // Conditions that pin slimmanage to position 1
-  const slimFirst=
-    hour>=18 ||
-    isNight() ||
-    streak<5  ||
-    meals.length<=1 ||
-    onbA.q1==='weight' ||
-    onbA.q1==='diet';
+  // チャット履歴を読んでキーワードスコアリング（+2点/ヒット）
+  const chatText=Store.get('chat_history',[]).slice(-30).map(m=>m.text||'').join(' ');
+  const scores={};
+  REC_DEFS.forEach(d=>{ scores[d.id]=0; });
+  Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
+    kws.forEach(k=>{ if(chatText.includes(k)) scores[id]=(scores[id]||0)+2; });
+  });
 
-  // Full pool (excluding slimmanage) — personalization reorders this
-  let base=['metabolism','exercise','diet','killerburner','saunabelt','citrulline'];
-  const pin=(id)=>{ base=[id,...base.filter(x=>x!==id)]; };
-  if(streak<3)              pin('exercise');
-  if(meals.length<=1)       pin('diet');
-  if(hour>=20||isNight())   pin('metabolism');
-  if(onbA.q1==='weight')    { pin('killerburner'); pin('metabolism'); }
-  else if(onbA.q1==='diet') { pin('diet'); pin('metabolism'); }
+  // 文脈シグナル（時間帯・連続日数・食事ログ・オンボーディング回答）で加点
+  if(hour>=20||isNight())    scores['slimmanage']+=2;
+  if(meals.length<=1)         scores['diet']+=1;
+  if(streak<3)                scores['exercise']+=1;
+  if(onbA.q1==='weight')     { scores['killerburner']+=2; scores['metabolism']+=2; }
+  else if(onbA.q1==='diet')  { scores['diet']+=2; scores['metabolism']+=1; }
+  else if(onbA.q1==='body')  { scores['exercise']+=2; scores['emsbelt']+=1; }
 
-  // Show top 3 from pool + slimmanage = 4 cards total
-  const top3=base.slice(0,3);
-  const order=slimFirst
-    ? ['slimmanage',...top3]
-    : [...top3,'slimmanage'];
+  // スコア降順ソート（同点はシャッフル）して上位3件
+  const sorted=REC_DEFS.slice().sort((a,b)=>{
+    const diff=(scores[b.id]||0)-(scores[a.id]||0);
+    return diff!==0 ? diff : Math.random()-0.5;
+  });
 
-  el.innerHTML=order.map((id,i)=>{
-    const d=REC_DEFS.find(r=>r.id===id);
-    if(!d) return '';
-    const isPrimary=i===0;
-    return `<div class="rec-card${isPrimary?' primary':''}">
+  el.innerHTML=sorted.slice(0,3).map((d,i)=>`
+    <div class="rec-card${i===0?' primary':''}">
       <div class="rec-card-tag">${d.em} ${d.tag}</div>
       <div class="rec-card-title">${d.title}</div>
       <div class="rec-card-desc">${d.desc}</div>
       <button class="rec-card-cta" onclick="recCardClick('${d.id}')">${d.cta} →</button>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   el.style.display='flex';
   if(lbl)  lbl.style.display='';
   if(note) note.style.display='';
-
-  // View log for slimmanage if it's visible
-  if(slimFirst) logRecEvent('rec_card_view_slimmanage');
 }
 
 /* ── iOS KEYBOARD VIEWPORT FIX ── */
@@ -3310,6 +4823,145 @@ function renderRecommendCards(){
   });
 })();
 
+/* ── POINTS & BADGES SYSTEM ── */
+const POINT_BADGES=[
+  {id:'first_step',    em:'🌱', name:'はじめの一歩',  pts:10},
+  {id:'hydration',     em:'💧', name:'水分補給',       pts:20},
+  {id:'deep_breath',   em:'🌬️',name:'深呼吸',         pts:30},
+  {id:'gentle_meal',   em:'🥗', name:'やさしい食事',  pts:40},
+  {id:'totonou',       em:'✨', name:'整い習慣',       pts:50},
+  {id:'daily_step',    em:'🚶', name:'毎日の一歩',    pts:60},
+  {id:'night_rhythm',  em:'🌙', name:'夜のリズム',    pts:70},
+  {id:'morning_light', em:'☀️',name:'朝のひかり',    pts:80},
+  {id:'mind_ease',     em:'🧘', name:'心のゆとり',    pts:90},
+  {id:'totonoisha',    em:'🌿', name:'整い者',         pts:100},
+];
+const STREAK_BADGES=[
+  {id:'s3',  em:'🔥',name:'3日継続',   days:3},
+  {id:'s7',  em:'⭐',name:'1週間継続', days:7},
+  {id:'s30', em:'🏆',name:'1ヶ月継続', days:30},
+  {id:'s50', em:'💫',name:'50日継続',  days:50},
+  {id:'s75', em:'🌈',name:'75日継続',  days:75},
+  {id:'s100',em:'💎',name:'100日継続', days:100},
+  {id:'s125',em:'🔮',name:'125日継続', days:125},
+  {id:'s150',em:'👑',name:'150日継続', days:150},
+];
+
+function getTodayPts(){
+  return Store.get('pts_date','')=== today()?Store.get('pts_today',0):0;
+}
+function getTotalPts(){return Store.get('pts_total',0);}
+
+function addPoints(n){
+  const isPrem=Store.get('is_premium',false);
+  const earned=isPrem?n*2:n;
+  const todayPts=(Store.get('pts_date','')=== today()?Store.get('pts_today',0):0)+earned;
+  Store.set('pts_date',today());
+  Store.set('pts_today',todayPts);
+  const total=getTotalPts()+earned;
+  Store.set('pts_total',total);
+  checkPointBadges(total);
+  renderPointsCard();
+}
+
+function checkPointBadges(total){
+  const earned=Store.get('badges_pts',[]);
+  POINT_BADGES.forEach(b=>{
+    if(total>=b.pts&&!earned.includes(b.id)){
+      earned.push(b.id);
+      showBadgeEarnToast(b.em+' '+b.name);
+    }
+  });
+  Store.set('badges_pts',earned);
+}
+
+function checkStreakBadges(streak){
+  const earned=Store.get('badges_streak',[]);
+  let changed=false;
+  STREAK_BADGES.forEach(b=>{
+    if(streak<b.days||earned.includes(b.id)) return;
+    earned.push(b.id);
+    changed=true;
+    showBadgeEarnToast(b.em+' '+b.name);
+  });
+  if(changed) Store.set('badges_streak',earned);
+}
+
+function showBadgeEarnToast(text){
+  const el=document.getElementById('badgeEarnToast');
+  if(!el) return;
+  el.textContent='🎖️ バッジ獲得！「'+text+'」';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+function renderPointsCard(){
+  const todayPts=getTodayPts();
+  const total=getTotalPts();
+  const streak=calcStreak(Store.get('wins',[]));
+  const earned=Store.get('badges_pts',[]);
+  const nextBadge=POINT_BADGES.find(b=>!earned.includes(b.id));
+  const nextIn=nextBadge?Math.max(0,nextBadge.pts-total):0;
+  const e=id=>document.getElementById(id);
+  if(e('pointsToday')) e('pointsToday').textContent='+'+(todayPts||0);
+  if(e('pointsTotal')) e('pointsTotal').textContent=total;
+  if(e('pointsStreak')) e('pointsStreak').textContent=streak+'日';
+  if(e('pointsNextBadge')) e('pointsNextBadge').textContent=nextBadge?nextIn+'pt':'全獲得！';
+}
+
+function openRewardsModal(){
+  const total=getTotalPts();
+  const ptEarned=Store.get('badges_pts',[]);
+  const stEarned=Store.get('badges_streak',[]);
+  const e=id=>document.getElementById(id);
+  if(e('rwTotalPts')) e('rwTotalPts').textContent=total+' pt';
+  if(e('rwBadgeCount')) e('rwBadgeCount').textContent=ptEarned.length+' / '+POINT_BADGES.length+' 獲得';
+  // Point badges grid
+  const pg=e('pointBadgesGrid');
+  if(pg) pg.innerHTML=POINT_BADGES.map(b=>{
+    const got=ptEarned.includes(b.id);
+    return `<div class="badge-item${got?'':' locked'}">
+      <div class="badge-em">${b.em}</div>
+      <div class="badge-nm">${b.name}</div>
+      <div class="badge-pts">${got?'獲得済':b.pts+'pt'}</div>
+    </div>`;
+  }).join('');
+  // Streak badges grid
+  const sg=e('streakBadgesGrid');
+  if(sg) sg.innerHTML=STREAK_BADGES.map(b=>{
+    const got=stEarned.includes(b.id);
+    return `<div class="badge-item${got?'':' locked'}">
+      <div class="badge-em">${b.em}</div>
+      <div class="badge-nm">${b.name}</div>
+      <div class="badge-pts">${got?'獲得済':b.days+'日'}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('rewardsOverlay').classList.add('show');
+}
+
+function onRewardsOverlayClick(e){
+  if(e.target===document.getElementById('rewardsOverlay')) closeRewardsModal();
+}
+function closeRewardsModal(){
+  document.getElementById('rewardsOverlay').classList.remove('show');
+}
+
+function checkReturnBadge(){
+  const lastLogin=Store.get('last_login_date','');
+  if(!lastLogin) return;
+  const daysSince=Math.floor((Date.now()-new Date(lastLogin).getTime())/86400000);
+  if(daysSince>=10){
+    const t=document.getElementById('comebackTitle');
+    const m=document.getElementById('comebackMsg');
+    if(t) t.textContent='おかえりなさい。\nまた一緒に始めましょう。';
+    if(m) m.textContent=daysSince+'日ぶりですね。\n久しぶりでも大丈夫。今日から、また少しずつ。';
+    document.getElementById('comebackOverlay').classList.add('show');
+  }
+}
+function closeComebackModal(){
+  document.getElementById('comebackOverlay').classList.remove('show');
+}
+
 /* ── INIT ── */
 function init(){
   if(!Store.get('start_date')) Store.set('start_date',today());
@@ -3318,6 +4970,7 @@ function init(){
   const ldSub=document.getElementById('ldSub');
   if(ldSub) ldSub.textContent=Store.get('onb_done')?'今日も、おかえりなさい。':'はじめまして。一緒に始めましょう 🌿';
 
+  refreshHabitDefs();
   initOnboarding();
   initHome();
   initHabits();
@@ -3335,6 +4988,24 @@ function init(){
   renderHabitCal();
   checkWeeklyReview();
   renderProfile();
+  renderGoalBanner();
+  renderPremiumState();
+  renderChatLimit();
+  initPremiumState();
+
+  // Daily login point + comeback check
+  checkReturnBadge();
+  const loginDate=Store.get('pts_login_date','');
+  if(loginDate!==today()){
+    Store.set('pts_login_date',today());
+    addPoints(1);
+  }
+  Store.set('last_login_date',today());
+  renderPointsCard();
+
+  // Check streak badges on load
+  const streak=calcStreak(Store.get('wins',[]));
+  if(streak>0) checkStreakBadges(streak);
 
   // Fade out loading screen
   const ld=document.getElementById('loading');
