@@ -1107,6 +1107,16 @@ body.night-bg{background:#C8C3BB;}
   font-size:10px;color:var(--t-l);
   text-align:center;padding:0 22px 4px;line-height:1.8;
 }
+.rec-pt-hint{
+  margin:0 22px 14px;
+  background:linear-gradient(135deg,var(--g-pp),var(--blue-p));
+  border-radius:var(--r-m);padding:11px 14px 11px 13px;
+  display:flex;align-items:flex-start;gap:9px;
+}
+.rec-pt-hint-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.rec-pt-hint-body{flex:1;}
+.rec-pt-hint-main{font-size:12px;font-weight:600;color:var(--t);line-height:1.6;}
+.rec-pt-hint-sub{font-size:10px;color:var(--t-g);margin-top:2px;line-height:1.6;}
 
 /* ── REC DETAIL MODAL ── */
 .rec-modal-overlay{
@@ -1718,6 +1728,13 @@ body.night-bg{background:#C8C3BB;}
     </div>
 
     <p class="sec-lbl" id="recLbl" style="display:none;">あなたへのおすすめ（PR）</p>
+    <div class="rec-pt-hint" id="recPtHint" style="display:none;">
+      <div class="rec-pt-hint-icon">🌱</div>
+      <div class="rec-pt-hint-body">
+        <div class="rec-pt-hint-main">健康習慣を確認するとポイントがもらえます</div>
+        <div class="rec-pt-hint-sub">プレミアム会員はポイントUP ／ Habio内の確認アクションが対象</div>
+      </div>
+    </div>
     <div id="recCards" class="rec-section" style="display:none;"></div>
     <p class="rec-footer-note" id="recNote" style="display:none;">
       ※ 広告・アフィリエイトリンクを含む場合があります
@@ -5524,6 +5541,8 @@ function renderRecommendCards(){
   el.style.display='flex';
   if(lbl)  lbl.style.display='';
   if(note) note.style.display='';
+  const ptHint=document.getElementById('recPtHint');
+  if(ptHint) ptHint.style.display='';
 }
 
 /* ── iOS KEYBOARD VIEWPORT FIX ── */
