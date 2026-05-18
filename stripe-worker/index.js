@@ -26,6 +26,11 @@ export default {
     if (request.method === 'GET'  && url.pathname === '/points/me')           return handlePointsMe(request, env);
     if (request.method === 'POST' && url.pathname === '/referral/register')   return handleReferralRegister(request, env);
 
+    // X (Twitter) endpoints
+    if (request.method === 'GET'  && url.pathname === '/x/status')            return handleXStatus(request, env);
+    if (request.method === 'POST' && url.pathname === '/x/tweet')             return handleXTweet(request, env);
+    if (request.method === 'POST' && url.pathname === '/x/disconnect')        return handleXDisconnect(request, env);
+
     return cors(JSON.stringify({ error: 'not found' }), 404);
   },
 };
@@ -214,15 +219,9 @@ async function handlePointsMe(request, env) {
   const email = (url.searchParams.get('email') || '').trim().toLowerCase();
   if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
 
-  const hash = await hashEmail(email);
-  const user = await env.PREMIUM_KV.get(`u:${hash}`, 'json');
-
-  if (!user) {
-    return cors(JSON.stringify({
-      total_points: 0, log: [],
-      referral_count: 0, premium_referral_count: 0,
-    }));
-  }
+  // getOrCreateUser で必ず招待コードを生成・返却する
+  const user = await getOrCreateUser(env.PREMIUM_KV, email);
+  const hash = user.hash;
 
   const log = (await env.PREMIUM_KV.get(`pts:log:${hash}`, 'json')) || [];
   const refList = (await env.PREMIUM_KV.get(`refs:by:${hash}`, 'json')) || [];
@@ -304,6 +303,163 @@ async function handleReferralRegister(request, env) {
   await env.PREMIUM_KV.put(`ref:${referrerHash}:${referredHash}`, JSON.stringify(refRecord));
 
   return cors(JSON.stringify({ ok: true, bonus: { referrer: 10, referred: 5 } }));
+}
+
+// ── /x/status ─────────────────────────────────────────────────────────────────
+async function handleXStatus(request, env) {
+  const url   = new URL(request.url);
+  const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+  if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
+
+  const hash    = await hashEmail(email);
+  const xUser   = await env.PREMIUM_KV.get(`x_user:${hash}`, 'json');
+  const hasToken = !!(await env.PREMIUM_KV.get(`x_token:${hash}`)) ||
+                   !!(await env.PREMIUM_KV.get(`x_refresh:${hash}`));
+
+  if (!xUser || !hasToken) {
+    return cors(JSON.stringify({ connected: false }));
+  }
+
+  // 今日のシェア数（JST）
+  const jstDate  = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const dayCount = parseInt(await env.PREMIUM_KV.get(`x_share_day:${hash}:${jstDate}`) || '0', 10);
+
+  return cors(JSON.stringify({
+    connected:   true,
+    x_username:  xUser.x_username,
+    x_user_id:   xUser.x_user_id,
+    today_count: dayCount,
+    daily_limit: 3,
+  }));
+}
+
+// ── /x/tweet ──────────────────────────────────────────────────────────────────
+async function handleXTweet(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email = (body.email || '').trim().toLowerCase();
+  const text  = (body.text  || '').trim();
+  if (!email)   return cors(JSON.stringify({ error: 'email required' }), 400);
+  if (!text)    return cors(JSON.stringify({ error: 'text required' }),  400);
+  if (text.length > 280) return cors(JSON.stringify({ error: 'tweet too long' }), 400);
+
+  const hash = await hashEmail(email);
+
+  // 今日のシェア数チェック（JST）
+  const jstDate  = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const dayKey   = `x_share_day:${hash}:${jstDate}`;
+  const dayCount = parseInt(await env.PREMIUM_KV.get(dayKey) || '0', 10);
+  if (dayCount >= 3) {
+    return cors(JSON.stringify({ ok: false, reason: 'daily_limit_reached', today_count: dayCount, daily_limit: 3 }), 429);
+  }
+
+  // アクセストークン取得（有効期限切れの場合はリフレッシュ）
+  let accessToken = null;
+  const tokenRecord = await env.PREMIUM_KV.get(`x_token:${hash}`, 'json');
+  if (tokenRecord) {
+    accessToken = tokenRecord.access_token;
+  } else {
+    // トークン期限切れ → リフレッシュを試みる
+    const refreshRecord = await env.PREMIUM_KV.get(`x_refresh:${hash}`, 'json');
+    if (!refreshRecord) {
+      return cors(JSON.stringify({ ok: false, reason: 'not_connected' }), 401);
+    }
+    const refreshed = await refreshXToken(refreshRecord.refresh_token, env.X_CLIENT_ID, env.X_CLIENT_SECRET);
+    if (!refreshed || refreshed.error) {
+      return cors(JSON.stringify({ ok: false, reason: 'token_refresh_failed', reconnect_required: true }), 401);
+    }
+    accessToken = refreshed.access_token;
+    // 新しいトークンを保存
+    await env.PREMIUM_KV.put(`x_token:${hash}`, JSON.stringify({
+      x_user_id:    refreshRecord.x_user_id,
+      x_username:   refreshRecord.x_username,
+      access_token: refreshed.access_token,
+      refresh_token: refreshed.refresh_token || refreshRecord.refresh_token,
+    }), { expirationTtl: (refreshed.expires_in || 7200) + 300 });
+    if (refreshed.refresh_token) {
+      await env.PREMIUM_KV.put(`x_refresh:${hash}`, JSON.stringify({
+        ...refreshRecord,
+        refresh_token: refreshed.refresh_token,
+      }), { expirationTtl: 30 * 24 * 3600 });
+    }
+  }
+
+  // ツイート投稿
+  const tweetRes = await fetch('https://api.twitter.com/2/tweets', {
+    method:  'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  if (tweetRes.status === 401) {
+    // アクセストークンが無効 → 再接続を促す
+    await env.PREMIUM_KV.delete(`x_token:${hash}`);
+    return cors(JSON.stringify({ ok: false, reason: 'auth_failed', reconnect_required: true }), 401);
+  }
+
+  const tweetData = await tweetRes.json();
+  if (!tweetRes.ok || !tweetData.data?.id) {
+    const errMsg = tweetData.detail || tweetData.errors?.[0]?.message || 'tweet failed';
+    return cors(JSON.stringify({ ok: false, reason: errMsg }), 500);
+  }
+
+  const tweetId = tweetData.data.id;
+
+  // 今日のカウントを更新
+  await env.PREMIUM_KV.put(dayKey, String(dayCount + 1), { expirationTtl: 48 * 3600 });
+
+  // ポイント付与（1pt/ツイート）
+  await addPoints(env.PREMIUM_KV, email, 'x_share', 1, `Xでシェア (${jstDate})`, null);
+
+  return cors(JSON.stringify({
+    ok:             true,
+    tweet_id:       tweetId,
+    tweet_url:      `https://x.com/i/web/status/${tweetId}`,
+    points_awarded: 1,
+    today_count:    dayCount + 1,
+    daily_limit:    3,
+  }));
+}
+
+// ── /x/disconnect ─────────────────────────────────────────────────────────────
+async function handleXDisconnect(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return cors(JSON.stringify({ error: 'invalid json' }), 400); }
+
+  const email = (body.email || '').trim().toLowerCase();
+  if (!email) return cors(JSON.stringify({ error: 'email required' }), 400);
+
+  const hash = await hashEmail(email);
+  await Promise.all([
+    env.PREMIUM_KV.delete(`x_token:${hash}`),
+    env.PREMIUM_KV.delete(`x_refresh:${hash}`),
+    env.PREMIUM_KV.delete(`x_user:${hash}`),
+  ]);
+
+  return cors(JSON.stringify({ ok: true }));
+}
+
+// ── X token refresh helper ────────────────────────────────────────────────────
+async function refreshXToken(refreshToken, clientId, clientSecret) {
+  const body = new URLSearchParams({
+    grant_type:    'refresh_token',
+    refresh_token: refreshToken,
+    client_id:     clientId,
+  });
+  const credentials = btoa(`${clientId}:${clientSecret}`);
+  const res = await fetch('https://api.twitter.com/2/oauth2/token', {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${credentials}`,
+    },
+    body: body.toString(),
+  });
+  return res.json();
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────

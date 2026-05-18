@@ -1512,6 +1512,14 @@ body.night-bg{background:#C8C3BB;}
 .x-dot.filled{background:#000;}
 .x-coming-badge{display:inline-flex;align-items:center;gap:6px;background:#e7e9ea;color:#536471;font-size:12px;font-weight:600;padding:9px 16px;border-radius:9999px;margin:4px 0 8px;}
 .x-note{font-size:11px;color:var(--t-l);line-height:1.8;}
+.x-connect-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;background:#000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-top:4px;}
+.x-connect-btn:disabled{opacity:.6;cursor:default;}
+.x-user-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.x-username-disp{font-size:14px;font-weight:700;color:var(--t);}
+.x-connected-badge{font-size:11px;font-weight:600;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:9999px;margin-left:auto;}
+.x-tweet-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;background:#000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;border:none;margin:8px 0 6px;}
+.x-tweet-btn:disabled{opacity:.6;cursor:default;}
+.x-disconnect-btn{background:none;border:none;font-size:12px;color:var(--t-l);text-decoration:underline;cursor:pointer;padding:2px 0;}
 
 /* ── REFERRAL SECTION ── */
 .ref-code-box{background:var(--g-p);border-radius:var(--r-m);padding:14px 16px;margin:6px 0 10px;display:flex;align-items:center;gap:12px;}
@@ -2033,24 +2041,39 @@ body.night-bg{background:#C8C3BB;}
     <p class="sec-lbl">Xでシェアしてポイント獲得</p>
     <div class="st-group">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
-        <div class="x-share-day-row">
-          <span class="x-share-count-text">今日の投稿</span>
-          <div class="x-share-dots">
-            <div class="x-dot" id="xdot1"></div>
-            <div class="x-dot" id="xdot2"></div>
-            <div class="x-dot" id="xdot3"></div>
+        <!-- 未連携 -->
+        <div id="x-not-connected">
+          <p class="x-note" style="margin-bottom:12px;">
+            X（Twitter）と連携すると、投稿1回につき<strong>1ポイント</strong>獲得できます（1日最大3回）<br>
+            投稿が確認できた場合のみポイントが付与されます
+          </p>
+          <button type="button" class="x-connect-btn" id="x-connect-btn" onclick="startXOAuth()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+            Xアカウントと連携する
+          </button>
+        </div>
+        <!-- 連携済み -->
+        <div id="x-connected" style="display:none;width:100%;">
+          <div class="x-user-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+            <span class="x-username-disp" id="x-username-disp">@—</span>
+            <span class="x-connected-badge">連携済み</span>
           </div>
-          <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
+          <div class="x-share-day-row">
+            <span class="x-share-count-text">今日の投稿</span>
+            <div class="x-share-dots">
+              <div class="x-dot" id="xdot1"></div>
+              <div class="x-dot" id="xdot2"></div>
+              <div class="x-dot" id="xdot3"></div>
+            </div>
+            <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
+          </div>
+          <button type="button" class="x-tweet-btn" id="x-tweet-btn" onclick="postHabioTweet()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+            Xに投稿して 1pt 獲得
+          </button>
+          <button type="button" class="x-disconnect-btn" onclick="disconnectX()">連携解除</button>
         </div>
-        <div class="x-coming-badge">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
-          X連携準備中
-        </div>
-        <p class="x-note">
-          X（Twitter）と連携すると、投稿1回につき1ポイント獲得できます（1日最大3回）<br>
-          投稿が成功した場合のみポイントが付与されます<br>
-          共有画面を開いただけではポイントは付与されません
-        </p>
       </div>
     </div>
 
@@ -2887,7 +2910,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); loadXStatus(); }
 }
 
 /* ── TOAST ── */
@@ -5569,8 +5592,153 @@ function shareRefOnX() {
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(refUrl)}`, '_blank');
 }
 
+// ── X OAuth 関数 ────────────────────────────────────────────────────────────
+
+// X連携を開始（/api/auth/x/start にリダイレクト）
+function startXOAuth() {
+  const email = Store.get('user_email', '');
+  if (!email) {
+    showToast('先にメールアドレスを設定してください');
+    return;
+  }
+  const btn = document.getElementById('x-connect-btn');
+  if (btn) { btn.textContent = '認証画面を開いています...'; btn.disabled = true; }
+  window.location.href = `/api/auth/x/start?email=${encodeURIComponent(email)}`;
+}
+
+// X連携状態をAPIからロードして描画する
+async function loadXStatus() {
+  const email   = Store.get('user_email', '');
+  const notConn = document.getElementById('x-not-connected');
+  const conn    = document.getElementById('x-connected');
+  if (!notConn || !conn) return;
+
+  if (!email) {
+    notConn.style.display = '';
+    conn.style.display    = 'none';
+    return;
+  }
+
+  try {
+    const res  = await fetch(`${STRIPE_WORKER}/x/status?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (data.connected) {
+      const userDisp = document.getElementById('x-username-disp');
+      const countTxt = document.getElementById('x-share-count-text');
+      if (userDisp) userDisp.textContent = '@' + data.x_username;
+      if (countTxt) countTxt.textContent = `${data.today_count} / ${data.daily_limit}`;
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById(`xdot${i}`);
+        if (dot) dot.classList.toggle('filled', i <= data.today_count);
+      }
+      const tweetBtn = document.getElementById('x-tweet-btn');
+      if (tweetBtn) tweetBtn.disabled = data.today_count >= data.daily_limit;
+      notConn.style.display = 'none';
+      conn.style.display    = '';
+    } else {
+      notConn.style.display = '';
+      conn.style.display    = 'none';
+    }
+  } catch {
+    notConn.style.display = '';
+    conn.style.display    = 'none';
+  }
+}
+
+// Xに Habio 定型ツイートを投稿してポイントを獲得する
+async function postHabioTweet() {
+  const email = Store.get('user_email', '');
+  if (!email) return;
+
+  const tweetBtn = document.getElementById('x-tweet-btn');
+  if (tweetBtn) { tweetBtn.textContent = '投稿中...'; tweetBtn.disabled = true; }
+
+  const text = 'Habio で今日の健康習慣をチェックしました 🌿\n気合いじゃなくていい、AIがやさしく寄り添う健康習慣アプリ。\nhttps://habio.pages.dev/app #Habio #健康習慣';
+
+  try {
+    const res  = await fetch(`${STRIPE_WORKER}/x/tweet`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, text }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      showToast('ツイート成功！ +1pt 獲得しました 🎉');
+      await loadXStatus();
+      await loadPointsReferral();
+    } else if (data.reason === 'daily_limit_reached') {
+      showToast('今日の投稿上限（3回）に達しました');
+      await loadXStatus();
+    } else if (data.reconnect_required) {
+      showToast('X連携の認証が切れました。再連携してください');
+      const notConn = document.getElementById('x-not-connected');
+      const connEl  = document.getElementById('x-connected');
+      if (notConn) notConn.style.display = '';
+      if (connEl)  connEl.style.display  = 'none';
+    } else {
+      showToast('投稿に失敗しました: ' + (data.reason || '不明なエラー'));
+    }
+  } catch {
+    showToast('投稿に失敗しました。通信エラー');
+  } finally {
+    if (tweetBtn && tweetBtn.disabled) {
+      tweetBtn.textContent = 'Xに投稿して 1pt 獲得';
+      tweetBtn.disabled    = false;
+    }
+  }
+}
+
+// X連携を解除する
+async function disconnectX() {
+  const email = Store.get('user_email', '');
+  if (!email) return;
+  if (!confirm('X（Twitter）との連携を解除しますか？')) return;
+
+  try {
+    await fetch(`${STRIPE_WORKER}/x/disconnect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    showToast('X連携を解除しました');
+    const notConn = document.getElementById('x-not-connected');
+    const connEl  = document.getElementById('x-connected');
+    if (notConn) notConn.style.display = '';
+    if (connEl)  connEl.style.display  = 'none';
+  } catch {
+    showToast('解除に失敗しました。もう一度お試しください');
+  }
+}
+
+// ?x_connected=1 / ?x_error=xxx をページ読み込み時に処理する
+function processXParams() {
+  const params = new URLSearchParams(location.search);
+  if (params.has('x_connected')) {
+    const username = params.get('x_username') || '';
+    showToast(`X連携が完了しました！${username ? ' @' + username : ''}`);
+    history.replaceState(null, '', location.pathname);
+    loadXStatus();
+    goTab('settings');
+  } else if (params.has('x_error')) {
+    const errMap = {
+      'access_denied':         'X連携をキャンセルしました',
+      'invalid_state':         'セッションが切れました。再度お試しください',
+      'token_exchange_failed': 'X認証に失敗しました。再度お試しください',
+      'user_fetch_failed':     'Xユーザー情報の取得に失敗しました',
+      'missing_params':        'コールバックパラメータが不正です',
+    };
+    const err = params.get('x_error');
+    showToast(errMap[err] || 'X連携に失敗しました: ' + err);
+    history.replaceState(null, '', location.pathname);
+    goTab('settings');
+  }
+}
+
 // 起動時に ?ref= を処理
 processRefParam();
+processXParams();
 </script>
 </body>
 </html>
