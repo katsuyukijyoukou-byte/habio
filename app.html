@@ -1117,6 +1117,23 @@ body.night-bg{background:#C8C3BB;}
 .rec-pt-hint-body{flex:1;}
 .rec-pt-hint-main{font-size:12px;font-weight:600;color:var(--t);line-height:1.6;}
 .rec-pt-hint-sub{font-size:10px;color:var(--t-g);margin-top:2px;line-height:1.6;}
+.pt-hint-bar{
+  margin:0 22px 12px;
+  background:linear-gradient(135deg,var(--g-pp),#f0faf4);
+  border:1px solid rgba(114,185,148,.15);
+  border-radius:var(--r-m);padding:10px 14px;
+  display:flex;align-items:flex-start;gap:9px;
+}
+.pt-hint-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.pt-hint-txt{font-size:12px;color:var(--t-m);line-height:1.7;}
+.pt-hint-txt strong{color:var(--g-d);font-weight:700;}
+.pt-hint-prem{font-size:10px;color:var(--t-g);display:block;margin-top:2px;}
+.meal-pt-badge{
+  font-size:10px;font-weight:700;color:var(--g-d);
+  background:rgba(114,185,148,.15);border-radius:30px;
+  padding:2px 8px;margin-left:6px;vertical-align:middle;
+}
+.meal-pt-badge.done{color:var(--t-l);background:var(--bg);font-weight:500;}
 
 /* ── REC DETAIL MODAL ── */
 .rec-modal-overlay{
@@ -1818,6 +1835,13 @@ body.night-bg{background:#C8C3BB;}
       </div>
       <div class="cal-days" id="calDays"></div>
     </div>
+    <div class="pt-hint-bar" id="habitPtHint">
+      <span class="pt-hint-icon">🌿</span>
+      <div class="pt-hint-txt">
+        習慣タスクを1つクリアすると <strong id="habitPtVal">+1pt</strong>
+        <span class="pt-hint-prem" id="habitPtPrem">プレミアム会員は +2pt</span>
+      </div>
+    </div>
     <div class="habit-list" id="habitList"></div>
     <div class="habit-enc" id="habitEnc">
       <div class="habit-enc-em">🌱</div>
@@ -1835,6 +1859,13 @@ body.night-bg{background:#C8C3BB;}
       <div class="food-date" id="foodDate"></div>
       <div class="food-note">カロリーより、バランス。<br>食べたものを記録して、少しずつ整えましょう。</div>
     </div>
+    <div class="pt-hint-bar" id="mealPtHint" style="margin-top:4px;">
+      <span class="pt-hint-icon">🌿</span>
+      <div class="pt-hint-txt">
+        食事を記録すると1食ごとに <strong id="mealPtVal">+1pt</strong>
+        <span class="pt-hint-prem" id="mealPtPrem">プレミアム会員は +2pt</span>
+      </div>
+    </div>
 
     <p class="sec-lbl">Habio より</p>
     <div class="food-ai-card mb14">
@@ -1847,7 +1878,7 @@ body.night-bg{background:#C8C3BB;}
 
     <div class="meal-section mb14">
       <div class="meal-hd">
-        <div class="meal-hd-left"><span class="meal-time-em">🌅</span><span class="meal-time-name">朝食</span></div>
+        <div class="meal-hd-left"><span class="meal-time-em">🌅</span><span class="meal-time-name">朝食</span><span class="meal-pt-badge" id="meal-morning-pt">+1pt</span></div>
         <button class="meal-add-btn" onclick="openFoodSheet('morning')">＋ 記録する</button>
       </div>
       <div class="meal-items" id="meal-morning"><div class="meal-empty">まだ記録がありません</div></div>
@@ -1855,7 +1886,7 @@ body.night-bg{background:#C8C3BB;}
 
     <div class="meal-section mb14">
       <div class="meal-hd">
-        <div class="meal-hd-left"><span class="meal-time-em">☀️</span><span class="meal-time-name">昼食</span></div>
+        <div class="meal-hd-left"><span class="meal-time-em">☀️</span><span class="meal-time-name">昼食</span><span class="meal-pt-badge" id="meal-noon-pt">+1pt</span></div>
         <button class="meal-add-btn" onclick="openFoodSheet('noon')">＋ 記録する</button>
       </div>
       <div class="meal-items" id="meal-noon"><div class="meal-empty">まだ記録がありません</div></div>
@@ -1863,7 +1894,7 @@ body.night-bg{background:#C8C3BB;}
 
     <div class="meal-section mb14">
       <div class="meal-hd">
-        <div class="meal-hd-left"><span class="meal-time-em">🌙</span><span class="meal-time-name">夕食</span></div>
+        <div class="meal-hd-left"><span class="meal-time-em">🌙</span><span class="meal-time-name">夕食</span><span class="meal-pt-badge" id="meal-night-pt">+1pt</span></div>
         <button class="meal-add-btn" onclick="openFoodSheet('night')">＋ 記録する</button>
       </div>
       <div class="meal-items" id="meal-night"><div class="meal-empty">まだ記録がありません</div></div>
@@ -3246,6 +3277,32 @@ function refreshHabitDefs(){
   HABIT_DEFS=set.map(id=>({id,...ALL_HABITS[id]}));
 }
 
+function updateHabitPtHint(){
+  const isPrem=Store.get('is_premium',false);
+  const valEl=document.getElementById('habitPtVal');
+  const premEl=document.getElementById('habitPtPrem');
+  if(valEl) valEl.textContent=isPrem?'+2pt':'+1pt';
+  if(premEl) premEl.style.display=isPrem?'none':'block';
+}
+
+function updateMealPtBadges(){
+  const isPrem=Store.get('is_premium',false);
+  const pt=isPrem?2:1;
+  const meals={morning:'meal-morning-pt',noon:'meal-noon-pt',night:'meal-night-pt'};
+  for(const [meal,elId] of Object.entries(meals)){
+    const el=document.getElementById(elId);
+    if(!el) continue;
+    const already=Store.get('pts_meal_'+meal+'_date','')===today();
+    el.textContent=already?'✓ 記録済み':`+${pt}pt`;
+    el.className='meal-pt-badge'+(already?' done':'');
+  }
+  // meal hint
+  const mealValEl=document.getElementById('mealPtVal');
+  const mealPremEl=document.getElementById('mealPtPrem');
+  if(mealValEl) mealValEl.textContent=isPrem?'+2pt':'+1pt';
+  if(mealPremEl) mealPremEl.style.display=isPrem?'none':'block';
+}
+
 function initHabits(){
   const lastDate=Store.get('habit_date','');
   if(lastDate!==today()){Store.set('habit_state',{});Store.set('habit_date',today());}
@@ -3263,6 +3320,7 @@ function initHabits(){
     </div>`).join('');
   updateHabitEnc();
   updateHabitProgress();
+  updateHabitPtHint();
 }
 
 function toggleHabit(el){
@@ -3278,8 +3336,18 @@ function toggleHabit(el){
   Store.set('habit_state',state);
   if(nowDone){
     logWin(def.em,def.name+'ができた',def.winNote);
-    showToast(def.em+' '+def.name+'を記録しました！');
-    addPoints(1);
+    // 同日同タスク二重付与防止
+    const dedupKey='pts_habit_done_'+today();
+    const done=Store.get(dedupKey,[]);
+    if(!done.includes(id)){
+      const earned=addPoints(1,'habit_task_complete','習慣タスク達成ポイント');
+      done.push(id);
+      Store.set(dedupKey,done);
+      const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
+      showToast(`${def.em} ${def.name}を記録 ／ ${ptMsg}`);
+    } else {
+      showToast(`${def.em} ${def.name}を記録しました！`);
+    }
   }
   updateHabitEnc();
   updateHabitProgress();
@@ -3352,16 +3420,24 @@ function logFoodItem(id,em,name){
   const logs=Store.get(key,[]);
   logs.push({id,em,name,mealTime:currentMealTime,ts:new Date().toISOString()});
   Store.set(key,logs);
+  const meal=currentMealTime;
   document.getElementById('foodSheetOverlay').classList.remove('show');
   currentMealTime=null;
   renderFoodLog();
   logWin(em,name+'を食べた','食事の記録');
-  showToast(em+' 記録しました！');
-  // 1pt per day for food logging (not per item)
-  if(Store.get('pts_food_date','')!==today()){
-    Store.set('pts_food_date',today());
-    addPoints(1);
+  // 食事区分ごと1日1回ポイント
+  const mealDedupKey='pts_meal_'+meal+'_date';
+  const typeMap={morning:'meal_breakfast',noon:'meal_lunch',night:'meal_dinner'};
+  const descMap={morning:'朝食記録ポイント',noon:'昼食記録ポイント',night:'夕食記録ポイント'};
+  if(Store.get(mealDedupKey,'')!==today()){
+    Store.set(mealDedupKey,today());
+    const earned=addPoints(1,typeMap[meal]||'meal_record',descMap[meal]||'食事記録ポイント');
+    const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
+    showToast(em+' 記録しました！ ／ '+ptMsg);
+  } else {
+    showToast(em+' 記録しました！');
   }
+  updateMealPtBadges();
 }
 
 function deleteFoodItem(idx){
@@ -3394,6 +3470,7 @@ function renderFoodLog(){
   }
   const foodAiEl=document.getElementById('foodAiMsg');
   if(foodAiEl) foodAiEl.textContent=generateFoodAiComment(logs);
+  updateMealPtBadges();
 }
 
 /* ── CHAT ── */
@@ -5687,16 +5764,22 @@ function getTodayPts(){
 }
 function getTotalPts(){return Store.get('pts_total',0);}
 
-function addPoints(n){
+function addPoints(n, type, description){
   const isPrem=Store.get('is_premium',false);
   const earned=isPrem?n*2:n;
-  const todayPts=(Store.get('pts_date','')=== today()?Store.get('pts_today',0):0)+earned;
+  const todayPts=(Store.get('pts_date','')===today()?Store.get('pts_today',0):0)+earned;
   Store.set('pts_date',today());
   Store.set('pts_today',todayPts);
   const total=getTotalPts()+earned;
   Store.set('pts_total',total);
+  if(type){
+    const log=Store.get('pts_local_log',[]);
+    log.unshift({type,pts:earned,description:description||`+${earned}pt`,date:today(),ts:new Date().toISOString()});
+    Store.set('pts_local_log',log.slice(0,100));
+  }
   checkPointBadges(total);
   renderPointsCard();
+  return earned;
 }
 
 function checkPointBadges(total){
