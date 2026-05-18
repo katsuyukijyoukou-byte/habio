@@ -3520,23 +3520,48 @@ async function quickChat(text){
 
 // ユーザーのメッセージにキーワードが含まれていたら自動で商品を1件提案する
 function maybeShowProductRec(userMsg){
+  // 推薦意図フレーズ（これがあればスコアを2倍にする）
+  const hasIntent=/おすすめ|オススメ|いいもの|良いもの|何かない|何がいい|どれがいい|教えて|紹介して|ある[？?]|ない[？?]|何を使|何を飲|何を食/.test(userMsg);
+
   const scores={};
   REC_DEFS.forEach(d=>{ scores[d.id]=0; });
   Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
     kws.forEach(k=>{ if(userMsg.includes(k)) scores[id]=(scores[id]||0)+2; });
   });
 
-  const sorted=REC_DEFS.slice().sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
-  const best=sorted[0];
-  if(!best||(scores[best.id]||0)===0) return; // キーワード不一致なら出さない
+  // 推薦意図あり + カテゴリ語一致 → スコア2倍
+  const maxScore=Math.max(0,...Object.values(scores));
+  if(hasIntent && maxScore>0){
+    Object.keys(scores).forEach(id=>{ if(scores[id]>0) scores[id]*=2; });
+  }
+
+  // 推薦意図のみ（カテゴリ語なし）→ チャット履歴ベースのクイックレコメンドに委譲
+  if(hasIntent && maxScore===0){
+    setTimeout(()=>quickProductRec(),900);
+    return;
+  }
+
+  // キーワード不一致かつ意図なし → 何も出さない
+  if(maxScore===0) return;
+
+  const sorted=REC_DEFS.slice().sort((a,b)=>{
+    const diff=(scores[b.id]||0)-(scores[a.id]||0);
+    return diff!==0?diff:Math.random()-0.5;
+  });
 
   const lastRecId=Store.get('last_chat_rec_id','');
-  if(best.id===lastRecId) return; // 直前と同じ商品は連続で出さない
+  const picks=sorted.filter(d=>d.id!==lastRecId);
+  const best=picks.length?picks[0]:sorted[0];
+  if(!best||(scores[best.id]||0)===0) return;
+
   const link=AFFILIATE_LINKS[best.id];
   if(!link) return;
 
   Store.set('last_chat_rec_id',best.id);
-  const msg=`ちなみに、気になっているなら参考になるかもしれません 🌿\n▶ ${best.title}\n${best.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+  const intro=hasIntent
+    ?'気になっているなら、こちらが参考になるかもしれません 🌿'
+    :'ちなみに、関連するアイテムをひとつご紹介します 🌿';
+  const msg=`${intro}\n▶ ${best.title}\n${best.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
   setTimeout(()=>appendBubble(msg,false,nowTime()),900);
 }
 
@@ -5069,35 +5094,35 @@ const REC_KEYWORDS = {
   smartwatch:    ['スマートウォッチ','万歩計','歩数'],
   sportsdrink:   ['スポーツドリンク','水分','クエン酸'],
   ashwaganda:    ['ストレス','アシュワガンダ','不安'],
-  rooibostea:    ['ルイボス','ノンカフェイン','お茶','カフェインなし','水分'],
-  lowcalbento:   ['宅配弁当','減塩弁当','カロリー制限','塩分制限','制限食','食事管理'],
-  zakkokumai:    ['雑穀','雑穀米','もち麦','食物繊維','栄養バランス'],
-  mytrexneck:    ['首こり','首コリ','ネック','スマホ首','ストレートネック','温熱'],
-  collagenpowder:['コラーゲン','肌','美肌','美容','粉末'],
-  pelvischair:   ['骨盤','姿勢','腰痛','デスクワーク','猫背','在宅'],
-  rakumolumbar:  ['腰','腰痛','コルセット','腰ベルト','腰サポーター'],
-  armshaer:      ['二の腕','引き締め','猫背','巻き肩','腕'],
-  donutcushion:  ['座布団','クッション','骨盤','腰痛','産後'],
-  legfit:        ['ふくらはぎ','むくみ','足','EMS','マッサージ機'],
-  neckpillow:    ['ストレートネック','スマホ首','首','肩甲骨','枕なし'],
-  fitnessbike:   ['エアロバイク','フィットネスバイク','有酸素','室内運動','自転車'],
-  stepper:       ['ステッパー','踏み台','有酸素','運動不足','脂肪燃焼'],
-  balanceboard:  ['バランスボード','体幹','木製','フィットネス','ヨガボード'],
-  balancedisc:   ['バランスディスク','体幹','ヨガ','ピラティス','ディスク'],
-  trainingsandal:['サンダル','体幹','ウォーキング','歩き','足元'],
-  healthzosui:   ['雑炊','置き換え','糖質制限','プロテイン雑炊','大豆'],
-  lowcalretort:  ['こんにゃく','低カロリー','レトルト','糖質','制限食'],
-  tomatosoup:    ['トマト','スープ','寒天','コラーゲン','ダイエットスープ'],
-  proterisotto:  ['リゾット','プロテイン','置き換え','スープ','たんぱく'],
-  imuse:         ['免疫','プラズマ乳酸菌','内臓脂肪','iMUSE','キリン'],
-  calorilimit:   ['カロリミット','FANCL','ファンケル','カロリー','桑の葉'],
-  imubalance:    ['イムバランス','GABA','イソフラボン','腸活','セラミド'],
-  blackgarlic:   ['にんにく','黒酢','活力','元気','黒にんにく'],
-  nanateatox:    ['ダイエット茶','キャンドルブッシュ','腸活茶','すっきり'],
-  nanamitea:     ['七美茶','漢方','ダイエット茶','デトックス','腸活'],
-  bananatea:     ['バナナ茶','デトックス茶','腸活','すっきり','フルーツティー'],
-  traintube:     ['チューブ','ゴムチューブ','筋トレ','ストレッチ','自宅運動'],
-  rumay3d:       ['3D振動','振動マシン','ぶるぶる','ウエスト','産後運動'],
+  rooibostea:    ['ルイボス','ノンカフェイン','お茶','カフェインなし','水分','ハーブティー','健康茶'],
+  lowcalbento:   ['宅配弁当','減塩弁当','カロリー制限','塩分制限','制限食','食事管理','お弁当','惣菜'],
+  zakkokumai:    ['雑穀','雑穀米','もち麦','食物繊維','栄養バランス','ごはん','米'],
+  mytrexneck:    ['首こり','首コリ','ネック','スマホ首','ストレートネック','温熱','首グッズ'],
+  collagenpowder:['コラーゲン','肌','美肌','美容','粉末','コラーゲンパウダー'],
+  pelvischair:   ['骨盤','姿勢','腰痛','デスクワーク','猫背','在宅','椅子'],
+  rakumolumbar:  ['腰','腰痛','コルセット','腰ベルト','腰サポーター','腰グッズ'],
+  armshaer:      ['二の腕','引き締め','猫背','巻き肩','腕','アームシェイパー'],
+  donutcushion:  ['座布団','クッション','骨盤','腰痛','産後','円座'],
+  legfit:        ['ふくらはぎ','むくみ','足','EMS','マッサージ機','脚','フットマッサージ'],
+  neckpillow:    ['ストレートネック','スマホ首','首','肩甲骨','枕','ネックピロー'],
+  fitnessbike:   ['エアロバイク','フィットネスバイク','有酸素','室内運動','自転車','バイク','運動器具'],
+  stepper:       ['ステッパー','踏み台','有酸素','運動不足','脂肪燃焼','踏み台運動','運動器具'],
+  balanceboard:  ['バランスボード','体幹','木製','フィットネス','ヨガボード','バランス','運動器具'],
+  balancedisc:   ['バランスディスク','体幹','ヨガ','ピラティス','ディスク','バランス'],
+  trainingsandal:['サンダル','体幹','ウォーキング','歩き','足元','歩く'],
+  healthzosui:   ['雑炊','置き換え','糖質制限','プロテイン雑炊','大豆','ダイエット食品','置き換え食'],
+  lowcalretort:  ['こんにゃく','低カロリー','レトルト','糖質','制限食','ダイエット食品','ローカロリー'],
+  tomatosoup:    ['トマト','スープ','寒天','コラーゲン','ダイエットスープ','ダイエット食品'],
+  proterisotto:  ['リゾット','プロテイン','置き換え','スープ','たんぱく','ダイエット食品','置き換え食'],
+  imuse:         ['免疫','プラズマ乳酸菌','内臓脂肪','iMUSE','キリン','免疫サポート'],
+  calorilimit:   ['カロリミット','FANCL','ファンケル','カロリー','桑の葉','ダイエットサプリ','サプリ'],
+  imubalance:    ['イムバランス','GABA','イソフラボン','腸活','セラミド','腸活サプリ','サプリ'],
+  blackgarlic:   ['にんにく','黒酢','活力','元気','黒にんにく','活力サプリ','サプリ'],
+  nanateatox:    ['ダイエット茶','キャンドルブッシュ','腸活茶','すっきり','お茶','健康茶','デトックス'],
+  nanamitea:     ['七美茶','漢方','ダイエット茶','デトックス','腸活','お茶','健康茶'],
+  bananatea:     ['バナナ茶','デトックス茶','腸活','すっきり','フルーツティー','お茶','健康茶'],
+  traintube:     ['チューブ','ゴムチューブ','筋トレ','ストレッチ','自宅運動','筋トレグッズ','運動器具'],
+  rumay3d:       ['3D振動','振動マシン','ぶるぶる','ウエスト','産後運動','振動','運動器具'],
 };
 
 /* ── REC LOGGING ── */
