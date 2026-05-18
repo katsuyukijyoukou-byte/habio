@@ -1614,6 +1614,48 @@ body.night-bg{background:#C8C3BB;}
 .ref-stat-lbl{font-size:10px;color:var(--t-m);margin-top:2px;}
 .ref-note{font-size:11px;color:var(--t-l);line-height:1.8;margin-top:6px;}
 .no-email-hint{font-size:12px;color:var(--t-m);text-align:center;padding:14px 0;line-height:1.7;}
+
+/* ── DAILY CONTENT ── */
+.daily-section{display:flex;flex-direction:column;gap:10px;margin:0 22px 14px;}
+.daily-weather-card{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,var(--blue-p),var(--g-pp));
+  border-radius:var(--r-m);padding:14px 18px;
+  box-shadow:var(--sh1);
+}
+.daily-weather-icon{font-size:28px;flex-shrink:0;}
+.daily-weather-body{flex:1;}
+.daily-weather-temp{font-size:20px;font-weight:700;color:var(--t);line-height:1.1;}
+.daily-weather-desc{font-size:11px;color:var(--t-m);margin-top:2px;}
+.daily-weather-loc{font-size:10px;color:var(--t-l);margin-top:1px;}
+.daily-mission-card{
+  background:var(--card);border-radius:var(--r-m);
+  padding:16px 18px;box-shadow:var(--sh1);
+}
+.daily-mission-top{display:flex;align-items:flex-start;gap:10px;}
+.daily-mission-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--t-g);text-transform:uppercase;margin-bottom:4px;}
+.daily-mission-text{font-size:14px;font-weight:600;color:var(--t);line-height:1.5;}
+.daily-mission-pt{font-size:10px;color:var(--t-m);margin-top:3px;}
+.daily-mission-em{font-size:24px;flex-shrink:0;margin-top:2px;}
+.daily-mission-btn{
+  display:block;width:100%;margin-top:12px;
+  background:var(--g);color:#fff;
+  border-radius:var(--r-f);padding:9px 0;
+  font-size:13px;font-weight:700;
+  transition:opacity .18s,transform .12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.daily-mission-btn:active{transform:scale(.97);opacity:.9;}
+.daily-mission-btn.done{background:var(--t-l);pointer-events:none;}
+.daily-lucky-card{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,var(--beige-l),var(--g-pp));
+  border-radius:var(--r-m);padding:14px 18px;
+  box-shadow:var(--sh1);
+}
+.daily-lucky-body{flex:1;}
+.daily-lucky-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--t-m);text-transform:uppercase;margin-bottom:3px;}
+.daily-lucky-text{font-size:13px;font-weight:600;color:var(--t);line-height:1.5;}
   </style>
 </head>
 <body>
@@ -1689,6 +1731,40 @@ body.night-bg{background:#C8C3BB;}
       <div class="points-item">
         <div class="points-num" id="pointsNextBadge">10pt</div>
         <div class="points-lbl">次のバッジまで</div>
+      </div>
+    </div>
+
+    <!-- ── DAILY CONTENT ── -->
+    <p class="sec-lbl">今日のHabio</p>
+    <div class="daily-section">
+      <!-- 天気 -->
+      <div id="weatherCard" class="daily-weather-card" style="display:none;">
+        <div class="daily-weather-icon" id="weatherIcon">☁️</div>
+        <div class="daily-weather-body">
+          <div class="daily-weather-temp" id="weatherTemp">--°C</div>
+          <div class="daily-weather-desc" id="weatherDesc">天気を読み込み中...</div>
+          <div class="daily-weather-loc" id="weatherLoc"></div>
+        </div>
+      </div>
+      <!-- 今日のミッション -->
+      <div class="daily-mission-card">
+        <div class="daily-mission-top">
+          <div class="daily-mission-em" id="missionEm">🎯</div>
+          <div style="flex:1;">
+            <div class="daily-mission-lbl">TODAY'S MISSION</div>
+            <div class="daily-mission-text" id="missionText">読み込み中...</div>
+            <div class="daily-mission-pt" id="missionPt">達成で +1pt</div>
+          </div>
+        </div>
+        <button class="daily-mission-btn" id="missionBtn" onclick="completeDailyMission()">ミッション達成！</button>
+      </div>
+      <!-- ラッキー習慣 -->
+      <div class="daily-lucky-card">
+        <div style="font-size:24px;flex-shrink:0;" id="luckyEm">🍀</div>
+        <div class="daily-lucky-body">
+          <div class="daily-lucky-lbl">LUCKY HABIT</div>
+          <div class="daily-lucky-text" id="luckyText">読み込み中...</div>
+        </div>
       </div>
     </div>
 
@@ -2031,6 +2107,42 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-em">🌙</div>
         <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
         <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
+      </div>
+    </div>
+
+    <p class="sec-lbl">地域設定（天気表示）</p>
+    <div class="st-group">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;">
+          <div class="st-em">🌤️</div>
+          <div class="st-info"><div class="st-name">お住まいの地域</div><div class="st-note">ホーム画面の天気表示に使用します</div></div>
+        </div>
+        <div style="margin-top:10px;width:100%;">
+          <select id="citySelect" onchange="saveCity(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg-w);color:var(--t);font-size:14px;font-family:inherit;appearance:none;">
+            <option value="">選択してください（未設定＝現在地）</option>
+            <option value="東京">東京</option>
+            <option value="横浜">横浜</option>
+            <option value="大阪">大阪</option>
+            <option value="京都">京都</option>
+            <option value="名古屋">名古屋</option>
+            <option value="神戸">神戸</option>
+            <option value="福岡">福岡</option>
+            <option value="広島">広島</option>
+            <option value="岡山">岡山</option>
+            <option value="仙台">仙台</option>
+            <option value="新潟">新潟</option>
+            <option value="金沢">金沢</option>
+            <option value="松山">松山</option>
+            <option value="熊本">熊本</option>
+            <option value="長崎">長崎</option>
+            <option value="鹿児島">鹿児島</option>
+            <option value="札幌">札幌</option>
+            <option value="那覇">那覇</option>
+          </select>
+        </div>
+        <div style="margin-top:6px;text-align:right;width:100%;">
+          <button onclick="useGeolocation()" style="font-size:11px;color:var(--t-g);font-weight:600;background:none;border:none;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;">📍 現在地を使用する</button>
+        </div>
       </div>
     </div>
 
@@ -3138,6 +3250,164 @@ function initHome(){
   const diff=Math.round((new Date()-new Date(start))/(1000*60*60*24))+1;
   const pmEl=document.getElementById('profileMeta');
   if(pmEl) pmEl.textContent='Habio を使いはじめて '+diff+'日目';
+}
+
+/* ── DAILY CONTENT ── */
+const DAILY_MISSIONS=[
+  {em:'🧘',text:'5分間、目を閉じて深呼吸してみましょう',cat:'stress'},
+  {em:'🌿',text:'今日の小さなよかったことを3つ思い出してみて',cat:'stress'},
+  {em:'☕',text:'好きな飲み物を一杯、ゆっくり味わう時間を',cat:'stress'},
+  {em:'📵',text:'10分間スマホを置いて、ぼーっとする時間を',cat:'stress'},
+  {em:'🎵',text:'好きな音楽を1曲、目を閉じて聴いてみましょう',cat:'stress'},
+  {em:'🌸',text:'窓の外を2分間ながめてみましょう',cat:'stress'},
+  {em:'🌙',text:'今夜は寝る30分前にスマホを置いてみましょう',cat:'sleep'},
+  {em:'💤',text:'今日は目標の就寝時間を決めて、守ってみましょう',cat:'sleep'},
+  {em:'🛁',text:'お風呂に15分つかってみましょう。体温が下がると眠くなります',cat:'sleep'},
+  {em:'🕯️',text:'寝る前に部屋を少し暗くして、リラックスしましょう',cat:'sleep'},
+  {em:'💧',text:'今日はコップ一杯以上の水を意識して飲みましょう',cat:'meal'},
+  {em:'🥗',text:'今日の食事に野菜を一品追加してみましょう',cat:'meal'},
+  {em:'🍎',text:'間食にくだものを選んでみましょう',cat:'meal'},
+  {em:'🥢',text:'今日は食事をゆっくり、よく噛んで食べましょう',cat:'meal'},
+  {em:'🌾',text:'今日の主食を雑穀米や全粒粉に変えてみましょう',cat:'meal'},
+  {em:'🚶',text:'今日は10分だけ外を歩きましょう',cat:'exercise'},
+  {em:'🧗',text:'エレベーターを使わずに階段を使ってみましょう',cat:'exercise'},
+  {em:'🤸',text:'好きな動画を見ながら軽くストレッチ10分',cat:'exercise'},
+  {em:'💃',text:'好きな音楽に合わせて2分間体を動かしてみましょう',cat:'exercise'},
+  {em:'🪑',text:'1時間座ったら、5分立ち上がって動きましょう',cat:'exercise'},
+];
+const DAILY_LUCKY_HABITS=[
+  {em:'🍵',text:'緑茶を一杯飲む'},
+  {em:'💧',text:'朝一番に水を飲む'},
+  {em:'🌞',text:'朝日を5分浴びる'},
+  {em:'🧴',text:'保湿ケアをていねいに'},
+  {em:'📖',text:'5分だけ本を読む'},
+  {em:'🌿',text:'深呼吸を3回する'},
+  {em:'🎧',text:'好きな音楽を聴く'},
+  {em:'🤸',text:'背伸びストレッチをする'},
+  {em:'🥕',text:'野菜を一品増やす'},
+  {em:'🚶',text:'一駅分歩く'},
+  {em:'📝',text:'ひとこと日記を書く'},
+  {em:'🛁',text:'ゆっくりお風呂につかる'},
+  {em:'🍎',text:'りんごを一切れ食べる'},
+  {em:'☕',text:'好きなお茶時間をつくる'},
+  {em:'🌙',text:'早めに寝る準備を始める'},
+  {em:'🧘',text:'1分間目を閉じる'},
+  {em:'😊',text:'鏡を見て笑顔をつくる'},
+  {em:'🪟',text:'窓を開けて換気する'},
+  {em:'🫶',text:'「よかった」を一つ数える'},
+  {em:'🏡',text:'部屋を少し片づける'},
+];
+
+function getDailyContent(){
+  const d=today();
+  const cached=Store.get('daily_content',null);
+  if(cached&&cached.date===d) return cached;
+
+  const onbGoals=Store.get('onb_goals',[]);
+  const seed=d.replace(/-/g,'');
+  const n=parseInt(seed.slice(-8),10)||20260101;
+
+  let pool=DAILY_MISSIONS;
+  if(onbGoals.includes('sleep'))     pool=DAILY_MISSIONS.filter(m=>m.cat==='sleep').concat(DAILY_MISSIONS);
+  else if(onbGoals.includes('stress')) pool=DAILY_MISSIONS.filter(m=>m.cat==='stress').concat(DAILY_MISSIONS);
+  else if(onbGoals.includes('diet')||onbGoals.includes('meal')) pool=DAILY_MISSIONS.filter(m=>m.cat==='meal').concat(DAILY_MISSIONS);
+  else if(onbGoals.includes('exercise')) pool=DAILY_MISSIONS.filter(m=>m.cat==='exercise').concat(DAILY_MISSIONS);
+
+  const mission=pool[n%pool.length];
+  const lucky=DAILY_LUCKY_HABITS[n%DAILY_LUCKY_HABITS.length];
+  const content={date:d,mission,lucky,missionDone:false};
+  Store.set('daily_content',content);
+  return content;
+}
+
+function initDailyCard(){
+  const c=getDailyContent();
+  const isPrem=Store.get('is_premium',false);
+
+  const mEm=document.getElementById('missionEm');
+  const mText=document.getElementById('missionText');
+  const mPt=document.getElementById('missionPt');
+  const mBtn=document.getElementById('missionBtn');
+  if(mEm) mEm.textContent=c.mission.em;
+  if(mText) mText.textContent=c.mission.text;
+  if(mPt) mPt.textContent='達成で +'+(isPrem?2:1)+'pt'+(isPrem?' (プレミアム2倍)':'');
+  if(mBtn){
+    if(c.missionDone){mBtn.textContent='達成済み ✓';mBtn.classList.add('done');}
+    else{mBtn.textContent='ミッション達成！';mBtn.classList.remove('done');}
+  }
+
+  const lEm=document.getElementById('luckyEm');
+  const lText=document.getElementById('luckyText');
+  if(lEm) lEm.textContent=c.lucky.em;
+  if(lText) lText.textContent=c.lucky.text;
+
+  loadWeather();
+}
+
+function completeDailyMission(){
+  const c=getDailyContent();
+  if(c.missionDone) return;
+  c.missionDone=true;
+  Store.set('daily_content',c);
+
+  const btn=document.getElementById('missionBtn');
+  if(btn){btn.textContent='達成済み ✓';btn.classList.add('done');}
+
+  const isPrem=Store.get('is_premium',false);
+  const pts=isPrem?2:1;
+  const earned=addPoints(pts,'daily_mission_complete','今日のミッション達成');
+  syncPointsToServer(earned,'daily_mission_complete','今日のミッション達成',`daily_mission_${today()}`);
+  renderPointsCard();
+  showToast(`ミッション達成！ +${pts}pt 🎯`);
+}
+
+/* ── WEATHER ── */
+const WEATHER_CODES={0:'快晴',1:'晴れ',2:'一部曇り',3:'曇り',45:'霧',48:'霧',51:'小雨',53:'雨',55:'強雨',61:'小雨',63:'雨',65:'大雨',71:'小雪',73:'雪',75:'大雪',80:'にわか雨',81:'にわか雨',82:'激しいにわか雨',95:'雷雨',96:'雷雨',99:'雷雨'};
+const WEATHER_ICONS={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌦️',63:'🌧️',65:'🌧️',71:'🌨️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+const CITY_COORDS={'東京':{lat:35.69,lon:139.69},'大阪':{lat:34.69,lon:135.50},'名古屋':{lat:35.17,lon:136.91},'福岡':{lat:33.60,lon:130.40},'札幌':{lat:43.06,lon:141.35},'仙台':{lat:38.27,lon:140.87},'横浜':{lat:35.45,lon:139.64},'神戸':{lat:34.69,lon:135.20},'京都':{lat:35.01,lon:135.76},'広島':{lat:34.39,lon:132.46},'那覇':{lat:26.21,lon:127.68},'金沢':{lat:36.56,lon:136.66},'新潟':{lat:37.90,lon:139.02},'熊本':{lat:32.80,lon:130.71},'鹿児島':{lat:31.60,lon:130.55},'長崎':{lat:32.75,lon:129.87},'岡山':{lat:34.66,lon:133.93},'松山':{lat:33.84,lon:132.77}};
+
+async function loadWeather(){
+  const card=document.getElementById('weatherCard');
+  if(!card) return;
+  const city=Store.get('user_city','');
+  let lat,lon,locName;
+  if(city&&CITY_COORDS[city]){
+    lat=CITY_COORDS[city].lat; lon=CITY_COORDS[city].lon; locName=city;
+  } else if(navigator.geolocation){
+    try{
+      const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000}));
+      lat=pos.coords.latitude.toFixed(2); lon=pos.coords.longitude.toFixed(2); locName='現在地';
+    }catch(e){lat=35.69;lon=139.69;locName='東京（デフォルト）';}
+  } else {lat=35.69;lon=139.69;locName='東京（デフォルト）';}
+  try{
+    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=Asia%2FTokyo`);
+    const data=await res.json();
+    const cw=data.current_weather;
+    const code=cw.weathercode;
+    document.getElementById('weatherIcon').textContent=WEATHER_ICONS[code]||'🌤️';
+    document.getElementById('weatherTemp').textContent=Math.round(cw.temperature)+'°C';
+    document.getElementById('weatherDesc').textContent=WEATHER_CODES[code]||'--';
+    document.getElementById('weatherLoc').textContent=locName;
+    card.style.display='flex';
+  }catch(e){card.style.display='none';}
+}
+
+function saveCity(city){
+  Store.set('user_city',city);
+  if(city) showToast('地域を「'+city+'」に設定しました');
+  loadWeather();
+}
+function useGeolocation(){
+  Store.set('user_city','');
+  const sel=document.getElementById('citySelect');
+  if(sel) sel.value='';
+  showToast('現在地を使用します');
+  loadWeather();
+}
+function restoreCity(){
+  const city=Store.get('user_city','');
+  const sel=document.getElementById('citySelect');
+  if(sel&&city) sel.value=city;
 }
 
 /* ── MOOD ── */
@@ -5924,11 +6194,13 @@ function init(){
   refreshHabitDefs();
   initOnboarding();
   initHome();
+  initDailyCard();
   initHabits();
   initFoodQuickGrid();
   restoreMood();
   restoreStep();
   restoreToggles();
+  restoreCity();
   initThemeSwatches();
   loadChatHistory();
   renderHomeWins();
