@@ -2160,6 +2160,7 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
         <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
       </div>
+      <div id="notif-status-hint" style="padding:4px 16px 10px;font-size:11.5px;color:var(--t-l);line-height:1.6;display:none;"></div>
     </div>
 
     <p class="sec-lbl">地域設定（天気表示）</p>
@@ -3189,7 +3190,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); }
 }
 
 /* ── TOAST ── */
@@ -4345,8 +4346,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 /* ── SETTINGS ── */
 function toggleToggle(el,key){
+  const wasOn=el.classList.contains('on');
   el.classList.toggle('on');
-  Store.set('toggle_'+key,el.classList.contains('on'));
+  const nowOn=el.classList.contains('on');
+  Store.set('toggle_'+key,nowOn);
+  if((key==='notif'||key==='sleep') && nowOn!==wasOn){
+    handleNotifToggle(key,nowOn).catch(e=>console.warn('[notif]',e));
+  }
 }
 function restoreToggles(){
   ['notif','sleep'].forEach(k=>{
@@ -6969,6 +6975,221 @@ function processXParams() {
 // 起動時に ?ref= を処理
 processRefParam();
 processXParams();
+
+/* ══════════════════════════════════════════════════
+   PUSH 通知
+   ══════════════════════════════════════════════════ */
+
+const PUSH_WORKER_URL = 'https://habio-push.katsuyuki-jyoukou.workers.dev';
+
+// email → 16桁ハッシュ（サーバーと同じロジック）
+async function hashEmail(email) {
+  const enc = new TextEncoder();
+  const digest = await crypto.subtle.digest('SHA-256', enc.encode(email.trim().toLowerCase()));
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
+}
+
+// applicationServerKey 用: base64url → Uint8Array
+function urlBase64ToUint8Array(str) {
+  const s = str.replace(/-/g,'+').replace(/_/g,'/');
+  const p = s.padEnd(s.length + (4 - s.length % 4) % 4, '=');
+  return new Uint8Array([...atob(p)].map(c => c.charCodeAt(0)));
+}
+
+// 現在の購読ユーザーハッシュを取得（なければ匿名ID）
+async function getPushHash() {
+  const email = Store.get('user_email','');
+  if (email) return hashEmail(email);
+  let anon = Store.get('push_anon_id', null);
+  if (!anon) {
+    anon = 'anon_' + Array.from(crypto.getRandomValues(new Uint8Array(8)))
+      .map(b=>b.toString(16).padStart(2,'0')).join('');
+    Store.set('push_anon_id', anon);
+  }
+  return anon;
+}
+
+// 通知ステータスヒント表示
+function renderNotifStatus() {
+  const el = document.getElementById('notif-status-hint');
+  if (!el) return;
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  if (!('Notification' in window) || !('PushManager' in window)) {
+    el.style.display = 'block';
+    el.innerHTML = '⚠️ お使いの環境では通知に対応していません。';
+    return;
+  }
+  if (isIOS && !isStandalone) {
+    el.style.display = 'block';
+    el.innerHTML = '📲 ホーム画面に追加してからアプリを開くと、通知を受け取れます。';
+    return;
+  }
+  const perm = Notification.permission;
+  if (perm === 'denied') {
+    el.style.display = 'block';
+    el.innerHTML = '🔕 通知がブロックされています。ブラウザの設定から許可してください。';
+    return;
+  }
+  if (Store.get('push_subscribed', false)) {
+    el.style.display = 'block';
+    el.innerHTML = '✅ 通知が設定されています。';
+    return;
+  }
+  if (perm === 'default') {
+    el.style.display = 'block';
+    el.innerHTML = '🔔 通知をONにすると、許可リクエストが表示されます。';
+    return;
+  }
+  el.style.display = 'none';
+}
+
+// トグルON/OFF ハンドラ
+async function handleNotifToggle(key, enabled) {
+  const notifOn = Store.get('toggle_notif', true);
+  const sleepOn = Store.get('toggle_sleep', true);
+  const anyOn = notifOn || sleepOn;
+
+  // 両方OFFになった → 購読解除
+  if (!anyOn) {
+    await unsubscribeFromPush();
+    renderNotifStatus();
+    return;
+  }
+
+  // どちらか1つがOFFになっただけ（もう1つはON）→ prefs更新
+  if (!enabled) {
+    await updatePushPrefs();
+    renderNotifStatus();
+    return;
+  }
+
+  // 通知サポート確認
+  if (!('Notification' in window) || !('PushManager' in window)) {
+    showToast('お使いの環境では通知に対応していません');
+    revertNotifToggle(key);
+    return;
+  }
+
+  // iOS: standalone必須
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !isStandalone) {
+    showToast('ホーム画面に追加すると通知を受け取れます 🌱');
+    showPwaBanner(true);
+    revertNotifToggle(key);
+    return;
+  }
+
+  // 既に購読済み → prefs更新のみ
+  if (Store.get('push_subscribed', false)) {
+    await updatePushPrefs();
+    renderNotifStatus();
+    return;
+  }
+
+  // 通知許可リクエスト
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') {
+    showToast('通知を許可すると声かけを受け取れます');
+    revertNotifToggle(key);
+    renderNotifStatus();
+    return;
+  }
+
+  // Push 購読
+  await subscribeForPush();
+  renderNotifStatus();
+}
+
+function revertNotifToggle(key) {
+  const el = document.getElementById('tog-' + key);
+  if (el) { el.classList.remove('on'); Store.set('toggle_' + key, false); }
+}
+
+async function subscribeForPush() {
+  try {
+    // VAPID 公開鍵を取得
+    const vapidRes = await fetch(`${PUSH_WORKER_URL}/push/vapid-key`);
+    if (!vapidRes.ok) throw new Error('VAPID key fetch failed');
+    const { publicKey } = await vapidRes.json();
+
+    // Service Worker が ready になるまで待つ
+    const reg = await navigator.serviceWorker.ready;
+    if (!reg.pushManager) throw new Error('pushManager not available');
+
+    // Push 購読
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+
+    // サーバーに保存
+    const hash = await getPushHash();
+    const prefs = {
+      notif: Store.get('toggle_notif', true),
+      sleep: Store.get('toggle_sleep', true),
+    };
+    const saveRes = await fetch(`${PUSH_WORKER_URL}/push/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hash, subscription: sub.toJSON(), prefs }),
+    });
+    if (!saveRes.ok) throw new Error('Subscription save failed');
+
+    Store.set('push_subscribed', true);
+    Store.set('push_hash', hash);
+    showToast('通知を設定しました 🌱');
+  } catch (e) {
+    console.warn('[push] subscribeForPush failed:', e);
+    showToast('通知の設定に失敗しました。再度お試しください。');
+    // toggleを戻す
+    ['notif','sleep'].forEach(k => revertNotifToggle(k));
+  }
+}
+
+async function unsubscribeFromPush() {
+  try {
+    // ブラウザ側の購読を解除
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) await sub.unsubscribe();
+
+    // サーバーから削除
+    const hash = Store.get('push_hash', null);
+    if (hash) {
+      await fetch(`${PUSH_WORKER_URL}/push/subscribe`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hash }),
+      });
+    }
+    Store.set('push_subscribed', false);
+  } catch (e) {
+    console.warn('[push] unsubscribeFromPush failed:', e);
+  }
+}
+
+async function updatePushPrefs() {
+  const hash = Store.get('push_hash', null);
+  if (!hash || !Store.get('push_subscribed', false)) return;
+  try {
+    await fetch(`${PUSH_WORKER_URL}/push/subscribe`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hash,
+        prefs: {
+          notif: Store.get('toggle_notif', true),
+          sleep: Store.get('toggle_sleep', true),
+        },
+      }),
+    });
+  } catch (e) {
+    console.warn('[push] updatePushPrefs failed:', e);
+  }
+}
 
 /* ══════════════════════════════════════════════════
    PWA — Service Worker & インストールプロンプト

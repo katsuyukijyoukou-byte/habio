@@ -117,3 +117,47 @@ self.addEventListener('message', event => {
     self.skipWaiting();
   }
 });
+
+// ── Push 通知受信 ──────────────────────────────────────────────
+self.addEventListener('push', event => {
+  if (!event.data) return;
+
+  let data;
+  try { data = event.data.json(); }
+  catch { return; }
+
+  const options = {
+    body:             data.body   || 'Habio からのお知らせ',
+    icon:             data.icon   || '/icons/icon-192.svg',
+    badge:            data.badge  || '/icons/icon-192.svg',
+    tag:              data.tag    || 'habio',
+    data:             data.data   || { url: '/app' },
+    vibrate:          [120, 60, 120],
+    requireInteraction: false,
+    silent:           false,
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Habio 🌿', options)
+  );
+});
+
+// ── 通知タップ → アプリを開く ──────────────────────────────────
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/app';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const existing = list.find(c => new URL(c.url).pathname.startsWith('/app'));
+      if (existing) return existing.focus();
+      return clients.openWindow(targetUrl);
+    })
+  );
+});
+
+// ── Subscription 変更時（ブラウザによる自動更新） ────────────
+self.addEventListener('pushsubscriptionchange', event => {
+  // TODO: Re-subscribe and update push-worker
+  console.log('[SW] pushsubscriptionchange');
+});

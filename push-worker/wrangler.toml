@@ -1,0 +1,15 @@
+name = "habio-push"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+[[kv_namespaces]]
+binding = "PREMIUM_KV"
+id = "1eed2c957cc242c9ab0c00a5183aa503"
+
+[triggers]
+crons = [
+  "0 23 * * *",
+  "0 3 * * *",
+  "0 11 * * *",
+  "0 12 * * *"
+]
