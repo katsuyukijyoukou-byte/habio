@@ -13,12 +13,15 @@
   <meta property="og:image" content="https://habio.app/og-image.png">
   <meta property="og:url" content="https://habio.app/app">
   <meta name="twitter:card" content="summary_large_image">
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
   <!-- iPhone home screen -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Habio">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2372B994'/><text y='.9em' font-size='72' x='14'>🌿</text></svg>">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon-192.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -62,7 +65,7 @@ body.night-bg{background:#C8C3BB;}
 
 /* ── APP SHELL ── */
 #app{
-  width:100vw;height:100vh;
+  width:100vw;height:100vh;height:100dvh;
   max-width:390px;max-height:844px;
   background:var(--bg);
   position:relative;overflow:hidden;
@@ -75,6 +78,44 @@ body.night-bg{background:#C8C3BB;}
     box-shadow:0 0 0 11px #242424,0 0 0 13px #3A3A3A,
                0 60px 100px rgba(0,0,0,.4),0 20px 40px rgba(0,0,0,.2);
   }
+}
+/* standalone（ホーム画面から起動）時: ノッチ・ダイナミックアイランド対応 */
+@media(display-mode:standalone){
+  #app{
+    max-height:none;
+    height:100dvh;
+    padding-top:env(safe-area-inset-top,0);
+  }
+}
+
+/* ── PWA インストールバナー ── */
+#pwaBanner{
+  position:absolute;
+  bottom:calc(68px + env(safe-area-inset-bottom,0));
+  left:12px;right:12px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px 16px 12px;
+  display:none;
+  box-shadow:0 4px 24px rgba(0,0,0,.10);
+  z-index:50;
+  animation:pwaUp .38s cubic-bezier(.34,1.2,.64,1) both;
+}
+#pwaBanner.show{display:block;}
+@keyframes pwaUp{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+#pwaBanner .pwa-icon{font-size:22px;margin-bottom:6px;}
+#pwaBanner .pwa-msg{font-size:12.5px;color:var(--t-m);line-height:1.55;margin-bottom:10px;}
+#pwaBanner .pwa-ios{font-size:11.5px;color:var(--t-l);margin-top:4px;line-height:1.5;}
+#pwaBanner .pwa-btns{display:flex;gap:8px;justify-content:flex-end;}
+#pwaBanner .pwa-skip{font-size:12px;color:var(--t-l);padding:6px 10px;border-radius:8px;}
+#pwaBanner .pwa-install{
+  font-size:12px;font-weight:600;
+  background:var(--g);color:white;
+  padding:6px 14px;border-radius:10px;
 }
 
 
@@ -2364,6 +2405,16 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name" style="color:#c0392b;">プレミアムを解約する</div><div class="st-note">退会の前にご確認いただけます</div></div>
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
+      <div class="st-row" id="pwaInstallRow" onclick="showPwaBanner(true)" style="display:none;">
+        <div class="st-em">📲</div>
+        <div class="st-info"><div class="st-name">ホーム画面に追加</div><div class="st-note">アプリのように使えます</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
+      <div class="st-row" onclick="clearPwaCache()">
+        <div class="st-em">🔄</div>
+        <div class="st-info"><div class="st-name">キャッシュをリセット</div><div class="st-note">表示の不具合が起きたときに</div></div>
+        <div class="st-r"><span class="st-arr">›</span></div>
+      </div>
       <div class="st-row" onclick="resetData()">
         <div class="st-em">🗑️</div>
         <div class="st-info"><div class="st-name">データをリセット</div><div class="st-note">習慣・チャット履歴を削除</div></div>
@@ -2381,6 +2432,16 @@ body.night-bg{background:#C8C3BB;}
 
   </div><!-- /screens -->
 
+
+  <!-- PWA インストールバナー -->
+  <div id="pwaBanner" role="dialog" aria-label="ホーム画面に追加">
+    <div class="pwa-icon">🌱</div>
+    <div class="pwa-msg" id="pwaBannerMsg">ホーム画面に追加すると、毎日開きやすくなります。</div>
+    <div class="pwa-btns">
+      <button class="pwa-skip" onclick="dismissPwaBanner(false)">後で</button>
+      <button class="pwa-install" id="pwaBannerInstallBtn" onclick="installPwa()">追加する</button>
+    </div>
+  </div>
 
   <!-- TAB BAR -->
   <nav id="tabbar">
@@ -6908,6 +6969,137 @@ function processXParams() {
 // 起動時に ?ref= を処理
 processRefParam();
 processXParams();
+
+/* ══════════════════════════════════════════════════
+   PWA — Service Worker & インストールプロンプト
+   ══════════════════════════════════════════════════ */
+
+let _pwaPrompt = null;
+const _isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || ('standalone' in navigator && navigator.standalone === true);
+const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+// beforeinstallprompt (Android/Chrome系) をキャプチャ
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  // 設定画面の「ホーム画面に追加」行を表示
+  const row = document.getElementById('pwaInstallRow');
+  if (row) row.style.display = '';
+  // 既に dismissed でなければ自動表示を試みる
+  schedulePwaBanner();
+});
+
+// インストール完了イベント
+window.addEventListener('appinstalled', () => {
+  _pwaPrompt = null;
+  Store.set('pwa_installed', true);
+  dismissPwaBanner(true);
+  showToast('ホーム画面に追加しました 🌱');
+  const row = document.getElementById('pwaInstallRow');
+  if (row) row.style.display = 'none';
+});
+
+function schedulePwaBanner() {
+  if (_isStandalone) return;
+  if (Store.get('pwa_installed', false)) return;
+  const until = Store.get('pwa_dismissed_until', 0);
+  if (Date.now() < until) return;
+  // ローディング後 20秒 で自動表示
+  setTimeout(() => showPwaBanner(false), 20000);
+}
+
+function showPwaBanner(force) {
+  if (_isStandalone && !force) return;
+  const banner = document.getElementById('pwaBanner');
+  const msgEl  = document.getElementById('pwaBannerMsg');
+  const btnEl  = document.getElementById('pwaBannerInstallBtn');
+  if (!banner) return;
+
+  if (_isIOS && !_pwaPrompt) {
+    // iOS Safari: 手動追加ガイド
+    if (msgEl) msgEl.innerHTML =
+      'ホーム画面に追加すると、毎日開きやすくなります。<br>' +
+      '<span class="pwa-ios">Safari の <b>共有ボタン</b>（↑）→「ホーム画面に追加」を選んでください。</span>';
+    if (btnEl) btnEl.style.display = 'none';
+  } else if (_pwaPrompt) {
+    if (msgEl) msgEl.textContent = 'ホーム画面に追加すると、毎日開きやすくなります。';
+    if (btnEl) btnEl.style.display = '';
+  } else {
+    return; // インストール不可環境
+  }
+
+  banner.classList.add('show');
+}
+
+function dismissPwaBanner(permanent) {
+  const banner = document.getElementById('pwaBanner');
+  if (banner) banner.classList.remove('show');
+  if (permanent) {
+    Store.set('pwa_installed', true);
+  } else {
+    // 7日間スヌーズ
+    Store.set('pwa_dismissed_until', Date.now() + 7 * 24 * 60 * 60 * 1000);
+  }
+}
+
+function installPwa() {
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(result => {
+      if (result.outcome === 'accepted') dismissPwaBanner(true);
+      _pwaPrompt = null;
+    });
+  } else if (_isIOS) {
+    showToast('Safari の共有ボタン →「ホーム画面に追加」から追加できます 🌱');
+    dismissPwaBanner(false);
+  }
+}
+
+// Service Worker 登録
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    // 新しいSWが見つかったらトースト通知
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if (!newWorker) return;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          showToast('アップデートがあります。再読み込みで最新版になります 🌿');
+        }
+      });
+    });
+  }).catch(err => console.warn('[SW] registration failed:', err));
+
+  // SWからのメッセージを受信
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data?.type === 'CACHE_CLEARED') {
+      showToast('キャッシュをリセットしました 🌿');
+    }
+  });
+}
+
+// PWAキャッシュをリセット（設定画面から呼び出し）
+function clearPwaCache() {
+  if (!confirm('キャッシュをリセットしますか？\n次の読み込みは少し遅くなります。')) return;
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+  } else {
+    // SW未登録時はブラウザのcaches APIで直接削除
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => showToast('キャッシュをリセットしました 🌿'));
+  }
+}
+
+// iOS で standalone でない場合、設定画面の行を表示
+if (_isIOS && !_isStandalone) {
+  const row = document.getElementById('pwaInstallRow');
+  if (row) row.style.display = '';
+  schedulePwaBanner();
+}
+
+registerServiceWorker();
 </script>
 </body>
 </html>
