@@ -175,9 +175,17 @@ async function sendPush(subscription, content, vapid, env) {
     body,
   });
 
-  if (res.status === 410 || res.status === 404) return 'expired';
-  if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
-  return 'sent';
+  const status     = res.status;
+  const statusText = res.statusText || '';
+  console.log(`[sendPush] endpoint=${endpoint.slice(0, 70)} status=${status}`);
+
+  if (status === 410 || status === 404) return { result: 'expired', status, statusText };
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    console.error(`[sendPush] failed ${status}: ${errBody}`);
+    throw new Error(`push service ${status}: ${errBody}`);
+  }
+  return { result: 'sent', status, statusText };
 }
 
 // ── ユーティリティ ────────────────────────────────────────────
@@ -257,11 +265,53 @@ export default {
     // テスト送信（開発用）
     if (url.pathname === '/push/test' && request.method === 'POST') {
       const { hash, slot = 'morning' } = await request.json();
+      console.log(`[push/test] hash=${hash}`);
+
       const stored = await env.PREMIUM_KV.get(`push_sub:${hash}`, 'json');
-      if (!stored) return Response.json({ error: 'no subscription for hash' }, { status: 404, headers });
+      console.log(`[push/test] subscriptionFound=${!!stored}`);
+
+      if (!stored) {
+        return Response.json({
+          ok: false,
+          debug: { hash, subscriptionFound: false },
+          error: 'no subscription for hash',
+        }, { status: 404, headers });
+      }
+
+      const endpointPrefix = stored.subscription?.endpoint?.slice(0, 70) || '(none)';
+      console.log(`[push/test] endpoint=${endpointPrefix}`);
+
       const vapid = await getVapidKeys(env);
-      await sendPush(stored.subscription, pickContent(slot), vapid, env);
-      return Response.json({ ok: true }, { headers });
+      let pushResult = null;
+      let pushError  = null;
+      let kvDeleted  = false;
+      try {
+        pushResult = await sendPush(stored.subscription, pickContent(slot), vapid, env);
+        console.log(`[push/test] pushResult=${JSON.stringify(pushResult)}`);
+        // 410/404 → KV から即削除
+        if (pushResult.result === 'expired') {
+          await env.PREMIUM_KV.delete(`push_sub:${hash}`);
+          kvDeleted = true;
+          console.log(`[push/test] Deleted expired subscription: push_sub:${hash}`);
+        }
+      } catch (e) {
+        pushError = e.message;
+        console.error(`[push/test] pushError=${pushError}`);
+      }
+
+      return Response.json({
+        ok: !pushError && pushResult?.result !== 'expired',
+        debug: {
+          hash,
+          subscriptionFound: true,
+          endpointPrefix,
+          pushStatus:     pushResult?.status     ?? null,
+          pushStatusText: pushResult?.statusText ?? null,
+          pushResult:     pushResult?.result     ?? null,
+          kvDeleted,
+          error:          pushError,
+        },
+      }, { headers });
     }
 
     return new Response('Not found', { status: 404, headers });
@@ -286,11 +336,11 @@ export default {
         const enabled = isGoodnight ? data.prefs?.sleep : data.prefs?.notif;
         if (!enabled) return;
         const result = await sendPush(data.subscription, content, vapid, env);
-        if (result === 'expired') {
+        if (result.result === 'expired') {
           await env.PREMIUM_KV.delete(name);
           console.log(`[push] Removed expired: ${name}`);
         } else {
-          console.log(`[push] ${slot} → ${name}`);
+          console.log(`[push] ${slot} → ${name} (${result.status})`);
         }
       })
     );

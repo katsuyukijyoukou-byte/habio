@@ -7182,21 +7182,48 @@ async function sendTestNotif() {
 
     // Step 6: Push サービスのレスポンス
     if (d.subscriptionFound) {
-      const isOk = d.pushResult === 'sent';
+      const isOk  = d.pushResult === 'sent';
       const isExp = d.pushResult === 'expired';
       addStep(
         isOk ? '✅' : (isExp ? '⚠️' : '❌'),
         `Push サービス: ${d.pushStatus ?? '—'}${d.pushStatusText ? ' ' + d.pushStatusText : ''}`,
         d.error
           ? d.error
-          : isOk ? '数秒後に通知が届くはずです'
-          : isExp ? 'エンドポイントが期限切れです。通知設定をOFFにして再登録してください。'
+          : isOk  ? '数秒後に通知が届くはずです'
+          : isExp ? 'エンドポイントが期限切れです（KVから削除済み）'
           : null
       );
       flush(
         isOk ? '#EAF7EF' : '#FEF0F0',
         isOk ? '#B7E4C7' : '#FAD0D0'
       );
+
+      // 期限切れ → ブラウザ側もクリアして再登録ボタンを表示
+      if (isExp) {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          const sub = await reg.pushManager.getSubscription();
+          if (sub) await sub.unsubscribe();
+        } catch (_) {}
+        Store.set('toggle_notif', false);
+        Store.set('toggle_sleep', false);
+        Store.set('push_hash', null);
+        renderNotifStatus();
+        // 再登録ボタンを追加
+        const reBtn = document.createElement('button');
+        reBtn.textContent = '再登録する';
+        reBtn.style.cssText = 'display:block;width:100%;margin-top:8px;padding:10px;border-radius:10px;background:var(--g);color:white;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;';
+        reBtn.onclick = async () => {
+          reBtn.disabled = true;
+          reBtn.textContent = '登録中…';
+          Store.set('toggle_notif', true);
+          const el = document.getElementById('toggle_notif');
+          if (el) el.classList.add('on');
+          await handleNotifToggle('toggle_notif', true);
+          reBtn.remove();
+        };
+        result.appendChild(reBtn);
+      }
     } else if (!res.ok) {
       flush('#FEF0F0', '#FAD0D0');
     }
