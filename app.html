@@ -1623,12 +1623,15 @@ body.night-bg{background:#C8C3BB;}
   border-radius:var(--r-m);padding:14px 18px;
   box-shadow:var(--sh1);
 }
-.weather-top{display:flex;align-items:center;gap:12px;}
-.daily-weather-icon{font-size:28px;flex-shrink:0;}
-.weather-top-body{flex:1;}
-.daily-weather-temp{font-size:20px;font-weight:700;color:var(--t);line-height:1.1;}
+.weather-top{display:flex;align-items:flex-start;gap:0;}
+.weather-left{flex-shrink:0;padding-right:14px;}
+.daily-weather-icon{font-size:26px;line-height:1;}
+.daily-weather-temp{font-size:20px;font-weight:700;color:var(--t);line-height:1.2;margin-top:4px;}
 .daily-weather-desc{font-size:11px;color:var(--t-m);margin-top:2px;}
 .daily-weather-loc{font-size:10px;color:var(--t-l);margin-top:1px;}
+.weather-lucky-wrap{flex:1;min-width:0;padding-left:14px;border-left:1.5px solid rgba(0,0,0,.08);}
+.weather-lucky-lbl{font-size:8px;font-weight:700;letter-spacing:.1em;color:var(--t-g);text-transform:uppercase;margin-bottom:5px;}
+.weather-lucky-text{font-size:12px;color:var(--t);line-height:1.7;font-weight:500;}
 .weather-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.08);}
 .weather-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.6);border-radius:8px;padding:4px 9px;}
 .wc-lbl{font-size:10px;color:var(--t-m);}
@@ -1653,15 +1656,6 @@ body.night-bg{background:#C8C3BB;}
 }
 .daily-mission-btn:active{transform:scale(.97);opacity:.9;}
 .daily-mission-btn.done{background:var(--t-l);pointer-events:none;}
-.daily-lucky-card{
-  display:flex;align-items:center;gap:12px;
-  background:linear-gradient(135deg,var(--beige-l),var(--g-pp));
-  border-radius:var(--r-m);padding:14px 18px;
-  box-shadow:var(--sh1);
-}
-.daily-lucky-body{flex:1;}
-.daily-lucky-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--t-m);text-transform:uppercase;margin-bottom:3px;}
-.daily-lucky-text{font-size:13px;font-weight:600;color:var(--t);line-height:1.5;}
   </style>
 </head>
 <body>
@@ -1743,14 +1737,20 @@ body.night-bg{background:#C8C3BB;}
     <!-- ── DAILY CONTENT ── -->
     <p class="sec-lbl">今日のHabio</p>
     <div class="daily-section">
-      <!-- 天気 -->
+      <!-- 天気 + LUCKY HABIT 統合カード -->
       <div id="weatherCard" class="daily-weather-card" style="display:none;">
         <div class="weather-top">
-          <div class="daily-weather-icon" id="weatherIcon">☁️</div>
-          <div class="weather-top-body">
+          <!-- 左: 天気情報 -->
+          <div class="weather-left">
+            <div class="daily-weather-icon" id="weatherIcon">☁️</div>
             <div class="daily-weather-temp" id="weatherTemp">--°C</div>
             <div class="daily-weather-desc" id="weatherDesc">--</div>
             <div class="daily-weather-loc" id="weatherLoc"></div>
+          </div>
+          <!-- 右: TODAY'S LUCKY HABIT -->
+          <div class="weather-lucky-wrap">
+            <div class="weather-lucky-lbl">TODAY'S LUCKY HABIT</div>
+            <div class="weather-lucky-text" id="weatherLuckyText"></div>
           </div>
         </div>
         <div class="weather-chips" id="weatherChips" style="display:none;">
@@ -1776,14 +1776,6 @@ body.night-bg{background:#C8C3BB;}
           </div>
         </div>
         <button class="daily-mission-btn" id="missionBtn" onclick="completeDailyMission()">ミッション達成！</button>
-      </div>
-      <!-- ラッキー習慣 -->
-      <div class="daily-lucky-card">
-        <div style="font-size:24px;flex-shrink:0;" id="luckyEm">🍀</div>
-        <div class="daily-lucky-body">
-          <div class="daily-lucky-lbl">LUCKY HABIT</div>
-          <div class="daily-lucky-text" id="luckyText">読み込み中...</div>
-        </div>
       </div>
     </div>
 
@@ -3338,12 +3330,77 @@ function initDailyCard(){
     else{mBtn.textContent='ミッション達成！';mBtn.classList.remove('done');}
   }
 
-  const lEm=document.getElementById('luckyEm');
-  const lText=document.getElementById('luckyText');
-  if(lEm) lEm.textContent=c.lucky.em;
-  if(lText) lText.textContent=c.lucky.text;
-
   loadWeather();
+}
+
+function getWeatherLucky(code, temp, windMs){
+  const isRaining = code>=51&&code<=82||code>=95;
+  const isSnow    = code>=71&&code<=77;
+  const isThunder = code>=95;
+  const isSunny   = code<=2;
+  const isCloudy  = code>=3&&code<51;
+  const isHot     = temp>=27;
+  const isCold    = temp<=10;
+  const isWindy   = windMs>=8;
+
+  const seed=parseInt(today().replace(/-/g,'').slice(-4),10);
+
+  let pool;
+  if(isThunder||(isWindy&&isRaining)){
+    pool=[
+      '室内でゆったり過ごす日です。深呼吸を3回してみるのも良さそうです🌿',
+      '今日は休息を大切に。温かい飲み物をゆっくり楽しんでみてください🍵',
+      '激しい天気の日は、室内で軽くストレッチするのがおすすめです🌱',
+    ];
+  } else if(isSnow){
+    pool=[
+      '寒い日は肩をゆっくり回すと、体がほぐれやすくなります🌱',
+      '温かい飲み物から始めると、体が整いやすくなります🍵',
+      '雪の日は無理せず、室内でゆっくり過ごすのもいい選択です🌿',
+    ];
+  } else if(isRaining){
+    pool=[
+      '雨の日は室内で深呼吸するのがおすすめです。気分が整いやすいです🌱',
+      '温かい飲み物を一杯、ゆっくり味わってみてください🍵',
+      '室内で軽くストレッチすると、体が喜びます🌿',
+      '今日は体を温めることを意識するのも良さそうです🌱',
+    ];
+  } else if(isWindy){
+    pool=[
+      '風が強い日は室内で過ごすと整いやすいです。深呼吸を意識してみましょう🌱',
+      '肩まわりを軽く回すだけで、気持ちがほぐれることがあります🌿',
+      '風の強い日は外出時に体温管理を意識するのがおすすめです',
+    ];
+  } else if(isHot&&isSunny){
+    pool=[
+      '暑い日はこまめな水分補給がおすすめです💧',
+      '日陰を歩くだけで体への負担が変わることがあります🌱',
+      '暑さを感じたら無理せず休む。体の声を聞いてみてください🌿',
+      '日差しが強い日は日焼けケアも忘れずに🌱',
+    ];
+  } else if(isCold){
+    pool=[
+      '寒い朝は肩をゆっくり回すと、体が目覚めやすくなります🌱',
+      '温かい飲み物からスタートするのがおすすめです🍵',
+      '軽く体を動かすだけで体温が上がりやすい日です🌿',
+      '寒い日は首・手首・足首を温めると整いやすくなります🌱',
+    ];
+  } else if(isCloudy){
+    pool=[
+      '曇りの日は深呼吸で気分をリセットするのがおすすめです🌱',
+      '軽いストレッチで体を整えると、すっきりしやすい日です🌿',
+      '今日は体をゆっくりほぐす一日にするのも良さそうです',
+      '窓を少し開けて空気を入れ替えてみるのも良いですよ🌱',
+    ];
+  } else {
+    pool=[
+      '今日は午前中に軽くストレッチすると、気分が整いやすい日です🌱',
+      '少し外を歩くと、気持ちが切り替わりやすいです🌿',
+      '朝日を浴びると体内時計が整いやすくなります。窓を開けてみてください☀️',
+      '天気の良い日は外の空気を少し吸うだけでも気持ちが変わります🌱',
+    ];
+  }
+  return pool[seed%pool.length];
 }
 
 function completeDailyMission(){
@@ -3445,6 +3502,10 @@ async function loadWeather(){
     document.getElementById('weatherTemp').textContent=Math.round(cw.temperature)+'°C';
     document.getElementById('weatherDesc').textContent=WEATHER_CODES[code]||'--';
     document.getElementById('weatherLoc').textContent=locName;
+
+    // TODAY'S LUCKY HABIT（天気連動）
+    const luckyEl=document.getElementById('weatherLuckyText');
+    if(luckyEl) luckyEl.textContent=getWeatherLucky(code,Math.round(cw.temperature),windMs);
 
     // チップ描画
     const el=id=>document.getElementById(id);
