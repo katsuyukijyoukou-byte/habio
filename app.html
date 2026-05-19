@@ -7104,35 +7104,105 @@ function renderNotifStatus() {
   if (testResult) testResult.style.display = 'none';
 }
 
-// テスト通知送信
+// テスト通知送信（詳細デバッグ表示付き）
 async function sendTestNotif() {
   const btn    = document.getElementById('notif-test-btn');
   const result = document.getElementById('notif-test-result');
-  if (!btn) return;
+  if (!btn || !result) return;
 
   btn.disabled    = true;
   btn.textContent = '送信中…';
-  if (result) result.style.display = 'none';
+
+  const steps = [];
+  function addStep(icon, label, detail) {
+    steps.push(`<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;">` +
+      `<span style="flex-shrink:0;font-size:14px;line-height:1.4">${icon}</span>` +
+      `<span style="flex:1;line-height:1.4"><b>${label}</b>` +
+      (detail ? `<br><span style="opacity:.75;font-size:11px;">${detail}</span>` : '') +
+      `</span></div>`);
+  }
+  function flush(bg, border) {
+    result.style.cssText = `display:block;background:${bg};border:1px solid ${border};border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.6;margin-top:8px;text-align:left;`;
+    result.innerHTML = steps.join('');
+  }
+
+  steps.length = 0;
 
   try {
+    // Step 1: ハッシュ確認
     const hash = Store.get('push_hash', null) || await getPushHash();
+    addStep('🔑', 'ハッシュ取得', hash ? hash.slice(0, 12) + '…' : '(なし)');
+    flush('#F9F9F9', '#DDD');
+
+    // Step 2: ブラウザ側 subscription 確認
+    let browserSub = null;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      browserSub = await reg.pushManager.getSubscription();
+    } catch (_) {}
+    addStep(
+      browserSub ? '✅' : '⚠️',
+      'ブラウザ購読状態',
+      browserSub ? 'PushSubscription あり' : 'PushSubscription なし（未購読またはブラウザ非対応）'
+    );
+    flush('#F9F9F9', '#DDD');
+
+    // Step 3: push-worker へリクエスト送信
+    addStep('📡', 'push-worker へリクエスト送信', `hash: ${hash ? hash.slice(0,12) + '…' : '?'}`);
+    flush('#F9F9F9', '#DDD');
+
     const res  = await fetch(`${PUSH_WORKER_URL}/push/test`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ hash, slot: 'morning' }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-    if (result) {
-      result.style.cssText = 'display:block;background:#EAF7EF;color:#27AE60;border:1px solid #B7E4C7;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.55;margin-top:8px;';
-      result.textContent = '✓ テスト通知を送信しました。数秒後に届きます。';
+    // Step 4: HTTPレスポンス
+    addStep(
+      res.ok ? '✅' : '❌',
+      `HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`,
+      res.ok ? null : (data.error || '詳細不明')
+    );
+    flush('#F9F9F9', '#DDD');
+
+    const d = data.debug || {};
+
+    // Step 5: KV に subscription があったか
+    if ('subscriptionFound' in d) {
+      addStep(
+        d.subscriptionFound ? '✅' : '❌',
+        'KV subscription',
+        d.subscriptionFound
+          ? (d.endpointPrefix || '取得済み')
+          : 'push_sub:' + (hash ? hash.slice(0, 12) + '…' : '?') + ' が KV に存在しません'
+      );
+      flush('#F9F9F9', '#DDD');
+    }
+
+    // Step 6: Push サービスのレスポンス
+    if (d.subscriptionFound) {
+      const isOk = d.pushResult === 'sent';
+      const isExp = d.pushResult === 'expired';
+      addStep(
+        isOk ? '✅' : (isExp ? '⚠️' : '❌'),
+        `Push サービス: ${d.pushStatus ?? '—'}${d.pushStatusText ? ' ' + d.pushStatusText : ''}`,
+        d.error
+          ? d.error
+          : isOk ? '数秒後に通知が届くはずです'
+          : isExp ? 'エンドポイントが期限切れです。通知設定をOFFにして再登録してください。'
+          : null
+      );
+      flush(
+        isOk ? '#EAF7EF' : '#FEF0F0',
+        isOk ? '#B7E4C7' : '#FAD0D0'
+      );
+    } else if (!res.ok) {
+      flush('#FEF0F0', '#FAD0D0');
     }
   } catch (e) {
-    if (result) {
-      result.style.cssText = 'display:block;background:#FEF0F0;color:#C0392B;border:1px solid #FAD0D0;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.55;margin-top:8px;';
-      result.textContent = '✗ 送信に失敗しました: ' + e.message;
-    }
+    addStep('❌', 'エラー', e.message);
+    flush('#FEF0F0', '#FAD0D0');
   } finally {
     btn.disabled    = false;
     btn.textContent = 'テスト通知を送る 🔔';
