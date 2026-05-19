@@ -75,7 +75,13 @@ textarea{resize:vertical;min-height:72px;}
   <label>通知タイプ（任意・分析用）</label>
   <input type="text" id="bc-type" placeholder="broadcast" value="broadcast">
 
-  <button class="btn btn-primary" style="margin-top:16px;" id="bc-btn" onclick="doBroadcast()">全員に送信</button>
+  <!-- Payload プレビュー -->
+  <div style="margin-top:14px;">
+    <div style="font-size:11px;font-weight:700;color:#4A7A4A;margin-bottom:6px;">送信 Payload プレビュー（test通知と同形式）</div>
+    <pre id="bc-payload-preview" style="font-size:10px;background:#F0F4F0;border-radius:8px;padding:10px;overflow-x:auto;white-space:pre-wrap;color:#2D4A2D;line-height:1.5;margin:0;">入力すると自動更新されます</pre>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:14px;" id="bc-btn" onclick="doBroadcast()">全員に送信</button>
   <div id="bc-result" class="result"></div>
 </div>
 
@@ -208,6 +214,49 @@ async function adminFetch(path, opts = {}) {
   return { res, data };
 }
 
+// ── Payload プレビュー（test通知と同形式で表示） ────────────────
+const TAB_TO_SLOT = { home: 'morning', habits: 'noon', chat: 'evening', food: 'noon', settings: 'goodnight' };
+
+function updatePayloadPreview() {
+  const title = document.getElementById('bc-title')?.value.trim() || '(タイトル未入力)';
+  const body  = document.getElementById('bc-body')?.value.trim()  || '(本文未入力)';
+  const tab   = document.getElementById('bc-tab')?.value  || 'home';
+  const slot  = TAB_TO_SLOT[tab] || 'morning';
+
+  // push-worker が組み立てる content オブジェクト（test通知と同形式）
+  const payload = {
+    title,
+    body,
+    icon:  '/icons/icon-192.svg',
+    badge: '/icons/icon-192.svg',
+    tag:   `habio-${slot}`,
+    data:  { url: `/app?tab=${tab}`, tab, type: slot, slot },
+  };
+
+  // テスト通知と broadcast の差分比較
+  const testPayloadExample = {
+    title: 'Habio 🌿',
+    body:  'おはようございます。まずは水を一杯。',
+    icon:  '/icons/icon-192.svg',
+    badge: '/icons/icon-192.svg',
+    tag:   'habio-morning',
+    data:  { url: '/app?tab=home', tab: 'home', type: 'morning', slot: 'morning' },
+  };
+
+  const preview = document.getElementById('bc-payload-preview');
+  if (preview) {
+    preview.textContent =
+      '── 送信 payload (broadcast) ──\n' + JSON.stringify(payload, null, 2) +
+      '\n\n── test通知 payload 例 ──\n' + JSON.stringify(testPayloadExample, null, 2);
+  }
+}
+
+// 入力変更時に自動更新
+['bc-title','bc-body','bc-tab'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', updatePayloadPreview);
+});
+updatePayloadPreview();
+
 // ── 一斉送信 ──────────────────────────────────────────────────
 async function doBroadcast() {
   const title = document.getElementById('bc-title').value.trim();
@@ -220,14 +269,18 @@ async function doBroadcast() {
     return;
   }
 
+  const requestBody = { title, body, tab, type };
+  dbgLog(`broadcast リクエスト body: ${JSON.stringify(requestBody)}`);
+
   const btn = document.getElementById('bc-btn');
   btn.disabled = true; btn.textContent = '送信中…';
 
   try {
-    dbgLog(`broadcast 開始: title="${title}" tab=${tab}`);
+    dbgLog(`broadcast 開始: title="${title}" tab=${tab} → slot=${TAB_TO_SLOT[tab] || 'morning'}`);
+    dbgLog(`tag が使われる値: habio-${TAB_TO_SLOT[tab] || 'morning'}`);
     const { res, data } = await adminFetch('/push/broadcast', {
       method: 'POST',
-      body: JSON.stringify({ title, body, tab, type }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!res.ok) {
@@ -235,7 +288,7 @@ async function doBroadcast() {
       return;
     }
 
-    dbgLog(`broadcast 完了: sent=${data.sent} failed=${data.failed} deleted=${data.deleted}`);
+    dbgLog(`broadcast 完了: sent=${data.sent} failed=${data.failed} deleted=${data.deleted} total=${data.total}`);
     showResult('bc-result', true,
       `<b>送信完了</b><br>` + statRows(data)
     );

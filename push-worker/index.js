@@ -406,18 +406,26 @@ export default {
       console.log(`[broadcast] title="${title}" body="${body?.slice(0,30)}" tab=${tab}`);
       if (!title || !body) return Response.json({ error: 'title and body are required' }, { status: 400, headers });
 
-      // A/B テスト時は URL にパラメータを付与してクリックを追跡
+      // テスト通知 (pickContent) と完全に同じ payload 形式で組み立てる
+      const TAB_TO_SLOT = { home: 'morning', habits: 'noon', chat: 'evening', food: 'noon', settings: 'goodnight' };
+      const slot = TAB_TO_SLOT[tab] || 'morning';
       const abParams = (abTestId && variant)
         ? `&abTestId=${encodeURIComponent(abTestId)}&variant=${encodeURIComponent(variant)}`
         : '';
+      // A/B 用の追加フィールドは null を含めず存在する場合のみ付与
+      const extraData = {};
+      if (variant)   extraData.variant   = variant;
+      if (abTestId)  extraData.abTestId  = abTestId;
+
       const content = {
         title,
         body,
         icon:  '/icons/icon-192.svg',
         badge: '/icons/icon-192.svg',
-        tag:   'habio-broadcast',
-        data:  { url: `/app?tab=${tab}${abParams}`, tab, type, variant, abTestId },
+        tag:   `habio-${slot}`,                                   // test と同じ habio-{slot} 形式
+        data:  { url: `/app?tab=${tab}${abParams}`, tab, type: slot, slot, ...extraData },
       };
+      console.log('[broadcast] content payload:', JSON.stringify(content));
 
       const vapid = await getVapidKeys(env);
       const list  = await env.PREMIUM_KV.list({ prefix: 'push_sub:' });

@@ -1,6 +1,6 @@
 // Habio Service Worker
 // バージョンを上げると古いキャッシュが自動削除されます
-const CACHE_VERSION = 'habio-v1';
+const CACHE_VERSION = 'habio-v2';
 const SHELL_CACHE   = `${CACHE_VERSION}-shell`;
 const FONT_CACHE    = `${CACHE_VERSION}-fonts`;
 
@@ -120,14 +120,27 @@ self.addEventListener('message', event => {
 
 // ── Push 通知受信 ──────────────────────────────────────────────
 self.addEventListener('push', event => {
-  if (!event.data) return;
+  console.log('[SW push] event received, hasData=' + !!event.data);
+  if (!event.data) {
+    console.warn('[SW push] no data, skipping');
+    return;
+  }
 
   let data;
-  try { data = event.data.json(); }
-  catch { return; }
+  try {
+    data = event.data.json();
+    console.log('[SW push] payload:', JSON.stringify(data));
+  } catch (e) {
+    console.error('[SW push] JSON parse failed:', e.message, '| raw:', event.data.text());
+    return;
+  }
+
+  const title = data.title || 'Habio 🌿';
+  const body  = data.body  || 'Habio からのお知らせ';
+  console.log('[SW push] showNotification title="' + title + '" body="' + body + '"');
 
   const options = {
-    body:             data.body   || 'Habio からのお知らせ',
+    body,
     icon:             data.icon   || '/icons/icon-192.svg',
     badge:            data.badge  || '/icons/icon-192.svg',
     tag:              data.tag    || 'habio',
@@ -136,12 +149,19 @@ self.addEventListener('push', event => {
     requireInteraction: false,
     silent:           false,
   };
+  console.log('[SW push] options:', JSON.stringify(options));
 
   event.waitUntil((async () => {
-    await self.registration.showNotification(data.title || 'Habio 🌿', options);
+    try {
+      await self.registration.showNotification(title, options);
+      console.log('[SW push] showNotification OK');
+    } catch (e) {
+      console.error('[SW push] showNotification FAILED:', e.message);
+    }
     // アプリアイコンにバッジを表示
     try {
       const shown = await self.registration.getNotifications();
+      console.log('[SW push] visible notifications count:', shown.length);
       if (self.navigator?.setAppBadge) await self.navigator.setAppBadge(shown.length);
     } catch (_) {}
   })());
