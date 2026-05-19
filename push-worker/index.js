@@ -355,6 +355,53 @@ export default {
       }, { headers });
     }
 
+    // 管理者一斉送信
+    if (url.pathname === '/push/broadcast' && request.method === 'POST') {
+      const authHeader = request.headers.get('Authorization') || '';
+      const secret = env.ADMIN_SECRET || '';
+      if (!secret || authHeader !== `Bearer ${secret}`) {
+        return new Response('Unauthorized', { status: 401, headers });
+      }
+
+      const { title, body, tab = 'home', type = 'broadcast', variant = null } = await request.json();
+      if (!title || !body) return Response.json({ error: 'title and body required' }, { status: 400, headers });
+
+      const content = {
+        title,
+        body,
+        icon:  '/icons/icon-192.svg',
+        badge: '/icons/icon-192.svg',
+        tag:   'habio-broadcast',
+        data:  { url: `/app?tab=${tab}`, tab, type, variant },
+      };
+
+      const vapid = await getVapidKeys(env);
+      const list  = await env.PREMIUM_KV.list({ prefix: 'push_sub:' });
+
+      let sent = 0, failed = 0, deleted = 0;
+      await Promise.allSettled(
+        list.keys.map(async ({ name }) => {
+          const data = await env.PREMIUM_KV.get(name, 'json');
+          if (!data) return;
+          try {
+            const result = await sendPush(data.subscription, content, vapid, env);
+            if (result.result === 'expired') {
+              await env.PREMIUM_KV.delete(name);
+              deleted++;
+            } else {
+              sent++;
+            }
+          } catch (e) {
+            console.error(`[broadcast] ${name}: ${e.message}`);
+            failed++;
+          }
+        })
+      );
+
+      console.log(`[broadcast] sent=${sent} failed=${failed} deleted=${deleted}`);
+      return Response.json({ ok: true, sent, failed, deleted, total: list.keys.length }, { headers });
+    }
+
     return new Response('Not found', { status: 404, headers });
   },
 

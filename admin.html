@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Habio Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F4F0;color:#2D4A2D;min-height:100vh;padding:24px 16px;}
+h1{font-size:18px;font-weight:700;margin-bottom:20px;color:#4A7A4A;}
+.card{background:white;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.card h2{font-size:14px;font-weight:700;color:#4A7A4A;margin-bottom:14px;letter-spacing:.03em;text-transform:uppercase;}
+label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;margin-top:12px;}
+label:first-of-type{margin-top:0;}
+input,textarea,select{width:100%;padding:10px 12px;border:1px solid #D0D8D0;border-radius:9px;font-size:13px;font-family:inherit;background:#FAFAFA;color:#2D4A2D;outline:none;transition:border-color .15s;}
+input:focus,textarea:focus,select:focus{border-color:#A8D5BA;}
+textarea{resize:vertical;min-height:72px;}
+.btn{display:block;width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity .15s;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:#4A7A4A;color:white;}
+.btn-primary:not(:disabled):hover{opacity:.85;}
+.btn-danger{background:#C0392B;color:white;margin-top:8px;}
+.result{margin-top:12px;padding:12px;border-radius:9px;font-size:12px;line-height:1.55;display:none;}
+.result.ok{background:#EAF7EF;border:1px solid #B7E4C7;color:#27AE60;}
+.result.err{background:#FEF0F0;border:1px solid #FAD0D0;color:#C0392B;}
+.stat-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.stat{flex:1;min-width:80px;background:#F0F4F0;border-radius:9px;padding:10px;text-align:center;}
+.stat-val{font-size:22px;font-weight:700;color:#4A7A4A;}
+.stat-lbl{font-size:11px;color:#777;margin-top:2px;}
+#auth-wall{position:fixed;inset:0;background:#F0F4F0;display:flex;align-items:center;justify-content:center;z-index:100;padding:24px;}
+#auth-box{background:white;border-radius:14px;padding:24px;width:100%;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+#auth-box h2{font-size:16px;font-weight:700;margin-bottom:16px;color:#4A7A4A;}
+#auth-err{color:#C0392B;font-size:12px;margin-top:8px;display:none;}
+.ab-row{display:flex;gap:8px;}
+.ab-row>*{flex:1;}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.tag-a{background:#E8F4FF;color:#1565C0;}
+.tag-b{background:#FFF3E0;color:#E65100;}
+</style>
+</head>
+<body>
+
+<!-- 認証ウォール -->
+<div id="auth-wall">
+  <div id="auth-box">
+    <h2>🌿 Habio Admin</h2>
+    <label>管理者パスワード</label>
+    <input type="password" id="auth-input" placeholder="ADMIN_SECRET を入力" autocomplete="current-password">
+    <div id="auth-err">パスワードが違います</div>
+    <button class="btn btn-primary" style="margin-top:14px;" onclick="authLogin()">ログイン</button>
+  </div>
+</div>
+
+<h1>🌿 Habio Push 管理</h1>
+
+<!-- 一斉送信 -->
+<div class="card">
+  <h2>一斉Push送信</h2>
+
+  <label>タイトル</label>
+  <input type="text" id="bc-title" placeholder="Habio 🌿" maxlength="60">
+
+  <label>本文</label>
+  <textarea id="bc-body" placeholder="通知の本文を入力してください。" maxlength="200"></textarea>
+
+  <label>遷移先タブ</label>
+  <select id="bc-tab">
+    <option value="home">ホーム (home)</option>
+    <option value="habits">習慣 (habits)</option>
+    <option value="chat">話す (chat)</option>
+    <option value="food">食事 (food)</option>
+    <option value="settings">設定 (settings)</option>
+  </select>
+
+  <label>通知タイプ（任意・分析用）</label>
+  <input type="text" id="bc-type" placeholder="broadcast" value="broadcast">
+
+  <button class="btn btn-primary" style="margin-top:16px;" id="bc-btn" onclick="doBroadcast()">全員に送信</button>
+  <div id="bc-result" class="result"></div>
+</div>
+
+<!-- A/B テスト送信 -->
+<div class="card">
+  <h2>A/B テスト送信</h2>
+  <p style="font-size:12px;color:#777;margin-bottom:12px;">登録者を A/B に分割してそれぞれ異なるメッセージを送信します。</p>
+
+  <label>タイトル（共通）</label>
+  <input type="text" id="ab-title" placeholder="Habio 🌿" maxlength="60">
+
+  <div class="ab-row" style="margin-top:12px;">
+    <div>
+      <label><span class="tag tag-a">A</span> 本文</label>
+      <textarea id="ab-body-a" placeholder="バリアントAの本文" maxlength="200"></textarea>
+    </div>
+    <div>
+      <label><span class="tag tag-b">B</span> 本文</label>
+      <textarea id="ab-body-b" placeholder="バリアントBの本文" maxlength="200"></textarea>
+    </div>
+  </div>
+
+  <label>遷移先タブ</label>
+  <select id="ab-tab">
+    <option value="home">ホーム</option>
+    <option value="habits">習慣</option>
+    <option value="chat">話す</option>
+  </select>
+
+  <label>テストID（分析用）</label>
+  <input type="text" id="ab-test-id" placeholder="ab_test_1" value="ab_test_1">
+
+  <button class="btn btn-primary" style="margin-top:16px;" id="ab-btn" onclick="doAbBroadcast()">A/B 送信</button>
+  <div id="ab-result" class="result"></div>
+</div>
+
+<!-- A/B 集計 -->
+<div class="card">
+  <h2>A/B 集計</h2>
+  <input type="text" id="stats-test-id" placeholder="ab_test_1" value="ab_test_1">
+  <button class="btn btn-primary" style="margin-top:10px;" onclick="loadAbStats()">集計を読み込む</button>
+  <div id="ab-stats" style="margin-top:12px;"></div>
+</div>
+
+<script>
+const PUSH_WORKER = 'https://habio-push.katsuyuki-jyoukou.workers.dev';
+let adminSecret = '';
+
+// ── 認証 ──────────────────────────────────────────────────────
+function authLogin() {
+  const pw = document.getElementById('auth-input').value.trim();
+  if (!pw) return;
+  adminSecret = pw;
+  // 簡易チェック：実際のリクエストで 401 が返ったら再認証
+  document.getElementById('auth-wall').style.display = 'none';
+}
+document.getElementById('auth-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') authLogin();
+});
+
+function showResult(id, ok, html) {
+  const el = document.getElementById(id);
+  el.className = 'result ' + (ok ? 'ok' : 'err');
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+// ── 一斉送信 ──────────────────────────────────────────────────
+async function doBroadcast() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body  = document.getElementById('bc-body').value.trim();
+  const tab   = document.getElementById('bc-tab').value;
+  const type  = document.getElementById('bc-type').value.trim() || 'broadcast';
+  if (!title || !body) { showResult('bc-result', false, 'タイトルと本文を入力してください。'); return; }
+
+  const btn = document.getElementById('bc-btn');
+  btn.disabled = true; btn.textContent = '送信中…';
+
+  try {
+    const res  = await fetch(`${PUSH_WORKER}/push/broadcast`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
+      body: JSON.stringify({ title, body, tab, type }),
+    });
+    if (res.status === 401) {
+      document.getElementById('auth-err').style.display = 'block';
+      document.getElementById('auth-wall').style.display = 'flex';
+      adminSecret = '';
+      showResult('bc-result', false, '認証エラー。再ログインしてください。');
+      return;
+    }
+    const data = await res.json();
+    if (!res.ok) { showResult('bc-result', false, data.error || `HTTP ${res.status}`); return; }
+    showResult('bc-result', true,
+      `<b>送信完了</b><br>` +
+      statRows({ sent: data.sent, failed: data.failed, deleted: data.deleted, total: data.total })
+    );
+  } catch (e) {
+    showResult('bc-result', false, e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '全員に送信';
+  }
+}
+
+// ── A/B 送信 ──────────────────────────────────────────────────
+async function doAbBroadcast() {
+  const title  = document.getElementById('ab-title').value.trim();
+  const bodyA  = document.getElementById('ab-body-a').value.trim();
+  const bodyB  = document.getElementById('ab-body-b').value.trim();
+  const tab    = document.getElementById('ab-tab').value;
+  const testId = document.getElementById('ab-test-id').value.trim() || 'ab_test_1';
+  if (!title || !bodyA || !bodyB) { showResult('ab-result', false, 'タイトルとA・B両方の本文を入力してください。'); return; }
+
+  const btn = document.getElementById('ab-btn');
+  btn.disabled = true; btn.textContent = '送信中…';
+
+  try {
+    const [resA, resB] = await Promise.all([
+      fetch(`${PUSH_WORKER}/push/broadcast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
+        body: JSON.stringify({ title, body: bodyA, tab, type: testId, variant: 'A', abTestId: testId }),
+      }),
+      fetch(`${PUSH_WORKER}/push/broadcast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
+        body: JSON.stringify({ title, body: bodyB, tab, type: testId, variant: 'B', abTestId: testId }),
+      }),
+    ]);
+
+    if (resA.status === 401 || resB.status === 401) {
+      document.getElementById('auth-wall').style.display = 'flex';
+      adminSecret = '';
+      showResult('ab-result', false, '認証エラー。再ログインしてください。');
+      return;
+    }
+
+    const dA = await resA.json();
+    const dB = await resB.json();
+    showResult('ab-result', resA.ok && resB.ok,
+      `<b>A/B 送信完了</b><br>` +
+      `<span class="tag tag-a">A</span> sent:${dA.sent ?? '?'} failed:${dA.failed ?? '?'} deleted:${dA.deleted ?? '?'}<br>` +
+      `<span class="tag tag-b">B</span> sent:${dB.sent ?? '?'} failed:${dB.failed ?? '?'} deleted:${dB.deleted ?? '?'}`
+    );
+  } catch (e) {
+    showResult('ab-result', false, e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'A/B 送信';
+  }
+}
+
+// ── A/B 集計 ──────────────────────────────────────────────────
+async function loadAbStats() {
+  const testId = document.getElementById('stats-test-id').value.trim() || 'ab_test_1';
+  const el = document.getElementById('ab-stats');
+  el.innerHTML = '<p style="font-size:12px;color:#888;">読み込み中…</p>';
+  try {
+    const res  = await fetch(`${PUSH_WORKER}/push/ab-stats?testId=${encodeURIComponent(testId)}`, {
+      headers: { 'Authorization': `Bearer ${adminSecret}` },
+    });
+    if (res.status === 401) { el.innerHTML = '<p style="color:#C0392B;font-size:12px;">認証エラー</p>'; return; }
+    const data = await res.json();
+    if (!res.ok) { el.innerHTML = `<p style="color:#C0392B;font-size:12px;">${data.error || 'エラー'}</p>`; return; }
+
+    const variants = ['A', 'B'];
+    el.innerHTML = variants.map(v => {
+      const s = data[v] || { sent: 0, clicks: 0 };
+      const ctr = s.sent > 0 ? ((s.clicks / s.sent) * 100).toFixed(1) : '0.0';
+      return `<div style="margin-bottom:10px;">` +
+        `<span class="tag tag-${v.toLowerCase()}">${v}</span> ` +
+        `送信: <b>${s.sent}</b>  タップ: <b>${s.clicks}</b>  CTR: <b>${ctr}%</b>` +
+        `</div>`;
+    }).join('') || '<p style="font-size:12px;color:#888;">データなし</p>';
+  } catch (e) {
+    el.innerHTML = `<p style="color:#C0392B;font-size:12px;">${e.message}</p>`;
+  }
+}
+
+function statRows(d) {
+  return `<div class="stat-row">` +
+    `<div class="stat"><div class="stat-val">${d.sent}</div><div class="stat-lbl">送信</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.failed}</div><div class="stat-lbl">失敗</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.deleted}</div><div class="stat-lbl">削除(410)</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.total}</div><div class="stat-lbl">合計</div></div>` +
+    `</div>`;
+}
+</script>
+</body>
+</html>
