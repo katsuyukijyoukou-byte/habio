@@ -1618,16 +1618,22 @@ body.night-bg{background:#C8C3BB;}
 /* ── DAILY CONTENT ── */
 .daily-section{display:flex;flex-direction:column;gap:10px;margin:0 22px 14px;}
 .daily-weather-card{
-  display:flex;align-items:center;gap:12px;
+  display:flex;flex-direction:column;
   background:linear-gradient(135deg,var(--blue-p),var(--g-pp));
   border-radius:var(--r-m);padding:14px 18px;
   box-shadow:var(--sh1);
 }
+.weather-top{display:flex;align-items:center;gap:12px;}
 .daily-weather-icon{font-size:28px;flex-shrink:0;}
-.daily-weather-body{flex:1;}
+.weather-top-body{flex:1;}
 .daily-weather-temp{font-size:20px;font-weight:700;color:var(--t);line-height:1.1;}
 .daily-weather-desc{font-size:11px;color:var(--t-m);margin-top:2px;}
 .daily-weather-loc{font-size:10px;color:var(--t-l);margin-top:1px;}
+.weather-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.08);}
+.weather-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.6);border-radius:8px;padding:4px 9px;}
+.wc-lbl{font-size:10px;color:var(--t-m);}
+.wc-val{font-size:11px;font-weight:700;color:var(--t);}
+.weather-loc-hint{font-size:11px;color:var(--t-m);text-align:center;padding:10px 14px;background:var(--g-pp);border-radius:var(--r-m);line-height:1.6;}
 .daily-mission-card{
   background:var(--card);border-radius:var(--r-m);
   padding:16px 18px;box-shadow:var(--sh1);
@@ -1739,12 +1745,25 @@ body.night-bg{background:#C8C3BB;}
     <div class="daily-section">
       <!-- 天気 -->
       <div id="weatherCard" class="daily-weather-card" style="display:none;">
-        <div class="daily-weather-icon" id="weatherIcon">☁️</div>
-        <div class="daily-weather-body">
-          <div class="daily-weather-temp" id="weatherTemp">--°C</div>
-          <div class="daily-weather-desc" id="weatherDesc">天気を読み込み中...</div>
-          <div class="daily-weather-loc" id="weatherLoc"></div>
+        <div class="weather-top">
+          <div class="daily-weather-icon" id="weatherIcon">☁️</div>
+          <div class="weather-top-body">
+            <div class="daily-weather-temp" id="weatherTemp">--°C</div>
+            <div class="daily-weather-desc" id="weatherDesc">--</div>
+            <div class="daily-weather-loc" id="weatherLoc"></div>
+          </div>
         </div>
+        <div class="weather-chips" id="weatherChips" style="display:none;">
+          <div class="weather-chip"><span class="wc-lbl">朝8時</span><span class="wc-val" id="wc-morning">--</span></div>
+          <div class="weather-chip"><span class="wc-lbl">最高</span><span class="wc-val" id="wc-max">--</span></div>
+          <div class="weather-chip"><span class="wc-lbl">最低</span><span class="wc-val" id="wc-min">--</span></div>
+          <div class="weather-chip"><span class="wc-lbl">夜19時</span><span class="wc-val" id="wc-evening">--</span></div>
+          <div class="weather-chip"><span class="wc-lbl">洗濯</span><span class="wc-val" id="wc-laundry">--</span></div>
+          <div class="weather-chip"><span class="wc-lbl">風</span><span class="wc-val" id="wc-wind">--</span></div>
+        </div>
+      </div>
+      <div id="weatherLocHint" class="weather-loc-hint" style="display:none;">
+        🌤️ 地域を設定すると天気が表示されます<br><span style="color:var(--t-g);font-weight:600;">設定 › 地域設定</span> から選択できます
       </div>
       <!-- 今日のミッション -->
       <div class="daily-mission-card">
@@ -3351,28 +3370,98 @@ const CITY_COORDS={'東京':{lat:35.69,lon:139.69},'大阪':{lat:34.69,lon:135.5
 
 async function loadWeather(){
   const card=document.getElementById('weatherCard');
+  const hint=document.getElementById('weatherLocHint');
   if(!card) return;
+
   const city=Store.get('user_city','');
   let lat,lon,locName;
+
   if(city&&CITY_COORDS[city]){
     lat=CITY_COORDS[city].lat; lon=CITY_COORDS[city].lon; locName=city;
   } else if(navigator.geolocation){
     try{
       const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000}));
-      lat=pos.coords.latitude.toFixed(2); lon=pos.coords.longitude.toFixed(2); locName='現在地';
-    }catch(e){lat=35.69;lon=139.69;locName='東京（デフォルト）';}
-  } else {lat=35.69;lon=139.69;locName='東京（デフォルト）';}
+      lat=pos.coords.latitude.toFixed(4); lon=pos.coords.longitude.toFixed(4); locName='現在地';
+    } catch(e){
+      card.style.display='none';
+      if(hint) hint.style.display='block';
+      return;
+    }
+  } else {
+    card.style.display='none';
+    if(hint) hint.style.display='block';
+    return;
+  }
+
+  if(hint) hint.style.display='none';
+
   try{
-    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=Asia%2FTokyo`);
+    const url='https://api.open-meteo.com/v1/forecast'
+      +'?latitude='+lat+'&longitude='+lon
+      +'&current_weather=true'
+      +'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode'
+      +'&hourly=temperature_2m,relativehumidity_2m,windspeed_10m'
+      +'&forecast_days=1'
+      +'&timezone=Asia%2FTokyo';
+
+    const res=await fetch(url);
     const data=await res.json();
     const cw=data.current_weather;
     const code=cw.weathercode;
+    const windMs=cw.windspeed/3.6; // km/h → m/s
+
+    // Daily
+    const maxTemp=Math.round(data.daily.temperature_2m_max[0]);
+    const minTemp=Math.round(data.daily.temperature_2m_min[0]);
+    const precipProb=data.daily.precipitation_probability_max!=null
+      ? data.daily.precipitation_probability_max[0] : 100;
+
+    // Hourly (indices 0-23 = 00:00-23:00 today)
+    const hTemps=data.hourly.temperature_2m||[];
+    const hHumid=data.hourly.relativehumidity_2m||[];
+    const morningTemp=hTemps[8]!=null?Math.round(hTemps[8]):null;
+    const eveningTemp=hTemps[19]!=null?Math.round(hTemps[19]):null;
+
+    // Hour of max temp
+    let maxIdx=0,maxVal=hTemps[0]??-99;
+    for(let i=1;i<24&&i<hTemps.length;i++){if(hTemps[i]>maxVal){maxVal=hTemps[i];maxIdx=i;}}
+
+    // Midday humidity for laundry calc
+    const humidity=hHumid[12]??hHumid[10]??hHumid[8]??80;
+
+    // Wind label
+    const windLabel=windMs<2?'弱め':windMs<5?'少しあり':windMs<8?'やや強め':'強い';
+
+    // Laundry判定
+    const isSunny=code<=1;
+    const isRaining=code>=61&&code<=82||code>=95;
+    let laundry;
+    if(!isRaining&&precipProb<30&&humidity<65&&windMs>=2&&isSunny) laundry='乾きやすい';
+    else if(!isRaining&&precipProb<50&&humidity<75) laundry='まあまあ';
+    else laundry='乾きにくい';
+
+    // 上段描画
     document.getElementById('weatherIcon').textContent=WEATHER_ICONS[code]||'🌤️';
     document.getElementById('weatherTemp').textContent=Math.round(cw.temperature)+'°C';
     document.getElementById('weatherDesc').textContent=WEATHER_CODES[code]||'--';
     document.getElementById('weatherLoc').textContent=locName;
+
+    // チップ描画
+    const el=id=>document.getElementById(id);
+    if(el('wc-morning')) el('wc-morning').textContent=morningTemp!=null?morningTemp+'°C':'--';
+    if(el('wc-max'))     el('wc-max').textContent=maxTemp+'°C（'+maxIdx+'時頃）';
+    if(el('wc-min'))     el('wc-min').textContent=minTemp+'°C';
+    if(el('wc-evening')) el('wc-evening').textContent=eveningTemp!=null?eveningTemp+'°C':'--';
+    if(el('wc-laundry')) el('wc-laundry').textContent=laundry;
+    if(el('wc-wind'))    el('wc-wind').textContent=windLabel;
+
+    const chips=document.getElementById('weatherChips');
+    if(chips) chips.style.display='flex';
     card.style.display='flex';
-  }catch(e){card.style.display='none';}
+  } catch(e){
+    card.style.display='none';
+    if(hint) hint.style.display='none';
+  }
 }
 
 function saveCity(city){
