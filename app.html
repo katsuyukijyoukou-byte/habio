@@ -2244,39 +2244,22 @@ body.night-bg{background:#C8C3BB;}
     <p class="sec-lbl">Xでシェアしてポイント獲得</p>
     <div class="st-group">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
-        <!-- 未連携 -->
-        <div id="x-not-connected">
-          <p class="x-note" style="margin-bottom:12px;">
-            X（Twitter）と連携すると、投稿1回につき<strong>1ポイント</strong>獲得できます（1日最大3回）<br>
-            投稿が確認できた場合のみポイントが付与されます
-          </p>
-          <button type="button" class="x-connect-btn" id="x-connect-btn" onclick="startXOAuth()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
-            Xアカウントと連携する
-          </button>
-        </div>
-        <!-- 連携済み -->
-        <div id="x-connected" style="display:none;width:100%;">
-          <div class="x-user-row">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
-            <span class="x-username-disp" id="x-username-disp">@—</span>
-            <span class="x-connected-badge">連携済み</span>
+        <p class="x-note" style="margin-bottom:10px;">
+          Xの投稿画面が開きます。<br>1日最大3回までポイント獲得できます。
+        </p>
+        <div class="x-share-day-row">
+          <span class="x-share-count-text">今日のシェア</span>
+          <div class="x-share-dots">
+            <div class="x-dot" id="xdot1"></div>
+            <div class="x-dot" id="xdot2"></div>
+            <div class="x-dot" id="xdot3"></div>
           </div>
-          <div class="x-share-day-row">
-            <span class="x-share-count-text">今日の投稿</span>
-            <div class="x-share-dots">
-              <div class="x-dot" id="xdot1"></div>
-              <div class="x-dot" id="xdot2"></div>
-              <div class="x-dot" id="xdot3"></div>
-            </div>
-            <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
-          </div>
-          <button type="button" class="x-tweet-btn" id="x-tweet-btn" onclick="postHabioTweet()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
-            Xに投稿して 1pt 獲得
-          </button>
-          <button type="button" class="x-disconnect-btn" onclick="disconnectX()">連携解除</button>
+          <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
         </div>
+        <button type="button" class="x-tweet-btn" id="x-tweet-btn" onclick="shareOnX()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
+          XでHabioをシェアして1pt獲得
+        </button>
       </div>
     </div>
 
@@ -3127,7 +3110,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); loadXStatus(); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); }
 }
 
 /* ── TOAST ── */
@@ -4107,6 +4090,7 @@ function closeUpgradeModal(event,force=false){
   setTimeout(()=>{if(root)root.style.pointerEvents='none';},400);
 }
 const STRIPE_WORKER = 'https://habio-stripe.katsuyuki-jyoukou.workers.dev';
+const USE_X_API_POST = false; // false=Intent投稿, true=POST /2/tweets
 
 async function handleUpgradeCta(){
   const emailEl = document.getElementById('upgradeEmail');
@@ -6201,6 +6185,7 @@ function init(){
   restoreStep();
   restoreToggles();
   restoreCity();
+  if (!USE_X_API_POST) renderXShareCount();
   initThemeSwatches();
   loadChatHistory();
   renderHomeWins();
@@ -6327,7 +6312,7 @@ async function loadPointsReferral() {
           const typeIcon = {
             referral_signup_referrer: '👤', referral_signup_referred: '🎁',
             referral_premium_referrer: '💎', referral_premium_referred: '✨',
-            x_share: '𝕏',
+            x_share: '𝕏', x_share_intent: '𝕏',
           }[e.type] || '⭐';
           return `<div class="pts-log-item">
             <span class="pts-log-pts">${typeIcon} +${e.points}pt</span>
@@ -6488,7 +6473,73 @@ async function loadXStatus() {
   }
 }
 
-// Xに Habio 定型ツイートを投稿してポイントを獲得する
+// ── X INTENT SHARE (USE_X_API_POST=false 時のメイン関数) ─────────────────────
+
+let _xShareInProgress = false;
+
+function getXShareCount() {
+  const d = Store.get('x_share_intent_date', '');
+  return d === today() ? (Store.get('x_share_intent_count', 0)) : 0;
+}
+
+function renderXShareCount() {
+  const count = getXShareCount();
+  const countText = document.getElementById('x-share-count-text');
+  if (countText) countText.textContent = `${count} / 3`;
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById(`xdot${i}`);
+    if (dot) dot.classList.toggle('filled', i <= count);
+  }
+  const btn = document.getElementById('x-tweet-btn');
+  if (btn) btn.disabled = count >= 3;
+}
+
+function shareOnX() {
+  if (USE_X_API_POST) { postHabioTweet(); return; }
+  if (_xShareInProgress) return;
+
+  const count = getXShareCount();
+  if (count >= 3) {
+    showToast('本日の共有ポイントは獲得済みです');
+    return;
+  }
+
+  _xShareInProgress = true;
+  const btn = document.getElementById('x-tweet-btn');
+  if (btn) btn.disabled = true;
+
+  // ローカルカウント更新（先に記録して連打防止）
+  const newCount = count + 1;
+  Store.set('x_share_intent_date', today());
+  Store.set('x_share_intent_count', newCount);
+
+  // ポイント付与
+  const isPrem = Store.get('is_premium', false);
+  const pts = isPrem ? 2 : 1;
+  const earned = addPoints(pts, 'x_share_intent', 'X共有ポイント');
+  syncPointsToServer(earned, 'x_share_intent', 'X共有ポイント', `x_share_intent_${today()}_${newCount}`);
+  renderPointsCard();
+  renderXShareCount();
+
+  if (isPrem) showToast(`プレミアム特典で2pt獲得しました`);
+  else        showToast(`1pt獲得しました`);
+
+  // 投稿文
+  const refCode = typeof _currentRefCode !== 'undefined' ? _currentRefCode : null;
+  const shareUrl = refCode
+    ? `https://habio.pages.dev/app?ref=${encodeURIComponent(refCode)}`
+    : 'https://habio.pages.dev/';
+  const text = `Habioで今日の健康習慣を記録しました🌱\n\n小さな習慣を、AIと一緒に続けています。\n\n${shareUrl}\n\n#Habio #健康習慣`;
+
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+
+  setTimeout(() => {
+    _xShareInProgress = false;
+    if (btn) btn.disabled = getXShareCount() >= 3;
+  }, 1000);
+}
+
+// Xに Habio 定型ツイートを投稿してポイントを獲得する（USE_X_API_POST=true 時）
 async function postHabioTweet() {
   const email = Store.get('user_email', '');
   if (!email) return;
