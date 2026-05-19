@@ -2958,11 +2958,15 @@ function buildAIContext(){
   const now=new Date(), h=now.getHours();
   const moodHist=Store.get('mood_history',[]);
   const yestMood=moodHist.find(m=>m.date===yesterday())||null;
+  const todayMood=moodHist.find(m=>m.date===today())||null;
   const wins=Store.get('wins',[]);
   const streak=calcStreak(wins);
   const todayWins=wins.filter(w=>w.date===today());
   const meals=Store.get('food_log_'+today(),[]);
-  return {hour:h,isNight:isNight(),yesterdayMood:yestMood,streak,todayWins,meals};
+  const dc=Store.get('daily_content',{});
+  const todayMission=dc.mission?.text||null;
+  const recentWins=wins.slice(-3).map(w=>w.title||'').filter(Boolean);
+  return {hour:h,isNight:isNight(),yesterdayMood:yestMood,todayMood,streak,todayWins,meals,todayMission,recentWins};
 }
 
 /* ── AI RESPONSES ── */
@@ -3058,8 +3062,11 @@ async function generateAIResponse(userMessage, context=null){
   const ctxPayload={
     streak: ctx.streak||0,
     hour: ctx.hour||new Date().getHours(),
-    todayMood: ctx.todayMood||null,
+    todayMood: ctx.todayMood?.mood||null,
+    yesterdayMood: ctx.yesterdayMood?.mood||null,
     mealsCount: (ctx.meals||[]).length,
+    todayMission: ctx.todayMission||null,
+    recentWins: ctx.recentWins||[],
     talkStyle: Store.get('talk_style','gentle'),
     goal: generateGoalText(
       Store.get('onb_answers',{}).q_current||'',
@@ -3068,8 +3075,8 @@ async function generateAIResponse(userMessage, context=null){
     ),
   };
 
-  // Send last 6 messages as history (3 exchanges)
-  const history=Store.get('chat_history',[]).slice(-6);
+  // Send last 10 messages as history (5 exchanges)
+  const history=Store.get('chat_history',[]).slice(-10);
 
   try{
     const res=await fetch(CHAT_WORKER_URL,{
@@ -4090,7 +4097,7 @@ function appendBubble(text,isMe,time,save=true,dateStr=null){
   }
 }
 
-const FREE_CHAT_LIMIT = 10;
+const FREE_CHAT_LIMIT = 5;
 
 function getDaysSinceStart(){
   const start=Store.get('start_date',today());
@@ -4117,10 +4124,10 @@ function renderChatLimit(){
   const sendBtn=document.getElementById('sendBtn');
   if(!banner) return;
 
-  // 最初の7日間は無制限
-  if(isPrem || getDaysSinceStart()<7){
+  if(isPrem){
     banner.style.display='none';
     if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
+    if(sendBtn) sendBtn.disabled=false;
     return;
   }
 
@@ -4129,22 +4136,20 @@ function renderChatLimit(){
 
   if(remaining<=0){
     banner.style.display='block';
-    if(limitText) limitText.textContent='今日の無料回数（10回）を使い切りました';
+    if(limitText) limitText.innerHTML='今日はここまでです🌱<br>プレミアム会員は無制限で利用できます。';
     if(inp){ inp.disabled=true; inp.placeholder='プレミアムで無制限に話せます'; }
     if(sendBtn) sendBtn.disabled=true;
-  } else if(remaining<=3){
-    banner.style.display='block';
-    if(limitText) limitText.textContent=`今日あと${remaining}回話せます（無料：10回/日）`;
-    if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
   } else {
-    banner.style.display='none';
+    banner.style.display='block';
+    if(limitText) limitText.textContent=`今日の会話 残り${remaining}回`;
     if(inp){ inp.disabled=false; inp.placeholder='Habio に話しかける…'; }
+    if(sendBtn) sendBtn.disabled=false;
   }
 }
 
 async function sendMsg(){
   const isPrem=Store.get('is_premium',false);
-  if(!isPrem && getDaysSinceStart()>=7 && getChatCount()>=FREE_CHAT_LIMIT){
+  if(!isPrem && getChatCount()>=FREE_CHAT_LIMIT){
     showUpgradeModal();
     return;
   }
