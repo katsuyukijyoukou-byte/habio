@@ -6142,16 +6142,42 @@ function onRecModalCta(){
 
 async function claimPrAction(){
   if(!_recModalCurrentId) return;
-  const email=(Store.get('user_email','')||'').trim().toLowerCase();
-  if(!email){ showToast('設定からメールアドレスを登録してください'); return; }
 
   const btn=document.getElementById('recModalActionBtn');
   const hint=document.getElementById('recModalActionHint');
   if(!btn||btn.disabled) return;
 
-  btn.disabled=true;
-  btn.textContent='送信中...';
+  // ローカル重複チェック（メール有無に関わらず）
+  const jstToday=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
+  const claimedMap=Store.get('pr_actions_today',{});
+  if(claimedMap[_recModalCurrentId]===jstToday){
+    btn.textContent='✓ 今日のアクション達成済み';
+    btn.classList.add('claimed');
+    btn.disabled=true;
+    return;
+  }
 
+  const email=(Store.get('user_email','')||'').trim().toLowerCase();
+  const isPrem=Store.get('is_premium',false);
+
+  btn.disabled=true;
+  btn.textContent='処理中...';
+
+  // メールなし → ローカルのみでポイント付与（addPoints が checkPointBadges も呼ぶ）
+  if(!email){
+    const pts=isPrem?2:1;
+    addPoints(pts,'pr_action','PRおすすめ習慣確認');
+    claimedMap[_recModalCurrentId]=jstToday;
+    Store.set('pr_actions_today',claimedMap);
+    btn.textContent=`✓ 今日のアクション達成！ +${pts}pt`;
+    btn.classList.add('claimed');
+    if(hint) hint.textContent=`合計 ${getTotalPts()}pt`;
+    showToast(`健康習慣アクション完了！ +${pts}pt 獲得！`);
+    console.log('[claimPrAction] local-only (no email)',{pts,total:getTotalPts()});
+    return;
+  }
+
+  // メールあり → サーバー経由
   try {
     const res=await fetch(`${STRIPE_WORKER}/pr/action`,{
       method:'POST',
@@ -6167,15 +6193,15 @@ async function claimPrAction(){
       const ptMsg=data.points>=2?`プレミアム特典で +${data.points}pt 獲得！`:`+${data.points}pt 獲得！`;
       showToast(`健康習慣アクション完了！ ${ptMsg}`);
       // ローカル記録（同日再呼び出し防止）
-      const jstToday=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
-      const m=Store.get('pr_actions_today',{});
-      m[_recModalCurrentId]=jstToday;
-      Store.set('pr_actions_today',m);
-      // ローカルポイント状態をサーバー応答で更新（ホームカードに即時反映）
+      claimedMap[_recModalCurrentId]=jstToday;
+      Store.set('pr_actions_today',claimedMap);
+      // ローカルポイント状態をサーバー応答で更新
       const todayPtsNow=(Store.get('pts_date','')===today()?Store.get('pts_today',0):0)+data.points;
       Store.set('pts_date',today());
       Store.set('pts_today',todayPtsNow);
       if(data.total_points>getTotalPts()) Store.set('pts_total',data.total_points);
+      // バッジ判定（サーバー応答のtotal_pointsで確実に判定）
+      checkPointBadges(getTotalPts());
       renderPointsCard();
       console.log('[claimPrAction] ok',{pts:data.points,serverTotal:data.total_points,localTotal:getTotalPts()});
       loadPointsReferral();
@@ -6405,9 +6431,10 @@ function syncPointsToServer(earned, type, description, dedupId){
     body:JSON.stringify(body),
   }).then(r=>r.json()).then(data=>{
     console.log('[syncPointsToServer]',{type,earned,dedupId,ok:data.ok,serverTotal:data.total_points});
-    // サーバー合計がローカルより大きければローカルを更新（設定タブ更新はloadPointsReferralに任せる）
+    // サーバー合計がローカルより大きければローカルを更新
     if(data.ok && data.total_points && data.total_points>getTotalPts()){
       Store.set('pts_total',data.total_points);
+      checkPointBadges(data.total_points);  // サーバー更新後もバッジ判定
       renderPointsCard();
     }
   }).catch(e=>console.warn('[syncPointsToServer] failed:',e));
@@ -6435,13 +6462,23 @@ function addPoints(n, type, description){
 
 function checkPointBadges(total){
   const earned=Store.get('badges_pts',[]);
+  const newBadges=[];
   POINT_BADGES.forEach(b=>{
     if(total>=b.pts&&!earned.includes(b.id)){
       earned.push(b.id);
+      newBadges.push(b.name);
       showBadgeEarnToast(b.em+' '+b.name);
     }
   });
   Store.set('badges_pts',earned);
+  const unearned=POINT_BADGES.filter(b=>!earned.includes(b.id));
+  console.log('[checkPointBadges]',{
+    total,
+    earnedBadges: earned,
+    newThisTime:  newBadges,
+    nextBadge:    unearned[0] ? unearned[0].name+'('+unearned[0].pts+'pt)' : '全取得',
+  });
+  return newBadges;
 }
 
 function checkStreakBadges(streak){
@@ -6584,6 +6621,20 @@ function init(){
   // Check streak badges on load
   const streak=calcStreak(Store.get('wins',[]));
   if(streak>0) checkStreakBadges(streak);
+
+  // 後追いバッジ判定: 既に条件を満たしているのに未付与のバッジを付与する
+  (function retroBadgeCheck(){
+    const total=getTotalPts();
+    const ptEarned=Store.get('badges_pts',[]);
+    const missing=POINT_BADGES.filter(b=>total>=b.pts && !ptEarned.includes(b.id));
+    if(missing.length>0){
+      console.log('[retroBadgeCheck] 未付与バッジを発見・付与:',missing.map(b=>b.name));
+      checkPointBadges(total);
+      renderPointsCard();
+    } else {
+      console.log('[retroBadgeCheck] 問題なし',{total, earnedCount:ptEarned.length});
+    }
+  })();
 
   // Fade out loading screen
   const ld=document.getElementById('loading');
