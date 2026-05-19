@@ -6535,6 +6535,11 @@ function closeComebackModal(){
 function init(){
   if(!Store.get('start_date')) Store.set('start_date',today());
 
+  // アプリ起動/復帰時に未読バッジをクリア
+  const clearBadge = () => { try { if (navigator.clearAppBadge) navigator.clearAppBadge(); } catch(_){} };
+  clearBadge();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) clearBadge(); });
+
   // Loading screen copy: returning vs new user
   const ldSub=document.getElementById('ldSub');
   if(ldSub) ldSub.textContent=Store.get('onb_done')?'今日も、おかえりなさい。':'はじめまして。一緒に始めましょう 🌿';

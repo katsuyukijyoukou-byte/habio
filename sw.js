@@ -137,14 +137,22 @@ self.addEventListener('push', event => {
     silent:           false,
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Habio 🌿', options)
-  );
+  event.waitUntil((async () => {
+    await self.registration.showNotification(data.title || 'Habio 🌿', options);
+    // アプリアイコンにバッジを表示
+    try {
+      const shown = await self.registration.getNotifications();
+      if (self.navigator?.setAppBadge) await self.navigator.setAppBadge(shown.length);
+    } catch (_) {}
+  })());
 });
 
 // ── 通知タップ → アプリを開く ──────────────────────────────────
 self.addEventListener('notificationclick', event => {
   event.notification.close();
+  // バッジをクリア
+  try { if (self.navigator?.clearAppBadge) self.navigator.clearAppBadge(); } catch (_) {}
+
   const notifData = event.notification.data || {};
   const targetUrl = notifData.url || '/app';
   const targetTab = notifData.tab || null;
