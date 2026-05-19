@@ -3,7 +3,7 @@
 
 const ALLOWED_ORIGIN = 'https://habio.pages.dev';
 
-// ── 通知コンテンツ ─────────────────────────────────────────────
+// ── 通知コンテンツ（各10件・日替わり） ───────────────────────
 const NOTIF_CONTENT = {
   morning: [
     { title: 'Habio 🌿', body: 'おはようございます。まずは水を一杯、それだけでも十分です。' },
@@ -11,6 +11,11 @@ const NOTIF_CONTENT = {
     { title: 'Habio 🌱', body: '朝の空気を少し深呼吸してみてください。それだけで少し整います。' },
     { title: 'Habio 🌿', body: '今日一つだけ、小さなことを整えてみませんか。' },
     { title: 'Habio 🌿', body: '無理しない一日でも、それはあなたのペース。おはようございます。' },
+    { title: 'Habio 🌱', body: '体を動かすのが難しい日も、窓を開けるだけで違います。' },
+    { title: 'Habio 🌿', body: '今日の朝ごはん、何か一口食べられましたか？それで十分です。' },
+    { title: 'Habio 🌿', body: '昨日よりちょっとだけ、それで十分。おはようございます。' },
+    { title: 'Habio 🌱', body: '朝の5分、ただぼーっとするだけでもいい時間です。' },
+    { title: 'Habio 🌿', body: '今日はどんな日にしたいですか？どんな答えでも正解です。' },
   ],
   noon: [
     { title: 'Habio 🌿', body: 'ちょっと一息つけましたか？肩の力を抜いてみてください。' },
@@ -18,6 +23,11 @@ const NOTIF_CONTENT = {
     { title: 'Habio 🌱', body: 'お昼は野菜を一品だけ意識してみてください。それで十分です。' },
     { title: 'Habio 🌿', body: '午前中、お疲れさまでした。少し休んでもいいですよ。' },
     { title: 'Habio 🌿', body: '今日は"整える日"でもいいかもしれません。無理しないで。' },
+    { title: 'Habio 🌱', body: 'お昼の後、少しだけ外を歩くと午後が変わります。' },
+    { title: 'Habio 🌿', body: '水を飲んでいますか？一杯だけでも体が喜びます。' },
+    { title: 'Habio 🌿', body: '今日の「できた」、まだゼロじゃないはずですよ。' },
+    { title: 'Habio 🌱', body: '姿勢を少し正してみましょう。それだけで気持ちが変わります。' },
+    { title: 'Habio 🌿', body: '今日の午後も、あなたのペースで大丈夫です。' },
   ],
   evening: [
     { title: 'Habio 🌿', body: '夕方になりましたね。少し体を伸ばすだけでも違いますよ。' },
@@ -25,6 +35,11 @@ const NOTIF_CONTENT = {
     { title: 'Habio 🌿', body: 'ゆっくり水を一杯飲んでみてください。少し整います。' },
     { title: 'Habio 🌿', body: '今日はどんな日でしたか？どんな日でも、あなたのペースで十分です。' },
     { title: 'Habio 🌙', body: '夜の時間、少しだけ自分を労ってあげてください。' },
+    { title: 'Habio 🌿', body: '夕食は消化に良いものを一品だけ意識してみましょう。' },
+    { title: 'Habio 🌱', body: '今日Habioに話しかけてみませんか？聞いていますよ。' },
+    { title: 'Habio 🌿', body: '肩と首を軽くほぐしてみましょう。30秒でも変わります。' },
+    { title: 'Habio 🌙', body: 'このまま夜を穏やかに過ごしましょう。焦らなくていいです。' },
+    { title: 'Habio 🌱', body: '今日の習慣、少しだけ振り返ってみませんか。' },
   ],
   goodnight: [
     { title: 'Habio 🌙', body: 'お疲れさまでした。今日はここまでで十分です。' },
@@ -32,15 +47,38 @@ const NOTIF_CONTENT = {
     { title: 'Habio 🌿', body: '今日できたこと、一つで十分。おやすみなさい。' },
     { title: 'Habio 🌙', body: 'ゆっくり休んでください。明日のことは、明日に。' },
     { title: 'Habio 🌙', body: '今日という日を、穏やかに終わらせましょう。おやすみなさい。' },
+    { title: 'Habio 🌙', body: '寝る前に深呼吸を一回。それだけで体が緩みます。' },
+    { title: 'Habio 🌿', body: '布団に入る前に、スマホを少し遠ざけてみましょう。' },
+    { title: 'Habio 🌙', body: '今日もありがとうございました。ゆっくり眠れますように。' },
+    { title: 'Habio 🌱', body: '完璧な一日じゃなくても、それで十分です。おやすみなさい。' },
+    { title: 'Habio 🌙', body: '明日の自分のために、今夜はしっかり休んでください。' },
   ],
 };
 
 const SLOT_TAB = { morning: 'home', noon: 'habits', evening: 'chat', goodnight: 'home' };
 
-function pickContent(slot) {
+// 前回と同じインデックスを避けて日替わり選択（env があれば KV で永続化）
+async function pickContent(slot, env = null) {
   const msgs = NOTIF_CONTENT[slot] || NOTIF_CONTENT.morning;
-  const msg  = msgs[Math.floor(Math.random() * msgs.length)];
   const tab  = SLOT_TAB[slot] || 'home';
+
+  let lastIdx = -1;
+  if (env && msgs.length > 1) {
+    lastIdx = (await env.PREMIUM_KV.get(`push_last_idx_${slot}`, 'json')) ?? -1;
+  }
+
+  let idx;
+  if (msgs.length <= 1) {
+    idx = 0;
+  } else {
+    do { idx = Math.floor(Math.random() * msgs.length); } while (idx === lastIdx);
+  }
+
+  if (env) {
+    await env.PREMIUM_KV.put(`push_last_idx_${slot}`, JSON.stringify(idx), { expirationTtl: 8 * 24 * 3600 });
+  }
+
+  const msg = msgs[idx];
   return {
     ...msg,
     icon:  '/icons/icon-192.svg',
@@ -289,7 +327,7 @@ export default {
       let pushError  = null;
       let kvDeleted  = false;
       try {
-        pushResult = await sendPush(stored.subscription, pickContent(slot), vapid, env);
+        pushResult = await sendPush(stored.subscription, await pickContent(slot, env), vapid, env);
         console.log(`[push/test] pushResult=${JSON.stringify(pushResult)}`);
         // 410/404 → KV から即削除
         if (pushResult.result === 'expired') {
@@ -328,7 +366,7 @@ export default {
     if (!slot) return;
 
     const vapid   = await getVapidKeys(env);
-    const content = pickContent(slot);
+    const content = await pickContent(slot, env);
     const isGoodnight = slot === 'goodnight';
 
     const list = await env.PREMIUM_KV.list({ prefix: 'push_sub:' });
