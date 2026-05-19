@@ -35,15 +35,18 @@ const NOTIF_CONTENT = {
   ],
 };
 
+const SLOT_TAB = { morning: 'home', noon: 'habits', evening: 'chat', goodnight: 'home' };
+
 function pickContent(slot) {
   const msgs = NOTIF_CONTENT[slot] || NOTIF_CONTENT.morning;
   const msg  = msgs[Math.floor(Math.random() * msgs.length)];
+  const tab  = SLOT_TAB[slot] || 'home';
   return {
     ...msg,
     icon:  '/icons/icon-192.svg',
     badge: '/icons/icon-192.svg',
     tag:   `habio-${slot}`,
-    data:  { url: '/app', type: slot },
+    data:  { url: `/app?tab=${tab}`, tab, type: slot },
   };
 }
 

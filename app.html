@@ -6592,6 +6592,28 @@ function init(){
 }
 init();
 
+// 通知タップからのタブ遷移: SW postMessage と ?tab= URL パラメータ両対応
+(function setupNotifNavigation() {
+  // SW からの NAVIGATE_TAB メッセージ
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'NAVIGATE_TAB') {
+        const tab = event.data.tab;
+        const valid = ['home', 'chat', 'habits', 'food', 'settings'];
+        if (valid.includes(tab)) goTab(tab);
+      }
+    });
+  }
+
+  // ?tab= パラメータ（PWA が新規起動した場合）
+  const urlTab = new URLSearchParams(location.search).get('tab');
+  const valid  = ['home', 'chat', 'habits', 'food', 'settings'];
+  if (urlTab && valid.includes(urlTab)) {
+    // ローディング画面が消えた後に遷移
+    setTimeout(() => goTab(urlTab), 700);
+  }
+})();
+
 /* ══════════════════════════════════════════════════
    POINTS & REFERRAL SYSTEM
    ══════════════════════════════════════════════════ */

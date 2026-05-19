@@ -145,12 +145,18 @@ self.addEventListener('push', event => {
 // ── 通知タップ → アプリを開く ──────────────────────────────────
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || '/app';
+  const notifData = event.notification.data || {};
+  const targetUrl = notifData.url || '/app';
+  const targetTab = notifData.tab || null;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       const existing = list.find(c => new URL(c.url).pathname.startsWith('/app'));
-      if (existing) return existing.focus();
+      if (existing) {
+        existing.focus();
+        if (targetTab) existing.postMessage({ type: 'NAVIGATE_TAB', tab: targetTab });
+        return;
+      }
       return clients.openWindow(targetUrl);
     })
   );
