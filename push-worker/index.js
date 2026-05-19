@@ -355,6 +355,32 @@ export default {
       }, { headers });
     }
 
+    // A/B クリック記録
+    if (url.pathname === '/push/ab-click' && request.method === 'POST') {
+      const { testId, variant } = await request.json();
+      if (!testId || !['A','B'].includes(variant)) {
+        return Response.json({ error: 'invalid params' }, { status: 400, headers });
+      }
+      const key = `push_ab:${testId}`;
+      const stats = (await env.PREMIUM_KV.get(key, 'json')) || { A: { sent:0, clicks:0 }, B: { sent:0, clicks:0 } };
+      stats[variant].clicks = (stats[variant].clicks || 0) + 1;
+      await env.PREMIUM_KV.put(key, JSON.stringify(stats), { expirationTtl: 90 * 24 * 3600 });
+      return Response.json({ ok: true }, { headers });
+    }
+
+    // A/B 集計取得（管理者認証）
+    if (url.pathname === '/push/ab-stats' && request.method === 'GET') {
+      const authHeader = request.headers.get('Authorization') || '';
+      const secret = env.ADMIN_SECRET || '';
+      if (!secret || authHeader !== `Bearer ${secret}`) {
+        return new Response('Unauthorized', { status: 401, headers });
+      }
+      const testId = url.searchParams.get('testId') || '';
+      if (!testId) return Response.json({ error: 'testId required' }, { status: 400, headers });
+      const stats = (await env.PREMIUM_KV.get(`push_ab:${testId}`, 'json')) || { A: { sent:0, clicks:0 }, B: { sent:0, clicks:0 } };
+      return Response.json(stats, { headers });
+    }
+
     // 管理者一斉送信
     if (url.pathname === '/push/broadcast' && request.method === 'POST') {
       const authHeader = request.headers.get('Authorization') || '';
@@ -363,16 +389,20 @@ export default {
         return new Response('Unauthorized', { status: 401, headers });
       }
 
-      const { title, body, tab = 'home', type = 'broadcast', variant = null } = await request.json();
+      const { title, body, tab = 'home', type = 'broadcast', variant = null, abTestId = null } = await request.json();
       if (!title || !body) return Response.json({ error: 'title and body required' }, { status: 400, headers });
 
+      // A/B テスト時は URL にパラメータを付与してクリックを追跡
+      const abParams = (abTestId && variant)
+        ? `&abTestId=${encodeURIComponent(abTestId)}&variant=${encodeURIComponent(variant)}`
+        : '';
       const content = {
         title,
         body,
         icon:  '/icons/icon-192.svg',
         badge: '/icons/icon-192.svg',
         tag:   'habio-broadcast',
-        data:  { url: `/app?tab=${tab}`, tab, type, variant },
+        data:  { url: `/app?tab=${tab}${abParams}`, tab, type, variant, abTestId },
       };
 
       const vapid = await getVapidKeys(env);
@@ -397,6 +427,14 @@ export default {
           }
         })
       );
+
+      // A/B sent カウントを記録
+      if (abTestId && ['A','B'].includes(variant)) {
+        const abKey = `push_ab:${abTestId}`;
+        const abStats = (await env.PREMIUM_KV.get(abKey, 'json')) || { A:{sent:0,clicks:0}, B:{sent:0,clicks:0} };
+        abStats[variant].sent = (abStats[variant].sent || 0) + sent;
+        await env.PREMIUM_KV.put(abKey, JSON.stringify(abStats), { expirationTtl: 90 * 24 * 3600 });
+      }
 
       console.log(`[broadcast] sent=${sent} failed=${failed} deleted=${deleted}`);
       return Response.json({ ok: true, sent, failed, deleted, total: list.keys.length }, { headers });
