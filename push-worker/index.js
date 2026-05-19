@@ -89,11 +89,12 @@ async function pickContent(slot, env = null) {
 }
 
 // ── CORS ──────────────────────────────────────────────────────
+// Authorization を含めないと preflight が通らずブラウザがブロックする
 function cors(origin) {
   return {
     'Access-Control-Allow-Origin':  origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }
 
@@ -372,8 +373,9 @@ export default {
     if (url.pathname === '/push/ab-stats' && request.method === 'GET') {
       const authHeader = request.headers.get('Authorization') || '';
       const secret = env.ADMIN_SECRET || '';
-      if (!secret || authHeader !== `Bearer ${secret}`) {
-        return new Response('Unauthorized', { status: 401, headers });
+      if (!secret) return Response.json({ error: 'ADMIN_SECRET not configured on Worker' }, { status: 500, headers });
+      if (authHeader !== `Bearer ${secret}`) {
+        return Response.json({ error: 'Unauthorized: invalid password' }, { status: 401, headers });
       }
       const testId = url.searchParams.get('testId') || '';
       if (!testId) return Response.json({ error: 'testId required' }, { status: 400, headers });
@@ -385,12 +387,24 @@ export default {
     if (url.pathname === '/push/broadcast' && request.method === 'POST') {
       const authHeader = request.headers.get('Authorization') || '';
       const secret = env.ADMIN_SECRET || '';
-      if (!secret || authHeader !== `Bearer ${secret}`) {
-        return new Response('Unauthorized', { status: 401, headers });
+
+      console.log(`[broadcast] ADMIN_SECRET set=${!!secret} authHeaderPrefix=${authHeader.slice(0,14)}...`);
+
+      if (!secret) {
+        console.error('[broadcast] ADMIN_SECRET is not set in Worker environment');
+        return Response.json({ error: 'ADMIN_SECRET not configured on Worker' }, { status: 500, headers });
+      }
+      if (authHeader !== `Bearer ${secret}`) {
+        console.error('[broadcast] Auth failed: header does not match ADMIN_SECRET');
+        return Response.json({ error: 'Unauthorized: invalid password' }, { status: 401, headers });
       }
 
-      const { title, body, tab = 'home', type = 'broadcast', variant = null, abTestId = null } = await request.json();
-      if (!title || !body) return Response.json({ error: 'title and body required' }, { status: 400, headers });
+      const body_json = await request.json().catch(() => null);
+      if (!body_json) return Response.json({ error: 'invalid JSON body' }, { status: 400, headers });
+
+      const { title, body, tab = 'home', type = 'broadcast', variant = null, abTestId = null } = body_json;
+      console.log(`[broadcast] title="${title}" body="${body?.slice(0,30)}" tab=${tab}`);
+      if (!title || !body) return Response.json({ error: 'title and body are required' }, { status: 400, headers });
 
       // A/B テスト時は URL にパラメータを付与してクリックを追跡
       const abParams = (abTestId && variant)
@@ -407,14 +421,16 @@ export default {
 
       const vapid = await getVapidKeys(env);
       const list  = await env.PREMIUM_KV.list({ prefix: 'push_sub:' });
+      console.log(`[broadcast] total subscriptions in KV: ${list.keys.length}`);
 
       let sent = 0, failed = 0, deleted = 0;
       await Promise.allSettled(
         list.keys.map(async ({ name }) => {
           const data = await env.PREMIUM_KV.get(name, 'json');
-          if (!data) return;
+          if (!data) { console.warn(`[broadcast] ${name}: no data`); return; }
           try {
             const result = await sendPush(data.subscription, content, vapid, env);
+            console.log(`[broadcast] ${name}: result=${result.result} status=${result.status}`);
             if (result.result === 'expired') {
               await env.PREMIUM_KV.delete(name);
               deleted++;
@@ -422,7 +438,7 @@ export default {
               sent++;
             }
           } catch (e) {
-            console.error(`[broadcast] ${name}: ${e.message}`);
+            console.error(`[broadcast] ${name}: ERROR ${e.message}`);
             failed++;
           }
         })
@@ -436,7 +452,7 @@ export default {
         await env.PREMIUM_KV.put(abKey, JSON.stringify(abStats), { expirationTtl: 90 * 24 * 3600 });
       }
 
-      console.log(`[broadcast] sent=${sent} failed=${failed} deleted=${deleted}`);
+      console.log(`[broadcast] DONE sent=${sent} failed=${failed} deleted=${deleted} total=${list.keys.length}`);
       return Response.json({ ok: true, sent, failed, deleted, total: list.keys.length }, { headers });
     }
 

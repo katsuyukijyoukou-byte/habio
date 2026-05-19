@@ -46,7 +46,7 @@ textarea{resize:vertical;min-height:72px;}
     <h2>🌿 Habio Admin</h2>
     <label>管理者パスワード</label>
     <input type="password" id="auth-input" placeholder="ADMIN_SECRET を入力" autocomplete="current-password">
-    <div id="auth-err">パスワードが違います</div>
+    <div id="auth-err" style="color:#C0392B;font-size:12px;margin-top:8px;display:none;">パスワードが違います</div>
     <button class="btn btn-primary" style="margin-top:14px;" onclick="authLogin()">ログイン</button>
   </div>
 </div>
@@ -120,6 +120,14 @@ textarea{resize:vertical;min-height:72px;}
   <div id="ab-stats" style="margin-top:12px;"></div>
 </div>
 
+<!-- デバッグパネル -->
+<div class="card">
+  <h2>デバッグログ</h2>
+  <p style="font-size:11px;color:#888;margin-bottom:8px;">fetch のリクエスト URL・ステータス・レスポンスをリアルタイム表示。ブラウザの DevTools Console にも同じ内容が出ます。</p>
+  <div id="debug-log" style="display:none;font-size:11px;font-family:monospace;background:#F6F8F6;border-radius:8px;padding:10px;max-height:260px;overflow-y:auto;line-height:1.6;"></div>
+  <button class="btn" onclick="document.getElementById('debug-log').innerHTML='';document.getElementById('debug-log').style.display='none';" style="background:#EEE;color:#555;margin-top:8px;font-size:12px;padding:8px;">ログをクリア</button>
+</div>
+
 <script>
 const PUSH_WORKER = 'https://habio-push.katsuyuki-jyoukou.workers.dev';
 let adminSecret = '';
@@ -129,12 +137,24 @@ function authLogin() {
   const pw = document.getElementById('auth-input').value.trim();
   if (!pw) return;
   adminSecret = pw;
-  // 簡易チェック：実際のリクエストで 401 が返ったら再認証
   document.getElementById('auth-wall').style.display = 'none';
+  dbgLog(`ログイン: ADMIN_SECRET を ${pw.length} 文字で設定`);
 }
 document.getElementById('auth-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') authLogin();
 });
+
+// ── デバッグログ ────────────────────────────────────────────────
+function dbgLog(msg, isErr = false) {
+  const el = document.getElementById('debug-log');
+  if (!el) return;
+  console[isErr ? 'error' : 'log']('[admin]', msg);
+  const line = document.createElement('div');
+  line.style.cssText = `color:${isErr ? '#C0392B' : '#2D4A2D'};margin-bottom:3px;word-break:break-all;`;
+  line.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
+  el.prepend(line);
+  el.style.display = 'block';
+}
 
 function showResult(id, ok, html) {
   const el = document.getElementById(id);
@@ -143,35 +163,81 @@ function showResult(id, ok, html) {
   el.style.display = 'block';
 }
 
+// ── 共通 fetch ─────────────────────────────────────────────────
+async function adminFetch(path, opts = {}) {
+  const url = `${PUSH_WORKER}${path}`;
+  dbgLog(`→ ${opts.method || 'GET'} ${url}`);
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${adminSecret}`,
+    ...(opts.headers || {}),
+  };
+  dbgLog(`  Authorization: Bearer ${adminSecret.slice(0, 4)}${'*'.repeat(Math.max(0, adminSecret.length - 4))}`);
+
+  let res, rawText;
+  try {
+    res = await fetch(url, { ...opts, headers });
+    rawText = await res.text();
+  } catch (e) {
+    dbgLog(`  NETWORK ERROR: ${e.message}`, true);
+    throw e;
+  }
+
+  dbgLog(`  HTTP ${res.status} ${res.statusText}`);
+  dbgLog(`  Body: ${rawText.slice(0, 200)}`);
+
+  if (res.status === 401) {
+    const msg = (() => { try { return JSON.parse(rawText).error; } catch { return rawText || 'Unauthorized'; } })();
+    dbgLog(`  AUTH FAILED: ${msg}`, true);
+    document.getElementById('auth-err').textContent = `認証失敗: ${msg}`;
+    document.getElementById('auth-err').style.display = 'block';
+    document.getElementById('auth-wall').style.display = 'flex';
+    adminSecret = '';
+    throw new Error(`401: ${msg}`);
+  }
+
+  if (res.status === 500) {
+    const msg = (() => { try { return JSON.parse(rawText).error; } catch { return rawText; } })();
+    dbgLog(`  SERVER ERROR: ${msg}`, true);
+    throw new Error(`500: ${msg}`);
+  }
+
+  let data;
+  try { data = JSON.parse(rawText); } catch { data = { raw: rawText }; }
+  return { res, data };
+}
+
 // ── 一斉送信 ──────────────────────────────────────────────────
 async function doBroadcast() {
   const title = document.getElementById('bc-title').value.trim();
   const body  = document.getElementById('bc-body').value.trim();
   const tab   = document.getElementById('bc-tab').value;
   const type  = document.getElementById('bc-type').value.trim() || 'broadcast';
-  if (!title || !body) { showResult('bc-result', false, 'タイトルと本文を入力してください。'); return; }
+
+  if (!title || !body) {
+    showResult('bc-result', false, 'タイトルと本文を入力してください。');
+    return;
+  }
 
   const btn = document.getElementById('bc-btn');
   btn.disabled = true; btn.textContent = '送信中…';
 
   try {
-    const res  = await fetch(`${PUSH_WORKER}/push/broadcast`, {
+    dbgLog(`broadcast 開始: title="${title}" tab=${tab}`);
+    const { res, data } = await adminFetch('/push/broadcast', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
       body: JSON.stringify({ title, body, tab, type }),
     });
-    if (res.status === 401) {
-      document.getElementById('auth-err').style.display = 'block';
-      document.getElementById('auth-wall').style.display = 'flex';
-      adminSecret = '';
-      showResult('bc-result', false, '認証エラー。再ログインしてください。');
+
+    if (!res.ok) {
+      showResult('bc-result', false, `HTTP ${res.status}: ${data.error || JSON.stringify(data)}`);
       return;
     }
-    const data = await res.json();
-    if (!res.ok) { showResult('bc-result', false, data.error || `HTTP ${res.status}`); return; }
+
+    dbgLog(`broadcast 完了: sent=${data.sent} failed=${data.failed} deleted=${data.deleted}`);
     showResult('bc-result', true,
-      `<b>送信完了</b><br>` +
-      statRows({ sent: data.sent, failed: data.failed, deleted: data.deleted, total: data.total })
+      `<b>送信完了</b><br>` + statRows(data)
     );
   } catch (e) {
     showResult('bc-result', false, e.message);
@@ -187,38 +253,32 @@ async function doAbBroadcast() {
   const bodyB  = document.getElementById('ab-body-b').value.trim();
   const tab    = document.getElementById('ab-tab').value;
   const testId = document.getElementById('ab-test-id').value.trim() || 'ab_test_1';
-  if (!title || !bodyA || !bodyB) { showResult('ab-result', false, 'タイトルとA・B両方の本文を入力してください。'); return; }
+
+  if (!title || !bodyA || !bodyB) {
+    showResult('ab-result', false, 'タイトルとA・B両方の本文を入力してください。');
+    return;
+  }
 
   const btn = document.getElementById('ab-btn');
   btn.disabled = true; btn.textContent = '送信中…';
 
   try {
+    dbgLog(`A/B broadcast 開始: testId=${testId}`);
     const [resA, resB] = await Promise.all([
-      fetch(`${PUSH_WORKER}/push/broadcast`, {
+      adminFetch('/push/broadcast', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
         body: JSON.stringify({ title, body: bodyA, tab, type: testId, variant: 'A', abTestId: testId }),
       }),
-      fetch(`${PUSH_WORKER}/push/broadcast`, {
+      adminFetch('/push/broadcast', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminSecret}` },
         body: JSON.stringify({ title, body: bodyB, tab, type: testId, variant: 'B', abTestId: testId }),
       }),
     ]);
 
-    if (resA.status === 401 || resB.status === 401) {
-      document.getElementById('auth-wall').style.display = 'flex';
-      adminSecret = '';
-      showResult('ab-result', false, '認証エラー。再ログインしてください。');
-      return;
-    }
-
-    const dA = await resA.json();
-    const dB = await resB.json();
-    showResult('ab-result', resA.ok && resB.ok,
+    showResult('ab-result', resA.res.ok && resB.res.ok,
       `<b>A/B 送信完了</b><br>` +
-      `<span class="tag tag-a">A</span> sent:${dA.sent ?? '?'} failed:${dA.failed ?? '?'} deleted:${dA.deleted ?? '?'}<br>` +
-      `<span class="tag tag-b">B</span> sent:${dB.sent ?? '?'} failed:${dB.failed ?? '?'} deleted:${dB.deleted ?? '?'}`
+      `<span class="tag tag-a">A</span> 送信:${resA.data.sent ?? '?'} 失敗:${resA.data.failed ?? '?'} 削除:${resA.data.deleted ?? '?'}<br>` +
+      `<span class="tag tag-b">B</span> 送信:${resB.data.sent ?? '?'} 失敗:${resB.data.failed ?? '?'} 削除:${resB.data.deleted ?? '?'}`
     );
   } catch (e) {
     showResult('ab-result', false, e.message);
@@ -233,22 +293,14 @@ async function loadAbStats() {
   const el = document.getElementById('ab-stats');
   el.innerHTML = '<p style="font-size:12px;color:#888;">読み込み中…</p>';
   try {
-    const res  = await fetch(`${PUSH_WORKER}/push/ab-stats?testId=${encodeURIComponent(testId)}`, {
-      headers: { 'Authorization': `Bearer ${adminSecret}` },
-    });
-    if (res.status === 401) { el.innerHTML = '<p style="color:#C0392B;font-size:12px;">認証エラー</p>'; return; }
-    const data = await res.json();
+    const { res, data } = await adminFetch(`/push/ab-stats?testId=${encodeURIComponent(testId)}`, { method: 'GET', headers: {} });
     if (!res.ok) { el.innerHTML = `<p style="color:#C0392B;font-size:12px;">${data.error || 'エラー'}</p>`; return; }
-
-    const variants = ['A', 'B'];
-    el.innerHTML = variants.map(v => {
-      const s = data[v] || { sent: 0, clicks: 0 };
+    el.innerHTML = ['A','B'].map(v => {
+      const s = data[v] || { sent:0, clicks:0 };
       const ctr = s.sent > 0 ? ((s.clicks / s.sent) * 100).toFixed(1) : '0.0';
-      return `<div style="margin-bottom:10px;">` +
-        `<span class="tag tag-${v.toLowerCase()}">${v}</span> ` +
-        `送信: <b>${s.sent}</b>  タップ: <b>${s.clicks}</b>  CTR: <b>${ctr}%</b>` +
-        `</div>`;
-    }).join('') || '<p style="font-size:12px;color:#888;">データなし</p>';
+      return `<div style="margin-bottom:10px;"><span class="tag tag-${v.toLowerCase()}">${v}</span> ` +
+        `送信: <b>${s.sent}</b>  タップ: <b>${s.clicks}</b>  CTR: <b>${ctr}%</b></div>`;
+    }).join('');
   } catch (e) {
     el.innerHTML = `<p style="color:#C0392B;font-size:12px;">${e.message}</p>`;
   }
@@ -256,10 +308,10 @@ async function loadAbStats() {
 
 function statRows(d) {
   return `<div class="stat-row">` +
-    `<div class="stat"><div class="stat-val">${d.sent}</div><div class="stat-lbl">送信</div></div>` +
-    `<div class="stat"><div class="stat-val">${d.failed}</div><div class="stat-lbl">失敗</div></div>` +
-    `<div class="stat"><div class="stat-val">${d.deleted}</div><div class="stat-lbl">削除(410)</div></div>` +
-    `<div class="stat"><div class="stat-val">${d.total}</div><div class="stat-lbl">合計</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.sent ?? 0}</div><div class="stat-lbl">送信</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.failed ?? 0}</div><div class="stat-lbl">失敗</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.deleted ?? 0}</div><div class="stat-lbl">削除(410)</div></div>` +
+    `<div class="stat"><div class="stat-val">${d.total ?? 0}</div><div class="stat-lbl">合計</div></div>` +
     `</div>`;
 }
 </script>
