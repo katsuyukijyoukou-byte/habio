@@ -2160,7 +2160,38 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
         <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
       </div>
-      <div id="notif-status-hint" style="padding:4px 16px 10px;font-size:11.5px;color:var(--t-l);line-height:1.6;display:none;"></div>
+      <div id="notif-status-panel" style="display:none;padding:6px 16px 14px;">
+        <!-- ステータス一覧 -->
+        <div style="background:var(--bg-w);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-size:12.5px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
+            <span style="color:var(--t-m);">通知許可</span>
+            <span id="nsp-perm-val" style="font-weight:500;"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
+            <span style="color:var(--t-m);">PWA起動</span>
+            <span id="nsp-pwa-val" style="font-weight:500;"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;">
+            <span style="color:var(--t-m);">購読状態</span>
+            <span id="nsp-sub-val" style="font-weight:500;"></span>
+          </div>
+        </div>
+        <!-- iOS案内 -->
+        <div id="nsp-ios-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FFFBEA;border:1px solid #F0E080;border-radius:10px;font-size:12px;color:#7A6010;line-height:1.65;">
+          📲 通知を受け取るには、ホーム画面に追加してアプリとして開いてください。<br>
+          Safari の共有ボタン（↑）→「ホーム画面に追加」を選んでください。
+        </div>
+        <!-- ブロック案内 -->
+        <div id="nsp-denied-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FEF0F0;border:1px solid #FAD0D0;border-radius:10px;font-size:12px;color:#B03030;line-height:1.65;">
+          🔕 通知がブロックされています。<br>
+          ブラウザの設定から Habio の通知を「許可」に変更してください。
+        </div>
+        <!-- テスト送信ボタン -->
+        <button id="notif-test-btn" onclick="sendTestNotif()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:12px;background:var(--g);color:white;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity .2s;">
+          テスト通知を送る 🔔
+        </button>
+        <div id="notif-test-result" style="display:none;margin-top:8px;font-size:12px;text-align:center;padding:9px 12px;border-radius:9px;line-height:1.55;"></div>
+      </div>
     </div>
 
     <p class="sec-lbl">地域設定（天気表示）</p>
@@ -7009,41 +7040,103 @@ async function getPushHash() {
   return anon;
 }
 
-// 通知ステータスヒント表示
+// 通知ステータスパネル表示
 function renderNotifStatus() {
-  const el = document.getElementById('notif-status-hint');
-  if (!el) return;
+  const panel = document.getElementById('notif-status-panel');
+  if (!panel) return;
 
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
+  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const supported    = ('Notification' in window) && ('PushManager' in window);
+  const perm         = supported ? Notification.permission : 'unsupported';
+  const subscribed   = Store.get('push_subscribed', false);
 
-  if (!('Notification' in window) || !('PushManager' in window)) {
-    el.style.display = 'block';
-    el.innerHTML = '⚠️ お使いの環境では通知に対応していません。';
-    return;
+  panel.style.display = 'block';
+
+  function setVal(id, text, color) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.style.color  = color;
   }
-  if (isIOS && !isStandalone) {
-    el.style.display = 'block';
-    el.innerHTML = '📲 ホーム画面に追加してからアプリを開くと、通知を受け取れます。';
-    return;
+
+  // 通知許可
+  if (!supported) {
+    setVal('nsp-perm-val', '非対応', 'var(--t-l)');
+  } else if (perm === 'granted') {
+    setVal('nsp-perm-val', '✓ 許可済み', '#4CAF50');
+  } else if (perm === 'denied') {
+    setVal('nsp-perm-val', '✗ ブロック中', '#E53935');
+  } else {
+    setVal('nsp-perm-val', '未許可', '#F5A623');
   }
-  const perm = Notification.permission;
-  if (perm === 'denied') {
-    el.style.display = 'block';
-    el.innerHTML = '🔕 通知がブロックされています。ブラウザの設定から許可してください。';
-    return;
+
+  // PWA起動
+  if (isStandalone) {
+    setVal('nsp-pwa-val', '✓ PWAとして起動中', '#4CAF50');
+  } else if (isIOS) {
+    setVal('nsp-pwa-val', '⚠ ホーム画面追加が必要', '#F5A623');
+  } else {
+    setVal('nsp-pwa-val', 'ブラウザで起動中', 'var(--t-l)');
   }
-  if (Store.get('push_subscribed', false)) {
-    el.style.display = 'block';
-    el.innerHTML = '✅ 通知が設定されています。';
-    return;
+
+  // 購読状態
+  if (subscribed) {
+    setVal('nsp-sub-val', '✓ 登録済み', '#4CAF50');
+  } else {
+    setVal('nsp-sub-val', '未登録', 'var(--t-l)');
   }
-  if (perm === 'default') {
-    el.style.display = 'block';
-    el.innerHTML = '🔔 通知をONにすると、許可リクエストが表示されます。';
-    return;
+
+  // iOS案内
+  const iosGuide = document.getElementById('nsp-ios-guide');
+  if (iosGuide) iosGuide.style.display = (isIOS && !isStandalone) ? 'block' : 'none';
+
+  // ブロック案内
+  const deniedGuide = document.getElementById('nsp-denied-guide');
+  if (deniedGuide) deniedGuide.style.display = (perm === 'denied') ? 'block' : 'none';
+
+  // テストボタン（購読済みのみ表示）
+  const testBtn = document.getElementById('notif-test-btn');
+  if (testBtn) testBtn.style.display = subscribed ? 'block' : 'none';
+
+  // テスト結果リセット
+  const testResult = document.getElementById('notif-test-result');
+  if (testResult) testResult.style.display = 'none';
+}
+
+// テスト通知送信
+async function sendTestNotif() {
+  const btn    = document.getElementById('notif-test-btn');
+  const result = document.getElementById('notif-test-result');
+  if (!btn) return;
+
+  btn.disabled    = true;
+  btn.textContent = '送信中…';
+  if (result) result.style.display = 'none';
+
+  try {
+    const hash = Store.get('push_hash', null) || await getPushHash();
+    const res  = await fetch(`${PUSH_WORKER_URL}/push/test`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ hash, slot: 'morning' }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    if (result) {
+      result.style.cssText = 'display:block;background:#EAF7EF;color:#27AE60;border:1px solid #B7E4C7;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.55;margin-top:8px;';
+      result.textContent = '✓ テスト通知を送信しました。数秒後に届きます。';
+    }
+  } catch (e) {
+    if (result) {
+      result.style.cssText = 'display:block;background:#FEF0F0;color:#C0392B;border:1px solid #FAD0D0;border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.55;margin-top:8px;';
+      result.textContent = '✗ 送信に失敗しました: ' + e.message;
+    }
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'テスト通知を送る 🔔';
   }
-  el.style.display = 'none';
 }
 
 // トグルON/OFF ハンドラ
