@@ -2547,6 +2547,8 @@ body.night-bg{background:#C8C3BB;}
       あなたのペースで、ゆっくりと。<br>
       <span style="opacity:.6;">ご意見・ご要望はいつでもどうぞ。</span>
     </div>
+    <!-- 管理者テストパネル（管理者メール時のみ表示） -->
+    <div id="adminPanelSettings" style="display:none;"></div>
     <div style="height:16px;"></div>
   </div>
 
@@ -2818,6 +2820,8 @@ body.night-bg{background:#C8C3BB;}
         <div style="font-size:11px;font-weight:700;color:var(--t-m);margin-bottom:8px;">交換履歴</div>
         <div id="rewardsHistoryList"></div>
       </div>
+      <!-- 管理者テストパネル（管理者メール時のみ表示） -->
+      <div id="adminPanelRewards" style="display:none;"></div>
       <div style="height:8px;"></div>
     </div>
   </div>
@@ -3435,7 +3439,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); }
 }
 
 /* ── TOAST ── */
@@ -4795,6 +4799,7 @@ function renderPremiumState(){
   const bdayEl = document.getElementById('settingsBirthday');
   if(bdayEl && !bdayEl.value) bdayEl.value = Store.get('user_birth_date','');
   refreshPeriodUI();
+  renderAdminPanel('adminPanelSettings');
 }
 
 /* ── PREMIUM FEATURE MODAL ── */
@@ -6783,9 +6788,111 @@ function getBadgeCounts(){
   const anE=Store.get('badges_anniversary',[]);
   const hdE=Store.get('badges_hidden',[]);
   const prE=Store.get('badges_pr',[]);
-  const totalEarned=ptE.length+stE.length+anE.length+hdE.length+prE.length;
+  const testBonus=Store.get('test_badge_bonus',0);
+  const totalEarned=ptE.length+stE.length+anE.length+hdE.length+prE.length+testBonus;
   const used=Store.get('badges_used_count',0);
-  return {totalEarned, owned:Math.max(0,totalEarned-used), used};
+  return {totalEarned, owned:Math.max(0,totalEarned-used), used, testBonus};
+}
+
+/* ── ADMIN TEST PANEL ── */
+const ADMIN_EMAIL='katsuyuki.jyoukou@gmail.com';
+function isAdmin(){
+  return (Store.get('user_email','')||'').trim().toLowerCase()===ADMIN_EMAIL;
+}
+
+function renderAdminPanel(containerId){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  if(!isAdmin()){el.style.display='none';return;}
+  el.style.display='';
+  const bonus=Store.get('test_badge_bonus',0);
+  const ptBonus=Store.get('test_point_bonus',0);
+  const exchHist=Store.get('reward_history',[]);
+  const repHist=Store.get('habit_report_history',[]);
+  const used=Store.get('badges_used_count',0);
+  el.innerHTML=`
+    <div style="margin:16px;padding:16px;border:2px dashed #e74c3c;border-radius:12px;background:rgba(231,76,60,.05);">
+      <div style="font-size:11px;font-weight:800;color:#c0392b;letter-spacing:.08em;margin-bottom:12px;">🛠 管理者テスト（非公開）</div>
+      <div style="display:grid;gap:8px;">
+        <button onclick="adminAddBadges()" style="padding:10px 14px;border-radius:8px;background:#2ecc71;color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;text-align:left;">
+          🏅 テスト用バッジを100枚付与（現在: ${bonus}枚ボーナス中）
+        </button>
+        <button onclick="adminAddPoints()" style="padding:10px 14px;border-radius:8px;background:#3498db;color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;text-align:left;">
+          ⭐ テスト用ポイントを1000pt付与（現在: +${ptBonus}pt ボーナス中）
+        </button>
+        <div style="margin-top:4px;font-size:11px;font-weight:700;color:#c0392b;">リセット</div>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--t);">テスト付与バッジ <b>${bonus}枚</b></span>
+            <button onclick="adminReset('badges')" style="padding:4px 10px;border-radius:6px;background:#e74c3c;color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;">削除</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--t);">テスト付与ポイント <b>+${ptBonus}pt</b></span>
+            <button onclick="adminReset('points')" style="padding:4px 10px;border-radius:6px;background:#e74c3c;color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;">削除</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--t);">バッジ交換履歴 <b>${exchHist.length}件</b> / 交換済カウント <b>${used}枚</b></span>
+            <button onclick="adminReset('exchange')" style="padding:4px 10px;border-radius:6px;background:#e74c3c;color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;">削除</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--t);">習慣分析レポート履歴 <b>${repHist.length}件</b></span>
+            <button onclick="adminReset('report')" style="padding:4px 10px;border-radius:6px;background:#e74c3c;color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;">削除</button>
+          </div>
+          <button onclick="adminReset('all')" style="padding:10px 14px;border-radius:8px;background:#e74c3c;color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;">
+            🗑 すべてのテストデータをリセット
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function adminAddBadges(){
+  const bonus=(Store.get('test_badge_bonus',0)||0)+100;
+  Store.set('test_badge_bonus',bonus);
+  showToast('🛠 テスト用バッジ +100枚 付与しました（累計: '+bonus+'枚）');
+  _refreshAdminPanels();
+  // rewardsモーダルが開いていれば更新
+  if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
+}
+
+function adminAddPoints(){
+  const ptBonus=(Store.get('test_point_bonus',0)||0)+1000;
+  Store.set('test_point_bonus',ptBonus);
+  const total=getTotalPts()+1000;
+  Store.set('pts_total',total);
+  checkPointBadges(total);
+  renderPointsCard();
+  showToast('🛠 テスト用ポイント +1000pt 付与しました（累計 '+total+'pt）');
+  _refreshAdminPanels();
+  if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
+}
+
+function adminReset(target){
+  if(target==='badges'||target==='all'){
+    Store.set('test_badge_bonus',0);
+  }
+  if(target==='points'||target==='all'){
+    const ptBonus=Store.get('test_point_bonus',0)||0;
+    const newTotal=Math.max(0,getTotalPts()-ptBonus);
+    Store.set('pts_total',newTotal);
+    Store.set('test_point_bonus',0);
+    renderPointsCard();
+  }
+  if(target==='exchange'||target==='all'){
+    Store.set('reward_history',[]);
+    Store.set('badges_used_count',0);
+  }
+  if(target==='report'||target==='all'){
+    Store.set('habit_report_history',[]);
+  }
+  showToast('🛠 リセットしました');
+  _refreshAdminPanels();
+  if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
+}
+
+function _refreshAdminPanels(){
+  renderAdminPanel('adminPanelSettings');
+  renderAdminPanel('adminPanelRewards');
 }
 
 function checkBirthdayBadge(){
@@ -7362,6 +7469,7 @@ function openRewardsModal(){
     if(hist.length) hl.innerHTML=hist.slice(0,5).map(h=>`<div style="font-size:12px;color:var(--t-m);padding:4px 0;">${h.date} — ${h.name}（${h.cost}枚）</div>`).join('');
   }
 
+  renderAdminPanel('adminPanelRewards');
   document.getElementById('rewardsOverlay').classList.add('show');
   const sheet=e('rewardsSheet');
   if(sheet) sheet.scrollTop=0;
