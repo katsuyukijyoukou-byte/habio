@@ -2876,10 +2876,31 @@ body.night-bg{background:#C8C3BB;}
         </div>
         <div id="aiSessionThemeList" style="display:grid;gap:8px;padding:16px;"></div>
       </div>
-      <!-- Step 2: サブテーマ選択 -->
+      <!-- Step 2: 性別選択 -->
       <div id="aiSessionStep2" style="display:none;">
-        <div style="padding:16px 20px 4px;display:flex;align-items:center;gap:10px;">
+        <div style="padding:16px 20px 12px;display:flex;align-items:center;gap:10px;">
           <button onclick="aiSessionGoStep(1)" style="background:none;border:none;font-size:20px;color:var(--t-m);cursor:pointer;padding:0;">←</button>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🌿 HABIO 特別セッション</div>
+            <div style="font-size:15px;font-weight:800;color:var(--t);margin-top:2px;">あなたについて教えてください</div>
+          </div>
+        </div>
+        <div style="display:grid;gap:10px;padding:0 16px 28px;">
+          <button class="ai-session-theme-btn" onclick="selectAiGender('female')" style="justify-content:center;padding:18px;">
+            <span class="btn-em">👩</span><span style="font-size:15px;">女性</span>
+          </button>
+          <button class="ai-session-theme-btn" onclick="selectAiGender('male')" style="justify-content:center;padding:18px;">
+            <span class="btn-em">👨</span><span style="font-size:15px;">男性</span>
+          </button>
+          <button class="ai-session-theme-btn" onclick="selectAiGender('other')" style="justify-content:center;padding:14px;opacity:.7;">
+            <span class="btn-em" style="font-size:16px;">›</span><span style="font-size:13px;">回答しない</span>
+          </button>
+        </div>
+      </div>
+      <!-- Step 3: サブテーマ選択 -->
+      <div id="aiSessionStep3" style="display:none;">
+        <div style="padding:16px 20px 4px;display:flex;align-items:center;gap:10px;">
+          <button onclick="aiSessionGoStep(2)" style="background:none;border:none;font-size:20px;color:var(--t-m);cursor:pointer;padding:0;">←</button>
           <div>
             <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🌿 HABIO 特別セッション</div>
             <div style="font-size:15px;font-weight:800;color:var(--t);margin-top:2px;">もう少し教えてください</div>
@@ -2887,8 +2908,8 @@ body.night-bg{background:#C8C3BB;}
         </div>
         <div id="aiSessionSubList" style="display:grid;gap:8px;padding:0 16px 24px;"></div>
       </div>
-      <!-- Step 3: セッション進行中 -->
-      <div id="aiSessionStep3" style="display:none;">
+      <!-- Step 4: セッション進行中 -->
+      <div id="aiSessionStep4" style="display:none;">
         <div style="padding:24px 20px 8px;text-align:center;">
           <div style="font-size:13px;font-weight:700;color:var(--g);">🌿 特別セッション進行中</div>
           <div class="session-active-box">
@@ -6906,9 +6927,13 @@ function closeAiSessionModal(){
   document.getElementById('aiSessionOverlay').classList.remove('show');
 }
 function aiSessionGoStep(n){
-  [1,2,3].forEach(i=>document.getElementById('aiSessionStep'+i).style.display=(i===n?'':'none'));
+  [1,2,3,4].forEach(i=>{
+    const el=document.getElementById('aiSessionStep'+i);
+    if(el) el.style.display=(i===n?'':'none');
+  });
   if(n===1) renderAiSessionThemes();
-  if(n===3) startAiSessionTimer();
+  if(n===3) renderAiSessionSubs();
+  if(n===4) startAiSessionTimer();
 }
 function renderAiSessionThemes(){
   const list=document.getElementById('aiSessionThemeList');
@@ -6921,25 +6946,41 @@ function renderAiSessionThemes(){
 function selectAiTheme(themeId){
   _aiSessionTheme=AI_SESSION_THEMES.find(t=>t.id===themeId);
   if(!_aiSessionTheme) return;
+  aiSessionGoStep(2);
+}
+function selectAiGender(gender){
+  Store.set('ai_session_gender',gender);
+  renderAiSessionSubs();
+  aiSessionGoStep(3);
+}
+function renderAiSessionSubs(){
+  if(!_aiSessionTheme) return;
   const list=document.getElementById('aiSessionSubList');
-  if(list) list.innerHTML=_aiSessionTheme.subs.map((s,i)=>`
+  if(!list) return;
+  list.innerHTML=_aiSessionTheme.subs.map((s,i)=>`
     <button class="ai-session-theme-btn" onclick="selectAiSubtheme(${i})">
       <span class="btn-em" style="font-size:16px;">›</span><span>${s}</span>
     </button>`).join('');
-  aiSessionGoStep(2);
 }
 function selectAiSubtheme(subIdx){
   if(!_aiSessionTheme) return;
   const sub=_aiSessionTheme.subs[subIdx];
   const isNoAffiliate=_aiSessionTheme.noAffiliateIdx?.includes(subIdx);
-  const isRelation=_aiSessionTheme.id==='worry'&&_aiSessionTheme.relationIdx===subIdx;
+  // Relation Insight AI: 悩み相談→恋人 or 人間関係カテゴリ全般
+  const isRelation=
+    (_aiSessionTheme.id==='worry'&&_aiSessionTheme.relationIdx===subIdx) ||
+    _aiSessionTheme.id==='relation';
   Store.set('ai_session_no_affiliate',isNoAffiliate);
   Store.set('ai_session_is_relation',isRelation);
-  Store.set('ai_session_theme',{id:_aiSessionTheme.id,name:_aiSessionTheme.name,sub});
+  Store.set('ai_session_theme',{
+    id:_aiSessionTheme.id,
+    name:_aiSessionTheme.name,
+    sub,
+    gender:Store.get('ai_session_gender','other'),
+  });
   const endAt=Date.now()+10*60*1000;
   Store.set('ai_session_end_at',endAt);
-  aiSessionGoStep(3);
-  // Start session in chat with opening message
+  aiSessionGoStep(4);
   closeAiSessionAndGoChat(true);
 }
 async function closeAiSessionAndGoChat(isStart){
@@ -6948,9 +6989,14 @@ async function closeAiSessionAndGoChat(isStart){
     goTab('chat');
     if(isStart){
       const theme=Store.get('ai_session_theme',{});
-      const openMsg=`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間です。\n\n「${theme.sub||theme.name}」について、一緒に考えていきましょう。\n\nどんな小さなことでも話してください。ここだけの話です。`;
+      const gender=theme.gender||'other';
+      const genderNote=gender==='female'?'（女性）':gender==='male'?'（男性）':'';
+      const isRelation=Store.get('ai_session_is_relation',false);
+      let openMsg=`🌿 Habio 特別セッション開始${genderNote}\n\nこの10分は、あなたのための時間です。\n\n「${theme.sub||theme.name}」について、一緒に考えていきましょう。\n\nどんな小さなことでも話してください。ここだけの話です。`;
+      if(isRelation){
+        openMsg+='\n\n人間関係って、感情だけで考えると疲れることがあります。\n"傾向"として見ると、少し整理しやすくなることも。\nまずは、今感じていることを話してみてください。';
+      }
       appendBubble(openMsg,false,nowTime());
-      // Context override for session
       const inp=document.getElementById('chatInput');
       if(inp) inp.focus();
     }
