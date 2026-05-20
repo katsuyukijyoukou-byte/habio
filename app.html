@@ -2427,6 +2427,21 @@ body.night-bg{background:#C8C3BB;}
             style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">確認</button>
         </div>
       </div>
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;padding-bottom:8px;">
+          <div class="st-em">🎂</div>
+          <div class="st-info">
+            <div class="st-name">誕生日（任意）</div>
+            <div class="st-note">毎年バースデーバッジをプレゼント</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;width:100%;padding:0 4px 0 2px;">
+          <input id="settingsBirthday" type="date" inputmode="none"
+            style="flex:1;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg);color:var(--t);outline:none;min-width:0;">
+          <button onclick="saveBirthday()"
+            style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">保存</button>
+        </div>
+      </div>
       <div class="st-row" onclick="window.location.href='index.html'">
         <div class="st-em">🌐</div>
         <div class="st-info"><div class="st-name">サービスサイトへ戻る</div><div class="st-note">Habio のランディングページ</div></div>
@@ -2693,19 +2708,39 @@ body.night-bg{background:#C8C3BB;}
           <div class="rwpb-total" id="rwTotalPts">0 pt</div>
           <div class="rwpb-lbl">累計整いポイント</div>
         </div>
-        <div style="margin-left:auto;text-align:right;">
-          <div style="font-size:13px;font-weight:700;color:var(--t);" id="rwBadgeCount">0 / 10 獲得</div>
-          <div style="font-size:10px;color:var(--t-m);margin-top:2px;">バッジ獲得状況</div>
+        <div style="display:flex;gap:20px;margin-left:auto;">
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:var(--g);" id="rwOwnedBadges">0</div>
+            <div style="font-size:10px;color:var(--t-m);">所有</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:var(--t);" id="rwTotalBadges">0</div>
+            <div style="font-size:10px;color:var(--t-m);">累計獲得</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:var(--t-m);" id="rwUsedBadges">0</div>
+            <div style="font-size:10px;color:var(--t-m);">交換済</div>
+          </div>
         </div>
       </div>
-      <div class="rewards-sec-lbl">POINT BADGES — 10pt ごとに獲得</div>
+      <div class="rewards-sec-lbl">⭐ POINT BADGES — 10pt ごとに獲得</div>
       <div class="badges-grid" id="pointBadgesGrid"></div>
-      <div class="rewards-sec-lbl">STREAK BADGES — 継続で獲得</div>
+      <div class="rewards-sec-lbl">🔥 STREAK BADGES — 継続で獲得</div>
       <div class="badges-grid" id="streakBadgesGrid"></div>
-      <div class="rewards-coming">
-        🎁 リワード機能<br>
-        <span style="font-size:11px;">バッジが10枚以上たまると、リワードと交換できるようになります（準備中）</span>
+      <div class="rewards-sec-lbl">🎂 ANNIVERSARY BADGES — 誕生日</div>
+      <div class="badges-grid" id="anniversaryBadgesGrid"></div>
+      <div class="rewards-sec-lbl">🔮 HIDDEN BADGES — 隠し実績</div>
+      <div class="badges-grid" id="hiddenBadgesGrid"></div>
+      <div class="rewards-sec-lbl">🌿 PR BADGES — 健康習慣探索</div>
+      <div class="badges-grid" id="prBadgesGrid"></div>
+      <div class="rewards-sec-lbl">🎁 バッジ交換</div>
+      <div style="padding:0 16px 8px;font-size:11px;color:var(--t-m);">所有バッジを消費してリワードと交換できます</div>
+      <div id="rewardsExchangeGrid" style="display:grid;gap:10px;padding:0 16px 16px;"></div>
+      <div id="rewardsHistorySection" style="display:none;padding:0 16px 24px;">
+        <div style="font-size:11px;font-weight:700;color:var(--t-m);margin-bottom:8px;">交換履歴</div>
+        <div id="rewardsHistoryList"></div>
       </div>
+      <div style="height:8px;"></div>
     </div>
   </div>
 
@@ -3771,6 +3806,7 @@ function selectMood(btn){
   Store.set('mood_history',hist.slice(0,30));
   const replyEl=document.getElementById('moodReply');
   if(replyEl){replyEl.textContent=MOOD_REPLIES[mood]||'';replyEl.classList.add('show');}
+  if(mood==='つかれた') checkQuietStrengthBadge();
 }
 function restoreMood(){
   const hist=Store.get('mood_history',[]);
@@ -3845,9 +3881,9 @@ function renderWins(){
   const habioMsg=document.getElementById('winsHabioMsg');
   if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
   // Update wins page badge/pts counters
-  const allBadges=[...Store.get('badges_pts',[]),...Store.get('badges_streak',[])];
+  const {totalEarned:allBadgeCount}=getBadgeCounts();
   const wpb=document.getElementById('winsPageBadgeCount');
-  if(wpb) wpb.textContent=allBadges.length+'枚獲得';
+  if(wpb) wpb.textContent=allBadgeCount+'枚獲得';
   const wpp=document.getElementById('winsPageTotalPts');
   if(wpp) wpp.textContent=getTotalPts()+' pt';
 }
@@ -3960,6 +3996,9 @@ function toggleHabit(el){
       syncPointsToServer(earned,'habit_task_complete','習慣タスク達成ポイント',`habit_${id}_${today()}`);
       const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
       showToast(`${def.em} ${def.name}を記録 ／ ${ptMsg}`);
+      checkNightOwlBadge();
+      checkEarlyBirdBadge();
+      checkQuietStrengthBadge();
     } else {
       showToast(`${def.em} ${def.name}を記録しました！`);
     }
@@ -4257,6 +4296,7 @@ async function sendMsg(){
   if(Store.get('pts_chat_date','')!==today()){
     Store.set('pts_chat_date',today());
     addPoints(1);
+    checkDeepTalkerBadge();
   }
 
   appendBubble(text,true,nowTime());
@@ -4573,6 +4613,8 @@ function renderPremiumState(){
   // Pre-fill email input
   const emailEl = document.getElementById('settingsEmail');
   if(emailEl && !emailEl.value) emailEl.value = Store.get('user_email','');
+  const bdayEl = document.getElementById('settingsBirthday');
+  if(bdayEl && !bdayEl.value) bdayEl.value = Store.get('user_birth_date','');
   refreshPeriodUI();
 }
 
@@ -4768,7 +4810,9 @@ function renderProfile(){
   const wkRate=Math.round(wkDays/7*100);
 
   const nameEl=document.getElementById('profileName');
-  if(nameEl) nameEl.textContent=name?name+'さん、こんにちは':'こんにちは';
+  const titleEarned=Store.get('reward_title_earned',false);
+  const titleSuffix=titleEarned?' 👑 整い達人':'';
+  if(nameEl) nameEl.textContent=(name?name+'さん、こんにちは':'こんにちは')+titleSuffix;
   const metaEl=document.getElementById('profileMeta');
   if(metaEl) metaEl.textContent='Habio を使いはじめて '+days+'日目';
   const tw=document.getElementById('statTotalWins');
@@ -6169,6 +6213,7 @@ async function claimPrAction(){
     addPoints(pts,'pr_action','PRおすすめ習慣確認');
     claimedMap[_recModalCurrentId]=jstToday;
     Store.set('pr_actions_today',claimedMap);
+    checkPrActionBadges();
     btn.textContent=`✓ 今日のアクション達成！ +${pts}pt`;
     btn.classList.add('claimed');
     if(hint) hint.textContent=`合計 ${getTotalPts()}pt`;
@@ -6202,6 +6247,7 @@ async function claimPrAction(){
       if(data.total_points>getTotalPts()) Store.set('pts_total',data.total_points);
       // バッジ判定（サーバー応答のtotal_pointsで確実に判定）
       checkPointBadges(getTotalPts());
+      checkPrActionBadges();
       renderPointsCard();
       console.log('[claimPrAction] ok',{pts:data.points,serverTotal:data.total_points,localTotal:getTotalPts()});
       loadPointsReferral();
@@ -6413,6 +6459,24 @@ const STREAK_BADGES=[
   {id:'s125',em:'🔮',name:'125日継続', days:125},
   {id:'s150',em:'👑',name:'150日継続', days:150},
 ];
+const HIDDEN_BADGES=[
+  {id:'night_owl',      em:'🦉', name:'夜更かし者',   desc:'夜23時以降に習慣を記録した'},
+  {id:'early_bird',     em:'🌅', name:'早起き習慣',   desc:'朝6時前に習慣を記録した'},
+  {id:'quiet_strength', em:'💪', name:'静かな強さ',   desc:'つかれた気分でも習慣を続けた'},
+  {id:'deep_talker',    em:'💬', name:'心の対話者',   desc:'3日連続でHabioとチャット'},
+  {id:'rainy_day',      em:'🌧️',name:'雨の日の習慣', desc:'雨の日に習慣を記録（準備中）'},
+];
+const PR_BADGES=[
+  {id:'pr_lv1',em:'🌿',name:'PR探索者 Lv.1',count:10,level:1},
+  {id:'pr_lv2',em:'🌳',name:'PR探索者 Lv.2',count:20,level:2},
+  {id:'pr_lv3',em:'🏅',name:'PR探索者 Lv.3',count:30,level:3},
+];
+const REWARD_ITEMS=[
+  {id:'ai_msg',   em:'🤖',name:'AIとの特別会話',  cost:10,desc:'Habio AIと特別なテーマで深く話す'},
+  {id:'theme',    em:'🎨',name:'テーマカラー解放', cost:20,desc:'限定テーマカラーが使えるようになる'},
+  {id:'analysis', em:'📊',name:'習慣分析レポート', cost:30,desc:'AIが1ヶ月の習慣を詳しく分析'},
+  {id:'title',    em:'👑',name:'称号「整い達人」', cost:50,desc:'プロフィールに特別称号が表示される'},
+];
 
 function getTodayPts(){
   return Store.get('pts_date','')=== today()?Store.get('pts_today',0):0;
@@ -6515,14 +6579,164 @@ function renderPointsCard(){
   if(e('pointsNextBadge')) e('pointsNextBadge').textContent=nextBadge?nextIn+'pt':'全獲得！';
 }
 
+function getBadgeCounts(){
+  const ptE=Store.get('badges_pts',[]);
+  const stE=Store.get('badges_streak',[]);
+  const anE=Store.get('badges_anniversary',[]);
+  const hdE=Store.get('badges_hidden',[]);
+  const prE=Store.get('badges_pr',[]);
+  const totalEarned=ptE.length+stE.length+anE.length+hdE.length+prE.length;
+  const used=Store.get('badges_used_count',0);
+  return {totalEarned, owned:Math.max(0,totalEarned-used), used};
+}
+
+function checkBirthdayBadge(){
+  const birth=Store.get('user_birth_date','');
+  if(!birth) return;
+  const now=new Date();
+  const bDate=new Date(birth);
+  if(bDate.getMonth()!==now.getMonth()||bDate.getDate()!==now.getDate()) return;
+  const year=now.getFullYear();
+  const badgeId='birthday_'+year;
+  const earned=Store.get('badges_anniversary',[]);
+  if(earned.includes(badgeId)) return;
+  earned.push(badgeId);
+  Store.set('badges_anniversary',earned);
+  const age=year-bDate.getFullYear();
+  showBadgeEarnToast('🎂 '+age+'歳おめでとうバッジ');
+}
+
+function checkNightOwlBadge(){
+  const h=new Date().getHours();
+  if(h<23&&h>=6) return;
+  const hidden=Store.get('badges_hidden',[]);
+  if(hidden.includes('night_owl')) return;
+  hidden.push('night_owl');
+  Store.set('badges_hidden',hidden);
+  showBadgeEarnToast('🦉 夜更かし者');
+}
+
+function checkEarlyBirdBadge(){
+  const h=new Date().getHours();
+  if(h<4||h>=6) return;
+  const hidden=Store.get('badges_hidden',[]);
+  if(hidden.includes('early_bird')) return;
+  hidden.push('early_bird');
+  Store.set('badges_hidden',hidden);
+  showBadgeEarnToast('🌅 早起き習慣');
+}
+
+function checkQuietStrengthBadge(){
+  const hist=Store.get('mood_history',[]);
+  const todayMood=hist.find(m=>m.date===today());
+  if(todayMood?.mood!=='つかれた') return;
+  const done=Store.get('pts_habit_done_'+today(),[]);
+  if(!done.length) return;
+  const hidden=Store.get('badges_hidden',[]);
+  if(hidden.includes('quiet_strength')) return;
+  hidden.push('quiet_strength');
+  Store.set('badges_hidden',hidden);
+  showBadgeEarnToast('💪 静かな強さ');
+}
+
+function checkDeepTalkerBadge(){
+  const chatDates=Store.get('chat_day_log',[]);
+  const t=today();
+  if(!chatDates.includes(t)) chatDates.unshift(t);
+  const uniq=[...new Set(chatDates)].sort((a,b)=>b.localeCompare(a)).slice(0,10);
+  Store.set('chat_day_log',uniq);
+  let consec=0;
+  for(let i=0;i<uniq.length;i++){
+    const exp=new Date(Date.now()-i*86400000);
+    if(uniq[i]===toDateStr(exp)) consec++;
+    else break;
+  }
+  if(consec<3) return;
+  const hidden=Store.get('badges_hidden',[]);
+  if(hidden.includes('deep_talker')) return;
+  hidden.push('deep_talker');
+  Store.set('badges_hidden',hidden);
+  showBadgeEarnToast('💬 心の対話者');
+}
+
+function checkPrActionBadges(){
+  const total=(Store.get('pr_action_total',0)||0)+1;
+  Store.set('pr_action_total',total);
+  const prBadges=Store.get('badges_pr',[]);
+  PR_BADGES.forEach(b=>{
+    if(total>=b.count&&!prBadges.includes(b.id)){
+      prBadges.push(b.id);
+      showBadgeEarnToast(b.em+' '+b.name);
+    }
+  });
+  Store.set('badges_pr',prBadges);
+}
+
+function saveBirthday(){
+  const el=document.getElementById('settingsBirthday');
+  if(!el||!el.value) return;
+  Store.set('user_birth_date',el.value);
+  showToast('誕生日を保存しました 🎂');
+  checkBirthdayBadge();
+}
+
+function exchangeReward(rewardId){
+  const reward=REWARD_ITEMS.find(r=>r.id===rewardId);
+  if(!reward) return;
+  const {owned}=getBadgeCounts();
+  if(owned<reward.cost){
+    showToast('バッジが足りません（必要: '+reward.cost+'枚）');
+    return;
+  }
+  const used=Store.get('badges_used_count',0)+reward.cost;
+  Store.set('badges_used_count',used);
+  const hist=Store.get('reward_history',[]);
+  hist.unshift({rewardId,name:reward.name,cost:reward.cost,date:today(),ts:new Date().toISOString()});
+  Store.set('reward_history',hist.slice(0,50));
+  deliverReward(reward);
+  openRewardsModal();
+}
+
+function deliverReward(reward){
+  if(reward.id==='ai_msg'){
+    closeRewardsModal();
+    setTimeout(()=>{
+      goTab('chat');
+      const inp=document.getElementById('chatInput');
+      if(inp) inp.value='最近の私の習慣について、特別に深く分析してもらえますか？';
+      showToast('🤖 特別AIメッセージを準備しました！');
+    },300);
+  } else if(reward.id==='theme'){
+    const lock=document.getElementById('themeLock');
+    if(lock) lock.style.display='none';
+    document.querySelectorAll('.theme-swatch').forEach(s=>{s.style.filter='';s.style.pointerEvents='';});
+    Store.set('reward_theme_unlocked',true);
+    showToast('🎨 テーマカラーが解放されました！');
+  } else if(reward.id==='analysis'){
+    closeRewardsModal();
+    setTimeout(()=>openPremiumFeature('report'),300);
+  } else if(reward.id==='title'){
+    Store.set('reward_title_earned',true);
+    showToast('👑 称号「整い達人」を獲得しました！');
+    renderProfile();
+  }
+}
+
 function openRewardsModal(){
   const total=getTotalPts();
   const ptEarned=Store.get('badges_pts',[]);
   const stEarned=Store.get('badges_streak',[]);
+  const anEarned=Store.get('badges_anniversary',[]);
+  const hdEarned=Store.get('badges_hidden',[]);
+  const prEarned=Store.get('badges_pr',[]);
+  const {totalEarned,owned,used}=getBadgeCounts();
   const e=id=>document.getElementById(id);
+
   if(e('rwTotalPts')) e('rwTotalPts').textContent=total+' pt';
-  if(e('rwBadgeCount')) e('rwBadgeCount').textContent=ptEarned.length+' / '+POINT_BADGES.length+' 獲得';
-  // Point badges grid
+  if(e('rwOwnedBadges')) e('rwOwnedBadges').textContent=owned;
+  if(e('rwTotalBadges')) e('rwTotalBadges').textContent=totalEarned;
+  if(e('rwUsedBadges')) e('rwUsedBadges').textContent=used;
+
   const pg=e('pointBadgesGrid');
   if(pg) pg.innerHTML=POINT_BADGES.map(b=>{
     const got=ptEarned.includes(b.id);
@@ -6532,7 +6746,7 @@ function openRewardsModal(){
       <div class="badge-pts">${got?'獲得済':b.pts+'pt'}</div>
     </div>`;
   }).join('');
-  // Streak badges grid
+
   const sg=e('streakBadgesGrid');
   if(sg) sg.innerHTML=STREAK_BADGES.map(b=>{
     const got=stEarned.includes(b.id);
@@ -6542,7 +6756,70 @@ function openRewardsModal(){
       <div class="badge-pts">${got?'獲得済':b.days+'日'}</div>
     </div>`;
   }).join('');
+
+  const ag=e('anniversaryBadgesGrid');
+  if(ag){
+    const birthBadges=anEarned.filter(id=>id.startsWith('birthday_'));
+    if(birthBadges.length){
+      const birth=Store.get('user_birth_date','');
+      ag.innerHTML=birthBadges.map(id=>{
+        const yr=parseInt(id.replace('birthday_',''));
+        const age=birth?yr-new Date(birth).getFullYear():0;
+        return `<div class="badge-item"><div class="badge-em">🎂</div><div class="badge-nm">${age}歳記念</div><div class="badge-pts">獲得済</div></div>`;
+      }).join('');
+    } else {
+      const birth=Store.get('user_birth_date','');
+      ag.innerHTML=`<div style="font-size:12px;color:var(--t-m);padding:8px 4px;">${birth?'誕生日になると獲得できます 🎂':'設定から誕生日を登録すると獲得できます'}</div>`;
+    }
+  }
+
+  const hg=e('hiddenBadgesGrid');
+  if(hg) hg.innerHTML=HIDDEN_BADGES.map(b=>{
+    const got=hdEarned.includes(b.id);
+    return `<div class="badge-item${got?'':' locked'}" title="${b.desc}">
+      <div class="badge-em">${got?b.em:'？'}</div>
+      <div class="badge-nm">${got?b.name:'???'}</div>
+      <div class="badge-pts">${got?'獲得済':'隠し実績'}</div>
+    </div>`;
+  }).join('');
+
+  const prg=e('prBadgesGrid');
+  if(prg){
+    const prTotal=Store.get('pr_action_total',0);
+    prg.innerHTML=PR_BADGES.map(b=>{
+      const got=prEarned.includes(b.id);
+      return `<div class="badge-item${got?'':' locked'}">
+        <div class="badge-em">${b.em}</div>
+        <div class="badge-nm">${b.name}</div>
+        <div class="badge-pts">${got?'獲得済':prTotal+'/'+b.count+'件'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const eg=e('rewardsExchangeGrid');
+  if(eg) eg.innerHTML=REWARD_ITEMS.map(r=>{
+    const canEx=owned>=r.cost;
+    return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;border:1.5px solid var(--border);display:flex;align-items:center;gap:12px;">
+      <div style="font-size:26px;">${r.em}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;color:var(--t);">${r.name}</div>
+        <div style="font-size:11px;color:var(--t-m);margin-top:2px;">${r.desc}</div>
+      </div>
+      <button onclick="exchangeReward('${r.id}')" style="padding:8px 12px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:${canEx?'pointer':'default'};background:${canEx?'var(--g)':'var(--border)'};color:${canEx?'#fff':'var(--t-m)'};">${r.cost}枚</button>
+    </div>`;
+  }).join('');
+
+  const hist=Store.get('reward_history',[]);
+  const hs=e('rewardsHistorySection');
+  const hl=e('rewardsHistoryList');
+  if(hs&&hl){
+    hs.style.display=hist.length?'':'none';
+    if(hist.length) hl.innerHTML=hist.slice(0,5).map(h=>`<div style="font-size:12px;color:var(--t-m);padding:4px 0;">${h.date} — ${h.name}（${h.cost}枚）</div>`).join('');
+  }
+
   document.getElementById('rewardsOverlay').classList.add('show');
+  const sheet=e('rewardsSheet');
+  if(sheet) sheet.scrollTop=0;
 }
 
 function onRewardsOverlayClick(e){
@@ -6618,9 +6895,10 @@ function init(){
   Store.set('last_login_date',today());
   renderPointsCard();
 
-  // Check streak badges on load
+  // Check streak badges and birthday badge on load
   const streak=calcStreak(Store.get('wins',[]));
   if(streak>0) checkStreakBadges(streak);
+  checkBirthdayBadge();
 
   // 後追いバッジ判定: 既に条件を満たしているのに未付与のバッジを付与する
   (function retroBadgeCheck(){
