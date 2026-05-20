@@ -626,6 +626,24 @@ body.night-bg{background:#C8C3BB;}
 }
 .food-trend-pr{font-size:10px;color:var(--t-l);margin-top:6px;}
 
+/* Food history */
+.food-history-day{
+  margin:0 22px 10px;padding:14px 16px;
+  background:var(--card);border-radius:var(--r-l);
+  box-shadow:var(--sh1);transition:background var(--trans-dur);
+}
+.food-history-date{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:10px;}
+.food-history-meal{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.food-history-meal:last-child{margin-bottom:0;}
+.food-history-meal-lbl{font-size:12px;color:var(--t-l);flex-shrink:0;width:36px;}
+.food-history-meal-tags{font-size:13px;color:var(--t);line-height:1.5;flex:1;}
+.food-history-meal-tags.no-record{color:var(--t-l);font-size:12px;}
+.food-history-premium-hint{
+  margin:0 22px 14px;padding:14px 16px;
+  background:var(--g-p);border-radius:var(--r-l);
+  text-align:center;font-size:13px;color:var(--t-g);cursor:pointer;
+}
+
 .food-ai-card{
   margin:0 22px;background:var(--card);border-radius:var(--r-l);
   padding:20px;box-shadow:var(--sh1);
@@ -2184,6 +2202,11 @@ body.night-bg{background:#C8C3BB;}
       <div class="meal-items" id="meal-night"><div class="meal-empty">まだ記録がありません</div></div>
     </div>
 
+    <div id="foodHistoryWrap" style="display:none;">
+      <p class="sec-lbl">最近の食事メモ</p>
+      <div id="foodHistoryList"></div>
+    </div>
+
     <div style="height:24px;"></div>
 
     <!-- Food sheet overlay -->
@@ -3725,7 +3748,7 @@ function goTab(name){
   if(tab) tab.classList.add('active');
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
-  if(name==='food') renderFoodLog();
+  if(name==='food'){ renderFoodLog(); renderFoodHistory(); }
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
@@ -6060,6 +6083,76 @@ function maybeShowFoodTrendRec(){
 function dismissFoodTrendRec(){
   const card=document.getElementById('foodTrendCard');
   if(card) card.style.display='none';
+}
+
+/* ── FOOD HISTORY (最近の食事メモ) ── */
+const TAP_ID_TO_LABEL={
+  veg:'野菜あり', rice:'主食あり', protein:'タンパク質あり',
+  water:'水分', soup:'温かいものあり', fruit:'フルーツあり',
+  snack:'甘いもの', outside:'外食っぽい',
+  egg:'タンパク質あり', fish:'魚あり', milk:'乳製品あり', coffee:'コーヒーあり',
+};
+const PHOTO_TAG_TO_LABEL={
+  '主食':'主食あり', '野菜':'野菜あり', 'タンパク質':'タンパク質あり',
+  '温かいもの':'温かいものあり', '甘いもの':'甘いもの寄り',
+  '外食':'外食っぽい', '軽め':'軽めの食事', 'しっかり':'しっかりめ',
+};
+
+function getMealSummary(logs, mealTime){
+  const items=logs.filter(l=>l.mealTime===mealTime);
+  if(!items.length) return null;
+  const labels=new Set();
+  items.forEach(item=>{
+    if(item.method==='photo'&&Array.isArray(item.tags)){
+      item.tags.forEach(t=>{ const l=PHOTO_TAG_TO_LABEL[t]; if(l) labels.add(l); });
+    } else if(item.id){
+      const l=TAP_ID_TO_LABEL[item.id]; if(l) labels.add(l);
+    }
+  });
+  return labels.size?[...labels].join(' / '):'記録あり';
+}
+
+function renderFoodHistory(){
+  const listEl=document.getElementById('foodHistoryList');
+  const wrapEl=document.getElementById('foodHistoryWrap');
+  if(!listEl||!wrapEl) return;
+
+  const isPrem=Store.get('is_premium',false);
+  const maxDays=isPrem?30:3;
+  const mealTime={morning:'🌅 朝', noon:'☀️ 昼', night:'🌙 夜'};
+
+  let html='';
+  let hasAnyData=false;
+
+  for(let d=1;d<maxDays;d++){
+    const dk=toDateStr(new Date(Date.now()-d*864e5));
+    const logs=Store.get('food_log_'+dk,[]);
+    if(!logs.length) continue;
+    hasAnyData=true;
+
+    const dateLabel=d===1?'昨日':d===2?'2日前':dk.replace(/(\d{4})-(\d{2})-(\d{2})/,'$2/$3');
+    const mealsHtml=['morning','noon','night'].map(mt=>{
+      const summary=getMealSummary(logs,mt);
+      return `<div class="food-history-meal">
+        <span class="food-history-meal-lbl">${mealTime[mt]}</span>
+        <span class="food-history-meal-tags${!summary?' no-record':''}">${summary||'まだ記録がないかも'}</span>
+      </div>`;
+    }).join('');
+
+    html+=`<div class="food-history-day">
+      <div class="food-history-date">${dateLabel}</div>
+      ${mealsHtml}
+    </div>`;
+  }
+
+  if(!isPrem){
+    html+=`<div class="food-history-premium-hint" onclick="openPremiumFeature('food_history')">
+      📅 プレミアムで過去30日分の食事メモを見る
+    </div>`;
+  }
+
+  listEl.innerHTML=html;
+  wrapEl.style.display=(hasAnyData||!isPrem)?'':'none';
 }
 
 /* ── AFFILIATE RECOMMEND ── */
