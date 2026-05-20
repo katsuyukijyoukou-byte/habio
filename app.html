@@ -561,6 +561,71 @@ body.night-bg{background:#C8C3BB;}
 .food-quick-em{font-size:26px;}
 .food-quick-name{font-size:10px;font-weight:600;color:var(--t-m);text-align:center;line-height:1.4;}
 
+/* Food photo mode */
+.food-mode-tabs{display:flex;gap:8px;padding:0 22px 12px;}
+.food-mode-btn{
+  flex:1;padding:9px 0;border-radius:var(--r-m);
+  font-size:13px;font-weight:600;
+  background:var(--bg);color:var(--t-m);
+  border:1.5px solid var(--border);transition:all var(--trans-dur);
+}
+.food-mode-btn.active{background:var(--g-p);color:var(--t-g);border-color:var(--g);}
+.food-photo-area{
+  margin:0 22px 12px;border-radius:var(--r-l);
+  border:2px dashed var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:8px;padding:28px 0;cursor:pointer;
+  transition:all var(--trans-dur);
+}
+.food-photo-area:active{background:var(--g-p);}
+.food-photo-icon{font-size:32px;}
+.food-photo-hint{font-size:13px;color:var(--t-l);}
+.food-photo-loading{
+  padding:24px 22px;display:flex;flex-direction:column;
+  align-items:center;gap:10px;
+}
+.food-loading-dots{display:flex;gap:6px;}
+.food-loading-dots span{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--g);animation:dot-blink 1.2s infinite;
+}
+.food-loading-dots span:nth-child(2){animation-delay:.2s;}
+.food-loading-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dot-blink{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+.food-loading-text{font-size:13px;color:var(--t-l);}
+.food-photo-comment{margin:0 22px 10px;font-size:14px;color:var(--t-m);line-height:1.6;}
+.food-tag-review{display:flex;flex-wrap:wrap;gap:8px;padding:0 22px 14px;}
+.food-tag-chip{
+  padding:6px 14px;border-radius:var(--r-f);font-size:12px;font-weight:600;
+  background:var(--bg);color:var(--t-m);
+  border:1.5px solid var(--border);transition:all var(--trans-dur);
+}
+.food-tag-chip.selected{background:var(--g-p);color:var(--t-g);border-color:var(--g);}
+.food-save-btn{
+  display:block;width:calc(100% - 44px);margin:0 22px;
+  padding:13px;border-radius:var(--r-m);font-size:14px;font-weight:700;
+  background:var(--g);color:#fff;transition:all var(--trans-dur);
+}
+.food-save-btn:active{opacity:.8;}
+.food-trend-card{
+  margin:0 22px 14px;background:var(--card);border-radius:var(--r-l);
+  padding:16px 18px;box-shadow:var(--sh1);position:relative;
+  border-left:4px solid var(--beige);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.food-trend-dismiss{
+  position:absolute;top:10px;right:12px;
+  font-size:16px;color:var(--t-l);cursor:pointer;padding:4px;
+}
+.food-trend-body{flex:1;}
+.food-trend-msg{font-size:13px;color:var(--t-m);line-height:1.6;margin-bottom:10px;}
+.food-trend-cta{
+  display:inline-block;font-size:12px;font-weight:600;
+  color:var(--t-g);background:var(--g-p);
+  padding:6px 14px;border-radius:var(--r-f);text-decoration:none;
+}
+.food-trend-pr{font-size:10px;color:var(--t-l);margin-top:6px;}
+
 .food-ai-card{
   margin:0 22px;background:var(--card);border-radius:var(--r-l);
   padding:20px;box-shadow:var(--sh1);
@@ -2085,6 +2150,16 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
+    <div class="food-trend-card mb14" id="foodTrendCard" style="display:none;">
+      <div class="food-trend-dismiss" onclick="dismissFoodTrendRec()">×</div>
+      <div class="habio-av">🌱</div>
+      <div class="food-trend-body">
+        <div class="food-trend-msg" id="foodTrendMsg"></div>
+        <a class="food-trend-cta" id="foodTrendCta" href="#" target="_blank" rel="nofollow sponsored noopener">そっと見てみる</a>
+        <div class="food-trend-pr">PR・広告：楽天市場 ／ 医薬品ではありません</div>
+      </div>
+    </div>
+
     <div class="meal-section mb14">
       <div class="meal-hd">
         <div class="meal-hd-left"><span class="meal-time-em">🌅</span><span class="meal-time-name">朝食</span><span class="meal-pt-badge" id="meal-morning-pt">+1pt</span></div>
@@ -2116,7 +2191,29 @@ body.night-bg{background:#C8C3BB;}
       <div class="food-sheet">
         <div class="food-sheet-handle"></div>
         <div class="food-sheet-title" id="foodSheetTitle">何を食べましたか？</div>
-        <div class="food-quick-grid" id="foodQuickGrid"></div>
+        <div class="food-mode-tabs">
+          <button class="food-mode-btn active" id="foodModeBtnTap" onclick="switchFoodMode('tap')">✍ タップで記録</button>
+          <button class="food-mode-btn" id="foodModeBtnPhoto" onclick="switchFoodMode('photo')">📸 写真で記録</button>
+        </div>
+        <div id="foodTapMode">
+          <div class="food-quick-grid" id="foodQuickGrid"></div>
+        </div>
+        <div id="foodPhotoMode" style="display:none;">
+          <div class="food-photo-area" id="foodPhotoArea" onclick="document.getElementById('foodPhotoInput').click()">
+            <div class="food-photo-icon">📸</div>
+            <div class="food-photo-hint">写真を撮る・選ぶ</div>
+          </div>
+          <input type="file" id="foodPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFoodPhoto(this)">
+          <div id="foodPhotoLoading" class="food-photo-loading" style="display:none;">
+            <div class="food-loading-dots"><span></span><span></span><span></span></div>
+            <div class="food-loading-text">写真を分析しています…</div>
+          </div>
+          <div id="foodPhotoResult" style="display:none;">
+            <div class="food-photo-comment" id="foodPhotoComment"></div>
+            <div class="food-tag-review" id="foodTagReview"></div>
+            <button class="food-save-btn" onclick="saveFoodFromPhoto()">この内容で記録する</button>
+          </div>
+        </div>
         <div style="height:20px;"></div>
       </div>
     </div>
@@ -4391,6 +4488,12 @@ function openFoodSheet(mealTime){
   const titles={morning:'朝食に何を食べましたか？',noon:'昼食に何を食べましたか？',night:'夕食に何を食べましたか？'};
   const titleEl=document.getElementById('foodSheetTitle');
   if(titleEl) titleEl.textContent=titles[mealTime]||'何を食べましたか？';
+  switchFoodMode('tap');
+  const pi=document.getElementById('foodPhotoInput'); if(pi) pi.value='';
+  const pr=document.getElementById('foodPhotoResult'); if(pr) pr.style.display='none';
+  const pl=document.getElementById('foodPhotoLoading'); if(pl) pl.style.display='none';
+  const pa=document.getElementById('foodPhotoArea'); if(pa) pa.style.display='flex';
+  currentPhotoTags=[]; currentPhotoComment='';
   document.getElementById('foodSheetOverlay').classList.add('show');
 }
 
@@ -4427,6 +4530,7 @@ function logFoodItem(id,em,name){
     showToast(em+' 記録しました！');
   }
   updateMealPtBadges();
+  maybeShowFoodTrendRec();
 }
 
 function deleteFoodItem(idx){
@@ -4449,13 +4553,24 @@ function renderFoodLog(){
       el.innerHTML=`<div class="meal-empty">${emptyMsg[time]||'まだ記録がありません'}</div>`;
       continue;
     }
-    el.innerHTML=items.map(item=>`
-      <div class="food-log-item fade-in">
+    el.innerHTML=items.map(item=>{
+      if(item.method==='photo'){
+        const tagStr=item.tags&&item.tags.length?item.tags.join(' · '):'写真で記録';
+        const timeStr=item.createdAt?new Date(item.createdAt).getHours()+':'+pad(new Date(item.createdAt).getMinutes()):'';
+        return `<div class="food-log-item fade-in">
+          <div class="food-log-em">📸</div>
+          <div class="food-log-name">${esc(tagStr)}</div>
+          <div class="food-log-time">${timeStr}</div>
+          <div class="food-log-del" onclick="deleteFoodItem(${item.idx})">×</div>
+        </div>`;
+      }
+      return `<div class="food-log-item fade-in">
         <div class="food-log-em">${esc(item.em)}</div>
         <div class="food-log-name">${esc(item.name)}</div>
         <div class="food-log-time">${item.ts?new Date(item.ts).getHours()+':'+pad(new Date(item.ts).getMinutes()):''}</div>
         <div class="food-log-del" onclick="deleteFoodItem(${item.idx})">×</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
   const foodAiEl=document.getElementById('foodAiMsg');
   if(foodAiEl) foodAiEl.textContent=generateFoodAiComment(logs);
@@ -5731,15 +5846,17 @@ function closeStreakModal(){
 /* ── FOOD AI COMMENT ── */
 function generateFoodAiComment(logs){
   if(!logs.length) return FOOD_TIPS[new Date().getDay()%FOOD_TIPS.length];
-  const ids=logs.map(l=>l.id);
+  const ids=logs.map(l=>l.id).filter(Boolean);
+  const photoTags=logs.filter(l=>l.method==='photo').flatMap(l=>l.tags||[]);
   const has=id=>ids.includes(id);
+  const hasTag=t=>photoTags.includes(t);
   const meals=[...new Set(logs.map(l=>l.mealTime))];
   const allMeals=meals.length>=3;
-  const hasVeg=has('veg');
-  const hasProt=has('protein')||has('fish')||has('egg');
+  const hasVeg=has('veg')||hasTag('野菜');
+  const hasProt=has('protein')||has('fish')||has('egg')||hasTag('タンパク質');
   const hasWater=has('water');
-  const hasSnack=has('snack');
-  const hasOut=has('outside');
+  const hasSnack=has('snack')||hasTag('甘いもの');
+  const hasOut=has('outside')||hasTag('外食');
   if(allMeals&&hasVeg&&hasProt) return '3食＋野菜＋タンパク質、とても整っています。この調子でいきましょう 🌿';
   if(hasVeg&&hasProt) return '野菜とタンパク質が摂れていますね。バランスを意識できています ✨';
   if(allMeals) return '3食きちんと食べられましたね。体のリズムが整っていきます 🌱';
@@ -5751,6 +5868,198 @@ function generateFoodAiComment(logs){
   if(hasSnack) return 'おやつもOKです。罪悪感より、全体のバランスで考えましょう 🍃';
   if(logs.length>=2) return '記録が続いていますね。続けることで、自分の食事パターンが見えてきます 🌱';
   return '記録してくれてありがとう。続けることで、少しずつ変化に気づけますよ。';
+}
+
+/* ── FOOD PHOTO MODE ── */
+let currentFoodMode='tap';
+let currentPhotoTags=[];
+let currentPhotoComment='';
+
+function switchFoodMode(mode){
+  currentFoodMode=mode;
+  const tapMode=document.getElementById('foodTapMode');
+  const photoMode=document.getElementById('foodPhotoMode');
+  const btnTap=document.getElementById('foodModeBtnTap');
+  const btnPhoto=document.getElementById('foodModeBtnPhoto');
+  if(!tapMode||!photoMode) return;
+  if(mode==='tap'){
+    tapMode.style.display=''; photoMode.style.display='none';
+    if(btnTap) btnTap.classList.add('active');
+    if(btnPhoto) btnPhoto.classList.remove('active');
+  } else {
+    tapMode.style.display='none'; photoMode.style.display='';
+    if(btnTap) btnTap.classList.remove('active');
+    if(btnPhoto) btnPhoto.classList.add('active');
+  }
+}
+
+async function compressMealImage(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const objUrl=URL.createObjectURL(file);
+    img.onload=()=>{
+      const maxPx=512;
+      const scale=Math.min(1,maxPx/Math.max(img.width,img.height));
+      const w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(objUrl);
+      canvas.toBlob(blob=>{
+        if(!blob){reject(new Error('compress failed'));return;}
+        const reader=new FileReader();
+        reader.onload=()=>resolve({base64:reader.result.split(',')[1],mimeType:'image/jpeg'});
+        reader.onerror=reject;
+        reader.readAsDataURL(blob);
+      },'image/jpeg',0.7);
+    };
+    img.onerror=reject;
+    img.src=objUrl;
+  });
+}
+
+async function handleFoodPhoto(input){
+  const file=input.files&&input.files[0];
+  if(!file) return;
+  const areaEl=document.getElementById('foodPhotoArea');
+  const loadEl=document.getElementById('foodPhotoLoading');
+  const resultEl=document.getElementById('foodPhotoResult');
+  if(areaEl) areaEl.style.display='none';
+  if(loadEl) loadEl.style.display='flex';
+  if(resultEl) resultEl.style.display='none';
+  try{
+    const {base64,mimeType}=await compressMealImage(file);
+    const {tags,comment}=await analyzeMealPhoto(base64,mimeType);
+    if(loadEl) loadEl.style.display='none';
+    renderFoodTagReview(tags,comment);
+  } catch(e){
+    if(loadEl) loadEl.style.display='none';
+    if(areaEl) areaEl.style.display='flex';
+    showToast('写真の分析に失敗しました。タップで記録してみてください。');
+  }
+}
+
+async function analyzeMealPhoto(base64,mimeType){
+  const res=await fetch(CHAT_WORKER_URL+'/analyze-meal',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({imageBase64:base64,mimeType}),
+  });
+  if(!res.ok) throw new Error('analyze-meal failed');
+  return await res.json();
+}
+
+function renderFoodTagReview(tags,comment){
+  currentPhotoTags=[...tags];
+  currentPhotoComment=comment;
+  const ALL_FOOD_TAGS=['主食','野菜','タンパク質','温かいもの','甘いもの','外食','軽め','しっかり'];
+  const commentEl=document.getElementById('foodPhotoComment');
+  const reviewEl=document.getElementById('foodTagReview');
+  if(commentEl) commentEl.textContent=comment;
+  if(reviewEl){
+    reviewEl.innerHTML=ALL_FOOD_TAGS.map(tag=>`
+      <button class="food-tag-chip${tags.includes(tag)?' selected':''}" onclick="toggleFoodTag('${tag}',this)">${tag}</button>
+    `).join('');
+  }
+  const resultEl=document.getElementById('foodPhotoResult');
+  if(resultEl) resultEl.style.display='block';
+}
+
+function toggleFoodTag(tag,btn){
+  const idx=currentPhotoTags.indexOf(tag);
+  if(idx>=0){currentPhotoTags.splice(idx,1);btn.classList.remove('selected');}
+  else{currentPhotoTags.push(tag);btn.classList.add('selected');}
+}
+
+function saveFoodFromPhoto(){
+  if(!currentMealTime) return;
+  const key='food_log_'+today();
+  const logs=Store.get(key,[]);
+  logs.push({
+    mealTime:currentMealTime,
+    method:'photo',
+    tags:[...currentPhotoTags],
+    aiComment:currentPhotoComment,
+    createdAt:new Date().toISOString(),
+  });
+  Store.set(key,logs);
+  const meal=currentMealTime;
+  document.getElementById('foodSheetOverlay').classList.remove('show');
+  currentMealTime=null; currentPhotoTags=[]; currentPhotoComment='';
+  renderFoodLog();
+  logWin('📸','食事写真を記録','食事の記録');
+  const mealDedupKey='pts_meal_'+meal+'_date';
+  const typeMap={morning:'meal_breakfast',noon:'meal_lunch',night:'meal_dinner'};
+  const descMap={morning:'朝食記録ポイント',noon:'昼食記録ポイント',night:'夕食記録ポイント'};
+  if(Store.get(mealDedupKey,'')!==today()){
+    Store.set(mealDedupKey,today());
+    const mType=typeMap[meal]||'meal_record';
+    const mDesc=descMap[meal]||'食事記録ポイント';
+    const earned=addPoints(1,mType,mDesc);
+    syncPointsToServer(earned,mType,mDesc,`${mType}_${today()}`);
+    showToast('📸 記録しました！ ／ +'+earned+'pt');
+  } else {
+    showToast('📸 記録しました！');
+  }
+  updateMealPtBadges();
+  maybeShowFoodTrendRec();
+}
+
+/* ── FOOD TREND REC ── */
+const FOOD_TREND_PRODUCTS={
+  '野菜少なめ':{id:'zakkokumai',msg:'野菜が少ない日が続いているかも。雑穀をプラスするだけでも、少し変わってきます。'},
+  '主食ばかり':{id:'smoothie',  msg:'炭水化物が続いているかもしれません。1食だけ、少しだけ変えてみませんか。'},
+  '夜食・甘いもの':{id:'rooibostea',msg:'夜の甘いもの、少し続いているかもしれませんね。温かいお茶に変えるのも、整える一つの方法。'},
+  '軽めの食事':{id:'vitaminb',  msg:'食事が軽めかもしれません。栄養を少しプラスする工夫をしてみてもいいかも。'},
+  '外食が続く':{id:'rooibostea',msg:'外食が続いているとき、飲み物で少し整えてみるのもいいかもしれません。'},
+};
+
+function detectFoodTrend(){
+  const tagCounts={};
+  for(let d=0;d<3;d++){
+    const dk=toDateStr(new Date(Date.now()-d*864e5));
+    const logs=Store.get('food_log_'+dk,[]);
+    logs.forEach(log=>{
+      if(log.method==='photo'&&Array.isArray(log.tags)){
+        log.tags.forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1;});
+      } else if(log.id){
+        const tm={veg:'野菜',rice:'主食',protein:'タンパク質',snack:'甘いもの',outside:'外食',fish:'タンパク質',egg:'タンパク質'};
+        const t=tm[log.id]; if(t) tagCounts[t]=(tagCounts[t]||0)+1;
+      }
+    });
+  }
+  const total=Object.values(tagCounts).reduce((a,b)=>a+b,0);
+  if(total<3) return [];
+  const patterns=[];
+  if((tagCounts['野菜']||0)<2&&total>=4) patterns.push('野菜少なめ');
+  if((tagCounts['外食']||0)>=2) patterns.push('外食が続く');
+  if((tagCounts['甘いもの']||0)>=2) patterns.push('夜食・甘いもの');
+  if((tagCounts['主食']||0)>=4&&(tagCounts['野菜']||0)<2) patterns.push('主食ばかり');
+  if((tagCounts['軽め']||0)>=3) patterns.push('軽めの食事');
+  return patterns;
+}
+
+function maybeShowFoodTrendRec(){
+  if(Store.get('food_trend_rec_date','')===today()) return;
+  const patterns=detectFoodTrend();
+  if(!patterns.length) return;
+  const trend=FOOD_TREND_PRODUCTS[patterns[0]];
+  if(!trend) return;
+  const url=AFFILIATE_LINKS[trend.id];
+  if(!url) return;
+  Store.set('food_trend_rec_date',today());
+  const card=document.getElementById('foodTrendCard');
+  const msgEl=document.getElementById('foodTrendMsg');
+  const ctaEl=document.getElementById('foodTrendCta');
+  if(!card||!msgEl||!ctaEl) return;
+  msgEl.textContent=trend.msg;
+  ctaEl.href=url;
+  card.style.display='flex';
+}
+
+function dismissFoodTrendRec(){
+  const card=document.getElementById('foodTrendCard');
+  if(card) card.style.display='none';
 }
 
 /* ── AFFILIATE RECOMMEND ── */

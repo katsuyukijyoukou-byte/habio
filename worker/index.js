@@ -262,9 +262,65 @@ ${styleInstruction}
 - 具体的な商品名・URLは自分では出さない（別システムが担当）`;
 }
 
+async function handleAnalyzeMeal(request, env, origin) {
+  let body;
+  try { body = await request.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+      status: 400, headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+    });
+  }
+  const { imageBase64, mimeType = 'image/jpeg' } = body;
+  if (!imageBase64) {
+    return new Response(JSON.stringify({ error: 'No image' }), {
+      status: 400, headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+    });
+  }
+  const systemPrompt = `あなたは食事写真を分析するAIです。
+画像を見て、以下の8つのタグから当てはまるものをすべて選んでください。
+タグ一覧: 主食, 野菜, タンパク質, 温かいもの, 甘いもの, 外食, 軽め, しっかり
+
+また、Habioというアプリらしい、やさしく短いコメントを1文で書いてください。
+コメントは命令・評価をせず「〜かもしれないですね」「〜ですね」など柔らかい表現で。
+
+必ずJSON形式で返してください: { "tags": ["主食", "野菜"], "comment": "コメント文" }`;
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: [
+            { type: 'image_url', image_url: { url: `data:${mimeType};base64,${imageBase64}`, detail: 'low' } },
+            { type: 'text', text: '上記の食事写真を分析してください。' },
+          ]},
+        ],
+        max_tokens: 200,
+        temperature: 0.3,
+        response_format: { type: 'json_object' },
+      }),
+    });
+    if (!res.ok) throw new Error('Vision API error');
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content || '{}';
+    let parsed; try { parsed = JSON.parse(content); } catch { parsed = {}; }
+    const tags = Array.isArray(parsed.tags) ? parsed.tags.slice(0, 8) : [];
+    const comment = typeof parsed.comment === 'string' ? parsed.comment : '記録できましたね。';
+    return new Response(JSON.stringify({ tags, comment }), {
+      headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+    });
+  } catch {
+    return new Response(JSON.stringify({
+      tags: [], comment: '写真の分析が難しかったようです。タップで記録してみてください。',
+    }), { status: 200, headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' } });
+  }
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
+    const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
@@ -272,6 +328,10 @@ export default {
 
     if (request.method !== 'POST') {
       return new Response('Method not allowed', { status: 405, headers: corsHeaders(origin) });
+    }
+
+    if (url.pathname === '/analyze-meal') {
+      return handleAnalyzeMeal(request, env, origin);
     }
 
     let body;
