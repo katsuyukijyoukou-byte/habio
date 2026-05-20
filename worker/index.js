@@ -146,7 +146,7 @@ function corsHeaders(origin) {
 const PRODUCT_BLOCK_MARKER = '\n\nひとつ選択肢としてご紹介します';
 
 function buildSystemPrompt(ctx) {
-  const { streak = 0, hour = 12, todayMood = null, yesterdayMood = null, mealsCount = 0, talkStyle = 'gentle', goal = '', todayMission = null, recentWins = [] } = ctx;
+  const { streak = 0, hour = 12, todayMood = null, yesterdayMood = null, mealsCount = 0, talkStyle = 'gentle', goal = '', todayMission = null, recentWins = [], sessionTheme = null, sessionInstruction = null, noAffiliate = false, suggestRelation = false } = ctx;
   const timeDesc = hour < 6 ? '深夜' : hour < 12 ? '午前' : hour < 18 ? '午後' : '夜';
   let contextDesc = `時間帯：${timeDesc}`;
   if (streak > 0) contextDesc += `、${streak}日連続継続中`;
@@ -156,6 +156,56 @@ function buildSystemPrompt(ctx) {
   if (goal) contextDesc += `、ユーザーの目標：「${goal}」`;
   if (todayMission) contextDesc += `、今日のミッション：「${todayMission}」`;
   if (recentWins.length > 0) contextDesc += `、最近の記録：「${recentWins.join('」「')}」`;
+
+  // ── SESSION MODE ──────────────────────────────────────────
+  if (sessionTheme) {
+    let sessionGuide = `【特別セッションモード（10分間の深い対話）】
+テーマ：「${sessionTheme}」
+
+【応答スタイル ★ 通常ルールより優先】
+1. まず相手の気持ち・状況を1文で受け止める
+2. よくある原因や背景を2〜3点、具体的に示す（箇条書きOK）
+3. 今日から試せる・意識できる具体的な提案を1つ入れる
+4. 会話を広げる・深める質問を1つで締める
+応答は4〜7文程度。絵文字は1個まで。
+
+【禁止】質問だけで終わる ／ 相づちだけで終わる ／ 2文以下の短い返し`;
+
+    if (sessionInstruction) {
+      sessionGuide += `\n\n【追加ガイド】\n${sessionInstruction}`;
+    }
+
+    if (suggestRelation) {
+      sessionGuide += `
+
+【Relation Insight AI の案内】
+会話が深まり、整理が必要だと感じたら自然な流れで1回だけ言及OK。
+「感情だけで考えるとループしやすいことがある。傾向として見ると整理しやすくなることも」という文脈で。
+URLを直接出さない。「AI分析で整理してみる方法もある」程度の自然な提案のみ。`;
+    }
+
+    const isDiet = sessionTheme.includes('痩せ') || sessionTheme.includes('ダイエット') || sessionTheme.includes('楽して') || sessionTheme.includes('diet');
+    if (!noAffiliate && isDiet) {
+      sessionGuide += `
+
+【ダイエット文脈のアフィリエイト提案】
+「頑張る」より「環境・仕組みを変える」方向で話を展開。
+置き換え食品・サポートドリンク・習慣化ツールを自然に1回だけ言及可。
+「こういうものを活用する人もいます」レベル。具体的な商品名は別システムが担当。`;
+    }
+
+    return `あなたはHabioというアプリの「習慣サポートAI」です。ユーザーの健康・生活習慣に深く寄り添い、具体的な提案と対話で前に進む力を渡します。
+
+ユーザー状況：${contextDesc}
+
+${sessionGuide}
+
+【一貫ルール】
+- 返答は必ず日本語
+- ユーザーを孤独にさせない。追い詰めない
+- 医療診断・処方・治療の提案はしない
+- 商品名・URLは自分では出さない（別システムが担当）`;
+  }
 
   const STYLE_INSTRUCTIONS = {
     gentle: `【キャラクター】保健室の先生のように、ふんわり温かく寄り添う。
@@ -292,7 +342,7 @@ export default {
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages,
-          max_tokens: 220,
+          max_tokens: context.sessionTheme ? 350 : 220,
           temperature: 0.85,
         }),
       });
@@ -306,8 +356,8 @@ export default {
       let text = data.choices?.[0]?.message?.content?.trim()
         || 'うまく返信できませんでした。もう一度話しかけてみてください 🌿';
 
-      // Append product recommendation block if product was detected
-      if (product) {
+      // Append product recommendation block if product was detected (skip during noAffiliate session)
+      if (product && !context.noAffiliate) {
         text += `${PRODUCT_BLOCK_MARKER} 🌿\n▶ ${product.name}\n${product.url}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
       }
 

@@ -1991,7 +1991,7 @@ body.night-bg{background:#C8C3BB;}
     <div id="chatLimitBanner" style="display:none;padding:10px 16px 0;">
       <div style="background:var(--bg);border-radius:var(--r-m);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <span id="chatLimitText" style="font-size:12px;color:var(--t-m);"></span>
-        <button onclick="showUpgradeModal()" style="font-size:11px;font-weight:700;color:var(--t-g);background:var(--g-p);border:none;border-radius:var(--r-f);padding:5px 10px;cursor:pointer;flex-shrink:0;">無制限にする →</button>
+        <button id="chatUpgradeBtn" onclick="showUpgradeModal()" style="font-size:11px;font-weight:700;color:var(--t-g);background:var(--g-p);border:none;border-radius:var(--r-f);padding:5px 10px;cursor:pointer;flex-shrink:0;">無制限にする →</button>
       </div>
     </div>
     <div class="chat-input-area">
@@ -3362,6 +3362,137 @@ let fallbackIdx=0;
 
 const CHAT_WORKER_URL = 'https://habio-chat.katsuyuki-jyoukou.workers.dev';
 
+// セッション中の高品質ローカルフォールバック（キーワードマッチ + テーマ別）
+const SESSION_AI_DB = [
+  { re:/朝.{0,10}(起きられ|起きれ|起き(ら|れ)ない|だる|つら)|早起き.{0,5}(できな|苦手|むずか)|朝が.{0,5}(弱|苦手)/,
+    replies:[
+      '朝起きられない時って、\n実は"気合い不足"よりも、\n・夜の脳疲労（情報の処理が終わっていない）\n・スマホで睡眠が浅くなっている\n・朝に楽しみが何もない\nが原因のことが多いです。\n\n「朝だけ好きな飲み物を飲んでいい」みたいな小さなご褒美を作ると、意外と体が起き上がりやすくなります。\n\n今、夜は大体何時ごろに寝ていますか？',
+      'いきなり1時間早起きしようとすると失敗します。\n「今より15分だけ早くする」を2週間続ける方が、脳への負荷が小さくて続きやすいです。\n\n朝活が習慣になっている人の多くは、「起きたらすぐやること」を1つだけ決めています。\n例えば「白湯を飲む」「窓を開ける」だけでもいい。\n\n今、朝で一番つらいと感じる瞬間はどんな時ですか？',
+    ]
+  },
+  { re:/続け(られ|ら)ない|三日坊主|やる気が続|続かない|挫折|途中でやめ|諦め/,
+    replies:[
+      '「続けられない」って悩む人の多くは、\n意志が弱いのではなくて、\n・目標が大きすぎる\n・毎日やる前提になっている\n・続けた実感が得られていない\nのどれかだったりします。\n\n「週3日できたらOK」にするだけで、気持ちがかなり楽になることがあります。\n\n何を続けようとしていましたか？',
+      '「三日坊主でいい」と本気で思ってみてください。\n四日目にまた始めれば、それは続いています。\n\n完璧主義が一番の「続けられない原因」になることが多くて。\n「60点の自分を認める」ことが、長く続ける第一歩です。\n\nこれまで、一番長く続いたことって何ですか？そしてそれが続いた理由、一緒に探してみましょう。',
+    ]
+  },
+  { re:/痩せ(たい|られ)|ダイエット|体重|カロリー|糖質|脂肪|体型|太っ/,
+    replies:[
+      '「頑張って痩せる」より、\n"環境を変えて自然に変わる"方が長続きするタイプの人、実は多いです。\n例えば：\n・食事の最初に野菜を食べる\n・お皿を小さくする\n・置き換えドリンクを朝1杯だけ試す\nみたいな「続けやすい仕組み」を作る方法。\n\n運動を頑張るより、食事の質を少しだけ変える方が、消費カロリー的にも効果が出やすいです。\n\n今の食生活で、一番「これが変えられない」と感じていることって何ですか？',
+      '「楽に痩せる」の本質は、\n"続けられる小さな変化を積む"ことです。\n\n特に効果が出やすいのは：\n・夜だけ炭水化物を少し減らす\n・よく噛んで食べる（20回を目安に）\n・朝食を食べる（代謝が上がりやすい）\nこのあたりは、生活を大きく変えなくてもできます。\n\nちなみに、今の食事で一番「これは変えたくない」と思うものって何ですか？そこから整えていきましょう。',
+    ]
+  },
+  { re:/食べ過ぎ|過食|食欲|食べてしまう|やめられない|間食|夜食/,
+    replies:[
+      '食べ過ぎてしまう時って、\n実は「お腹が空いてる」より「ストレス発散」や「退屈」「手持ちぶさた」が理由のことが多いです。\n\n食べる前に「今、何を感じてる？」と自分に聞いてみるだけで、少し変わることがあります。\n\nまずは「食べてしまいやすいタイミング」を知ることが大事で。\n一番「無意識に食べてしまう」のって、いつごろですか？',
+    ]
+  },
+  { re:/ストレス|仕事.{0,10}(しんど|つら|きつ|疲れ)|疲れ.{0,5}(た|てる|てい)|イライラ|もやもや|しんどい/,
+    replies:[
+      'ストレスがたまっているんですね。\n\n少し聞いていいですか。\nそのストレス、主に「誰か（人間関係）」からですか？\nそれとも「状況や仕事量」の問題ですか？\n\n原因によって、対処の方向がかなり変わります。\nもう少し教えてもらえますか？',
+      'しんどい時って、\n「どうすれば解決するか」より先に、\nまず気持ちをちゃんと吐き出すことが大事です。\n\n頭の中にあることを、整理しなくていいのでそのまま話してみてください。\n「なんかモヤモヤする」でも全然OK。\n\n最近、特につらかった瞬間ってどんな時ですか？',
+    ]
+  },
+  { re:/人間関係|職場.{0,10}(人|関係)|気(を)?遣(い|う)|嫌われ|距離感|疲れる.{0,5}(人|関係)|めんどくさい.{0,5}(人|関係)/,
+    replies:[
+      '人間関係って、本当に消耗しますよね。\n\n気を遣いすぎる人って、実は「相手の気持ちへの想像力が豊か」なんです。\nそれ自体はすごい力なんですが、消耗しやすいのも事実で。\n\n少し整理してみると、「誰に対して一番気を遣っているか」が見えてくることがあります。\n\n今、一番「この関係がしんどいな」と感じている相手や状況を話してみてください。',
+      '人間関係の悩みって、感情だけで考えるとループしやすいです。\n\n少し"傾向"として見てみると、整理しやすくなることもあります。\n「自分はどんな相手の時に疲れやすいか」「どんな場面で気を遣いすぎるか」のパターンが見えてきたりして。\n\n今、特に気になっている状況を教えてもらえますか？',
+    ]
+  },
+  { re:/恋人|彼氏|彼女|パートナー|好きな人|片思い|別れ|浮気|結婚|付き合|恋愛/,
+    replies:[
+      'そういうことって、一人で考えているとループしがちですよね。\n\n恋愛の悩みって、感情が絡んでいるから特にしんどい。\n\nまず少し聞かせてください。\n今の状況を一言で表すとしたら、どんな感じですか？\n（モヤモヤ、つらい、どうしたらいいかわからない…など）',
+      '恋愛の悩みって、感情だけで考えると答えが出にくいことがあります。\n\n少し"傾向"として見てみると整理しやすくなることも。\n自分がどんな時に不安になりやすいか、どんな言葉に傷つきやすいかが見えてくると、対処しやすくなります。\n\nAI分析で整理してみる方法もありますよ。\nまずは、今どんな状況か教えてもらえますか？',
+    ]
+  },
+  { re:/自信|自己肯定|ネガティブ|自分が嫌|どうせ|無理.{0,5}(だ|だと思|かも)|できない気が|また失敗/,
+    replies:[
+      '自信って、「持とうと思って持てるもの」じゃなくて、\n「小さな成功体験を積んだ結果、育つもの」です。\n\nだから今、自信がないのは普通のことで。\n\n一つ聞いていいですか？\n最近、「これだけはできた」と思えることって、何かありますか？\nどんな小さなことでもOKです。そこから一緒に積み上げましょう。',
+    ]
+  },
+  { re:/眠れ(ない|なく)|ねむれ|寝れ(ない|なく)|寝付け|睡眠.{0,10}(悪|浅|とれ|不足)|夜中に目が覚め|ぐっすり/,
+    replies:[
+      '眠れない時って、\n「眠ろうとすること」自体がプレッシャーになって、さらに眠れなくなる…という悪循環があります。\n\n試してほしいのが「90分の倍数で寝る」意識。\n例えば7時間半（90分×5サイクル）を目安にするだけで、目覚めが変わることがあります。\n\nあと寝る1時間前のスマホが一番の大敵で。\n今、寝る時間と起きる時間はだいたい何時ですか？',
+    ]
+  },
+  { re:/朝活|習慣(を)?作|ルーティン|毎日.{0,5}(続け|やり|でき)|続けたい/,
+    replies:[
+      '習慣を作るコツは、\n「新しいことを追加する」より「すでにやっていることにくっつける」方が成功率が高いです。\n\n例えば：\n・歯磨きの後に1分だけ深呼吸\n・コーヒーを飲みながら昨日を振り返る\nみたいに。脳は「既存の行動の後」なら新習慣を受け入れやすいです。\n\n今、毎日必ずやっていることって何ですか？そこに新習慣をくっつけてみましょう。',
+    ]
+  },
+  { re:/悩(ん|み)|相談|どうしたら|どうすれば|わからない|迷(っ|って)/,
+    replies:[
+      '話してくれてありがとうございます。\n\nその悩み、もう少し詳しく聞かせてもらえますか？\n「最近ずっとモヤモヤしている」のか、「具体的に困っていることがある」のかによって、一緒に考える方向も変わってきます。\n\n今頭の中にあることを、そのまま教えてください。',
+    ]
+  },
+];
+
+const SESSION_FALLBACK_REPLIES = {
+  health: [
+    'どんな小さなことでも、話してください。\n今、一番気になっていることは何ですか？ 🌿',
+    '今の生活で、一番変えたいと思っていることを教えてください。\n一緒に整理していきましょう。',
+    'まず「これだけは続けたい」と思う習慣は、何かありますか？',
+  ],
+  diet: [
+    '今の食生活で、一番難しいと感じていることは何ですか？',
+    '「完璧に食べる」より「少しだけ変える」方が長続きします。\n今試してみたいことはありますか？',
+    '食事の中で、一番楽しみにしていることを教えてください。\nそこから整えていきましょう 🥗',
+  ],
+  worry: [
+    '話してくれてありがとうございます。\n今、一番重く感じていることは何ですか？',
+    '気持ちを整理するために、\n頭の中にあることをそのまま教えてください。',
+    'そう感じるようになったのは、最近のことですか？\nゆっくり聞かせてください 🌙',
+  ],
+  relation: [
+    '人間関係って、本当に疲れることありますよね。\n今一番気になっている状況を話してみてください。',
+    'どんな場面でその気持ちになりますか？\n具体的に教えてもらえると、整理しやすくなります。',
+    '「この関係、なんかしんどいな」と感じるのはどんな時ですか？',
+  ],
+  morning: [
+    '朝、一番ハードルになっていることは何ですか？\n一緒に考えてみましょう 🌅',
+    '今の起きる時間と、目標の時間を教えてください。\n現実的なプランを考えましょう。',
+    '朝活で試したことがあることはありますか？\nうまくいかなかった理由も教えてください。',
+  ],
+  continue: [
+    'どんな時に「続けられない」と感じますか？\nそのパターンを一緒に見つけましょう 🔥',
+    '今まで一番長く続いたことは何ですか？\nそれが続いた理由を一緒に探りましょう。',
+    '「完璧にやらないといけない」という気持ちはありますか？\nそこが鍵かもしれません。',
+  ],
+  myself: [
+    '今、自分のどんな部分を変えたいと思っていますか？\n焦らず、一緒に考えましょう ✨',
+    '最近、「ちょっと整ってきたかも」と感じた瞬間はありましたか？',
+    '心が落ち着く瞬間って、どんな時ですか？\nそこにヒントがあるかもしれません。',
+  ],
+};
+let _sessionFallbackIdx=0;
+
+function buildSessionInstruction(){
+  const theme=Store.get('ai_session_theme',null);
+  if(!theme) return null;
+  const gender=theme.gender||'other';
+  const genderNote=gender==='female'?'ユーザーは女性。':gender==='male'?'ユーザーは男性。':'';
+  const noAffiliate=Store.get('ai_session_no_affiliate',false);
+  const isRelation=Store.get('ai_session_is_relation',false);
+  let inst=`10分特別セッション。テーマ:「${theme.name}→${theme.sub||theme.name}」。${genderNote}`;
+  inst+='\n・ユーザーの言葉をまず受け止め、具体的な提案か質問を1つ加える。';
+  inst+='\n・応答は2〜4文。説明より対話重視。';
+  if(theme.id==='health'||theme.id==='morning'){
+    inst+='\n・今夜か明日から試せる具体的な行動を1つ提案する。';
+  }
+  if(theme.id==='diet'){
+    if(!noAffiliate) inst+='\n・流れの中で、実践をサポートする商品があると自然に1回だけ伝えてよい。';
+    inst+='\n・「続けられる小さな変化」を軸にアドバイス。完璧主義を否定する。';
+  }
+  if(theme.id==='worry'||theme.id==='relation'||isRelation){
+    inst+='\n・感情を先に受け止め、解決策より「どんな気持ちか」を引き出す質問を優先。';
+    if(isRelation) inst+='\nRelation Insight AIへの言及は1回まで。強制しない。自然な流れでのみ案内。';
+  }
+  if(theme.id==='continue'||theme.id==='myself'){
+    inst+='\n・自己批判を止め、肯定から入る。次の小さな一歩を一緒に考える。';
+  }
+  return inst;
+}
+
 async function generateAIResponse(userMessage, context=null){
   const ctx=context||buildAIContext();
 
@@ -3385,6 +3516,7 @@ async function generateAIResponse(userMessage, context=null){
     sessionTheme: sessionActive&&sessionTheme?`${sessionTheme.name}→${sessionTheme.sub}`:null,
     noAffiliate: sessionActive&&Store.get('ai_session_no_affiliate',false),
     suggestRelation: sessionActive&&Store.get('ai_session_is_relation',false),
+    sessionInstruction: sessionActive?buildSessionInstruction():null,
   };
 
   // Send last 10 messages as history (5 exchanges)
@@ -3409,6 +3541,28 @@ async function generateAIResponse(userMessage, context=null){
 
 function localAIResponse(msg,ctx){
   const {hour,yesterdayMood,streak}=ctx;
+  const sessionActive=Store.get('ai_session_end_at',0)>Date.now();
+
+  // During session: rich responses with proposals + questions
+  if(sessionActive){
+    const theme=Store.get('ai_session_theme',null);
+    const themeId=theme?.id||'default';
+    // SESSION_AI_DB first: richer, more proactive responses
+    for(const entry of SESSION_AI_DB){
+      if(entry.re.test(msg)){
+        const r=entry.replies[Math.floor(Math.random()*entry.replies.length)];
+        return {text:r, delay:1600+Math.random()*800};
+      }
+    }
+    // Theme-specific proactive fallback
+    const pool=SESSION_FALLBACK_REPLIES[themeId]||[];
+    const def=['もう少し詳しく教えてもらえますか？\n一緒に考えたいと思っています 🌿','そう感じているんですね。\n今、何が一番気になっていますか？','あなたのペースで話してください。\nここでは急がなくていいですよ。'];
+    const all=[...pool,...def];
+    const r=all[_sessionFallbackIdx%all.length];
+    _sessionFallbackIdx++;
+    return {text:r, delay:1400+Math.random()*600};
+  }
+
   let prefix='';
   if(yesterdayMood&&yesterdayMood.mood==='つかれた'&&hour<12){
     prefix='昨日はお疲れでしたね。今日は少し楽になりましたか？\n\n';
@@ -4434,8 +4588,10 @@ function incChatCount(){
 
 function renderChatLimit(){
   const isPrem=Store.get('is_premium',false);
+  const sessionActive=Store.get('ai_session_end_at',0)>Date.now();
   const banner=document.getElementById('chatLimitBanner');
   const limitText=document.getElementById('chatLimitText');
+  const upgradeBtn=document.getElementById('chatUpgradeBtn');
   const inp=document.getElementById('chatInput');
   const sendBtn=document.getElementById('sendBtn');
   if(!banner) return;
@@ -4447,6 +4603,20 @@ function renderChatLimit(){
     return;
   }
 
+  // セッション中は上限バイパス・タイマー表示
+  if(sessionActive){
+    banner.style.display='block';
+    if(upgradeBtn) upgradeBtn.style.display='none';
+    const endAt=Store.get('ai_session_end_at',0);
+    const rem=Math.max(0,endAt-Date.now());
+    const m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    if(limitText) limitText.innerHTML=`🌿 特別セッション 残り <b>${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</b>`;
+    if(inp){ inp.disabled=false; inp.placeholder='Habio と話しましょう…'; }
+    if(sendBtn) sendBtn.disabled=false;
+    return;
+  }
+
+  if(upgradeBtn) upgradeBtn.style.display='';
   const used=getChatCount();
   const remaining=Math.max(0, FREE_CHAT_LIMIT-used);
 
@@ -4465,7 +4635,8 @@ function renderChatLimit(){
 
 async function sendMsg(){
   const isPrem=Store.get('is_premium',false);
-  if(!isPrem && getChatCount()>=FREE_CHAT_LIMIT){
+  const sessionActive=Store.get('ai_session_end_at',0)>Date.now();
+  if(!isPrem && !sessionActive && getChatCount()>=FREE_CHAT_LIMIT){
     showUpgradeModal();
     return;
   }
@@ -4475,7 +4646,7 @@ async function sendMsg(){
   const text=inp.value.trim();
   if(!text) return;
 
-  if(!isPrem) incChatCount();
+  if(!isPrem && !sessionActive) incChatCount();
   // 1pt per day for using chat
   if(Store.get('pts_chat_date','')!==today()){
     Store.set('pts_chat_date',today());
@@ -7107,12 +7278,20 @@ async function closeAiSessionAndGoChat(isStart){
     goTab('chat');
     if(isStart){
       const theme=Store.get('ai_session_theme',{});
-      const gender=theme.gender||'other';
-      const genderNote=gender==='female'?'（女性）':gender==='male'?'（男性）':'';
+      const sub=theme.sub||theme.name||'';
       const isRelation=Store.get('ai_session_is_relation',false);
-      let openMsg=`🌿 Habio 特別セッション開始${genderNote}\n\nこの10分は、あなたのための時間です。\n\n「${theme.sub||theme.name}」について、一緒に考えていきましょう。\n\nどんな小さなことでも話してください。ここだけの話です。`;
-      if(isRelation){
-        openMsg+='\n\n人間関係って、感情だけで考えると疲れることがあります。\n"傾向"として見ると、少し整理しやすくなることも。\nまずは、今感じていることを話してみてください。';
+      const SESSION_OPENERS={
+        health:`🌿 Habio 特別セッション開始\n\nこの10分は、あなた専用の時間です。\n\n「${sub}」について話しましょう。\n\nまず正直に聞かせてください。\n今の生活で一番「これがしんどいな」と感じていることは何ですか？`,
+        diet:`🌿 Habio 特別セッション開始\n\nこの10分は、あなた専用の時間です。\n\n「${sub}」、わかります。\n\n"頑張って痩せる"より、"続けられる小さな変化"を一緒に考えましょう。\n\n今の食事や生活で、一番「これが変えられない」と感じていることを教えてください。`,
+        worry:`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間。ここだけの話です。\n\n「${sub}」についてですね。\n\n頭の中にあることを、整理しなくていいのでそのまま話してみてください。`,
+        relation:`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間。ここだけの話です。\n\n「${sub}」についてですね。\n\n人間関係って、感情だけで考えるとループしやすいんです。\n一緒に、少し整理してみましょう。\n\n今一番気になっている状況を話してみてください。`,
+        morning:`🌿 Habio 特別セッション開始\n\nこの10分は、あなた専用の時間です。\n\n「${sub}」、一緒に考えましょう。\n\n早起きや朝活って、"気合い"で解決しようとすると続かないことが多いです。\n\n今、朝で一番つらいと感じる瞬間はいつですか？\n（アラームが鳴った瞬間？起きても眠い？気持ちが重い？）`,
+        continue:`🌿 Habio 特別セッション開始\n\nこの10分は、あなた専用の時間です。\n\n「${sub}」ですね。\n\n「続けられない」って悩む人は、意志が弱いのではなくて、方法が自分に合っていないことが多いです。\n\n何を続けようとしていましたか？\nそして、どのタイミングで止まってしまうことが多いですか？`,
+        myself:`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間。ゆっくり話しましょう。\n\n「${sub}」ですね。\n\n自分を整えたいと感じているだけで、それは大切な気持ちです。\n\n今、一番「整っていないな」と感じているのは、どんな部分ですか？`,
+      };
+      let openMsg=SESSION_OPENERS[theme.id]||`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間です。\n\n「${sub}」について、一緒に考えましょう。\n\nどんな小さなことでも話してください。ここだけの話です。`;
+      if(isRelation&&theme.id!=='relation'&&theme.id!=='worry'){
+        openMsg+='\n\n感情だけで考えると疲れることもあります。"傾向"として見ると整理しやすくなることも。\nまずは今感じていることを話してみてください。';
       }
       appendBubble(openMsg,false,nowTime());
       const inp=document.getElementById('chatInput');
@@ -7127,8 +7306,11 @@ function startAiSessionTimer(){
     if(!endAt){clearInterval(_aiSessionTimer);return;}
     const rem=Math.max(0,endAt-Date.now());
     const m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    const timeStr=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
     const el=document.getElementById('aiSessionTimerDisplay');
-    if(el) el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(el) el.textContent=timeStr;
+    const bannerText=document.getElementById('chatLimitText');
+    if(bannerText) bannerText.innerHTML=`🌿 特別セッション 残り <b>${timeStr}</b>`;
     if(rem<=0){clearInterval(_aiSessionTimer);endAiSession(false);}
   };
   update();
@@ -7138,6 +7320,7 @@ function endAiSession(manual){
   if(_aiSessionTimer){clearInterval(_aiSessionTimer);_aiSessionTimer=null;}
   Store.set('ai_session_end_at',0);
   closeAiSessionModal();
+  renderChatLimit();
   if(!manual){
     setTimeout(async ()=>{
       const closeMsg='🌙 今回のセッションはここまでです。\n\nまた必要な時は、いつでもHabioに来てくださいね。\nゆっくり休んでください 🌿';
