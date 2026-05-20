@@ -2722,57 +2722,10 @@ body.night-bg{background:#C8C3BB;}
     <div id="adminPanelSettings" style="display:none;"></div>
     <div style="height:16px;"></div>
 
-    <!-- ★★★ WELCOME DEBUG BUTTON — 動作確認後に削除 ★★★ -->
-    <div style="padding:0 16px 24px;">
-      <button onclick="showWelcomeDebug()" style="width:100%;background:#f0f0f0;border:1.5px dashed #bbb;border-radius:12px;padding:12px;font-size:12px;color:#888;cursor:pointer;">
-        🔍 Welcome Debug
-      </button>
-    </div>
-    <!-- ★★★ END WELCOME DEBUG BUTTON ★★★ -->
-
   </div>
 
   </div><!-- /screens -->
 
-
-  <!-- ★★★ WELCOME DEBUG PANEL — 動作確認後に削除 ★★★ -->
-  <div id="welcomeDebugOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999999;overflow-y:auto;padding:20px;box-sizing:border-box;">
-    <div style="background:#1a1a1a;border-radius:16px;padding:20px;max-width:400px;margin:0 auto;color:#e0e0e0;font-size:12px;font-family:monospace;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <span style="font-size:14px;font-weight:700;color:#7ec87e;">🔍 Welcome Popup Debug</span>
-        <button onclick="closeWelcomeDebug()" style="background:#333;border:none;color:#aaa;font-size:18px;cursor:pointer;border-radius:8px;width:32px;height:32px;line-height:32px;">×</button>
-      </div>
-
-      <!-- 状態表示エリア -->
-      <div id="welcomeDebugBody" style="background:#111;border-radius:10px;padding:14px;line-height:2.2;margin-bottom:16px;word-break:break-all;"></div>
-
-      <!-- テストボタン群 -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-        <button onclick="wdbForce()" style="background:#2a5a2a;color:#7ec87e;border:1.5px solid #3a7a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
-          ⚡ forceWelcomePopup<br><span style="opacity:.7;font-size:10px;">最小DOM強制表示</span>
-        </button>
-        <button onclick="wdbTest()" style="background:#2a2a5a;color:#7e9ec8;border:1.5px solid #3a3a7a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
-          🧪 testWelcomePopup<br><span style="opacity:.7;font-size:10px;">通常フロー表示テスト</span>
-        </button>
-        <button onclick="wdbResetSlots()" style="background:#5a3a1a;color:#c8a07e;border:1.5px solid #7a5a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
-          🔄 回答済みリセット<br><span style="opacity:.7;font-size:10px;">今日のanswered_slotsを削除</span>
-        </button>
-        <button onclick="wdbClearAll()" style="background:#5a1a1a;color:#c87e7e;border:1.5px solid #7a3a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
-          🗑️ Welcome LS全削除<br><span style="opacity:.7;font-size:10px;">welcome関連を全消去</span>
-        </button>
-      </div>
-      <button onclick="wdbRefresh()" style="width:100%;background:#333;color:#aaa;border:1.5px solid #555;border-radius:10px;padding:10px;font-size:11px;cursor:pointer;font-family:monospace;">
-        🔃 状態を再読み込み
-      </button>
-
-      <!-- テスト結果ログ -->
-      <div style="margin-top:12px;">
-        <div style="font-size:10px;color:#666;margin-bottom:6px;">テストログ</div>
-        <div id="welcomeDebugLog" style="background:#111;border-radius:8px;padding:10px;font-size:11px;color:#888;line-height:1.8;min-height:40px;max-height:120px;overflow-y:auto;"></div>
-      </div>
-    </div>
-  </div>
-  <!-- ★★★ END WELCOME DEBUG PANEL ★★★ -->
 
   <!-- PWA インストールバナー -->
   <div id="pwaBanner" role="dialog" aria-label="ホーム画面に追加">
@@ -9671,118 +9624,6 @@ function closeWelcomePopup() {
   overlay.style.opacity = '0';
   setTimeout(() => overlay.remove(), 220);
 }
-
-// ★★★ WELCOME DEBUG PANEL FUNCTIONS — 動作確認後に削除 ★★★
-function showWelcomeDebug() {
-  const panel = document.getElementById('welcomeDebugOverlay');
-  if (!panel) return;
-  panel.style.display = 'block';
-  wdbRefresh();
-}
-function closeWelcomeDebug() {
-  const panel = document.getElementById('welcomeDebugOverlay');
-  if (panel) panel.style.display = 'none';
-}
-function wdbLog(msg) {
-  const log = document.getElementById('welcomeDebugLog');
-  if (!log) return;
-  const line = document.createElement('div');
-  line.style.cssText = 'border-bottom:1px solid #222;padding-bottom:3px;';
-  line.textContent = new Date().toLocaleTimeString('ja-JP') + '  ' + msg;
-  log.insertBefore(line, log.firstChild);
-}
-function wdbRefresh() {
-  const body = document.getElementById('welcomeDebugBody');
-  if (!body) return;
-
-  const todayStr = today();
-  const lsKey   = 'habio_welcome_popup_answered_slots_' + todayStr;
-  const slot     = getWelcomeSlot();
-  const answered = getWelcomeAnsweredSlots();
-
-  const onbOverlay    = document.getElementById('onbOverlay');
-  const onbActive     = !!(onbOverlay && onbOverlay.style.display !== 'none' && !onbOverlay.classList.contains('done'));
-
-  const cb            = document.getElementById('comebackOverlay');
-  const comebackShow  = !!(cb && cb.classList.contains('show'));
-
-  const overlayInDOM  = !!document.getElementById('welcomeOverlay');
-  const alreadyAns    = answered.includes(slot);
-  const shouldShow    = !onbActive && !overlayInDOM && !comebackShow && !alreadyAns;
-
-  let skipReason = '—';
-  if (onbActive)     skipReason = 'onboarding画面が表示中';
-  else if (overlayInDOM) skipReason = 'welcomeOverlayがすでにDOM内に存在';
-  else if (comebackShow) skipReason = 'comebackOverlayが表示中';
-  else if (alreadyAns)   skipReason = 'このスロットは回答済み (' + slot + ')';
-  else                   skipReason = 'なし（表示されるはず）';
-
-  const rows = [
-    ['現在スロット',        slot],
-    ['回答済みスロット',    answered.length ? answered.join(', ') : '（なし）'],
-    ['localStorageキー',    lsKey],
-    ['LSの実際の値',        localStorage.getItem(lsKey) || '（未設定）'],
-    ['onb_done',           localStorage.getItem('habio_onb_done') || '（未設定）'],
-    ['onbOverlay 表示中？', onbActive  ? '🔴 YES' : '🟢 NO'],
-    ['onbOverlay display', onbOverlay?.style.display || '（インラインなし）'],
-    ['onbOverlay.done?',   onbOverlay?.classList.contains('done') ? 'YES' : 'NO'],
-    ['comebackOverlay?',   comebackShow ? '🔴 YES' : '🟢 NO'],
-    ['welcomeOverlay DOM?',overlayInDOM ? '🔴 YES' : '🟢 NO'],
-    ['alreadyAnswered?',   alreadyAns   ? '🔴 YES' : '🟢 NO'],
-    ['shouldShow?',        shouldShow   ? '🟢 YES → 表示されるはず' : '🔴 NO → ブロック中'],
-    ['skip理由',           skipReason],
-  ];
-
-  body.innerHTML = rows.map(([k, v]) =>
-    '<div style="display:flex;gap:8px;">' +
-      '<span style="color:#888;min-width:140px;flex-shrink:0;">' + k + '</span>' +
-      '<span style="color:#e0e0e0;">' + v + '</span>' +
-    '</div>'
-  ).join('');
-
-  wdbLog('状態を更新しました — shouldShow: ' + shouldShow + ' / slot: ' + slot);
-}
-function wdbForce() {
-  wdbLog('forceWelcomePopup() を実行...');
-  closeWelcomeDebug();
-  setTimeout(() => { forceWelcomePopup(); wdbLog('forceWelcomePopup() 完了 — 画面上に緑のカードが出れば DOM/CSS は正常'); }, 200);
-}
-function wdbTest() {
-  wdbLog('testWelcomePopup() を実行...');
-  closeWelcomeDebug();
-  setTimeout(() => {
-    const existing = document.getElementById('welcomeOverlay');
-    if (existing) existing.remove();
-    const slot = getWelcomeSlot();
-    buildWelcomePopup(slot);
-    setTimeout(() => {
-      const el = document.getElementById('welcomeOverlay');
-      const result = el ? 'DOM挿入成功 (z-index=' + el.style.zIndex + ')' : 'DOM挿入失敗';
-      wdbLog('testWelcomePopup 結果: ' + result);
-    }, 100);
-  }, 200);
-}
-function wdbResetSlots() {
-  const lsKey = 'habio_welcome_popup_answered_slots_' + today();
-  localStorage.removeItem(lsKey);
-  wdbLog('回答済みスロットを削除: ' + lsKey);
-  wdbRefresh();
-}
-function wdbClearAll() {
-  const todayStr = today();
-  const targets = [
-    'habio_welcome_popup_answered_slots_' + todayStr,
-    'habio_welcome_message_history',
-    'habio_welcome_point_date',
-    'habio_habio_welcome_popup_answered_slots_' + todayStr,
-    'habio_habio_welcome_message_history',
-    'habio_habio_welcome_point_date',
-  ];
-  targets.forEach(k => { localStorage.removeItem(k); });
-  wdbLog('Welcome関連 ' + targets.length + ' キーを削除しました');
-  wdbRefresh();
-}
-// ★★★ END WELCOME DEBUG PANEL FUNCTIONS ★★★
 
 /* ── INIT ── */
 function init(){
