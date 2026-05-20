@@ -2551,6 +2551,20 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
+    <!-- TITLE SETTINGS SECTION -->
+    <p class="sec-lbl">🏷 称号設定</p>
+    <div class="st-group" id="titleSettingsGroup">
+      <div id="titleSettingsList"></div>
+    </div>
+
+    <!-- TENDENCY HISTORY SECTION -->
+    <p class="sec-lbl" id="tendencyHistSec" style="display:none;">🪞 傾向分析履歴</p>
+    <div class="st-group" id="tendencyHistGroup" style="display:none;"><div id="tendencyHistList"></div></div>
+
+    <!-- REPORT HISTORY SECTION -->
+    <p class="sec-lbl" id="reportHistSec" style="display:none;">📊 習慣分析レポート履歴</p>
+    <div class="st-group" id="reportHistGroup" style="display:none;"><div id="reportHistList"></div></div>
+
     <div class="st-ver">
       Habio v1.0<br>
       あなたのペースで、ゆっくりと。<br>
@@ -2980,6 +2994,35 @@ body.night-bg{background:#C8C3BB;}
       <div class="comeback-title" id="titleAwardName" style="font-size:20px;"></div>
       <div class="comeback-msg" id="titleAwardDesc" style="white-space:pre-line;font-size:13px;line-height:1.9;"></div>
       <button class="comeback-btn" onclick="closeTitleAwardModal()">受け取る 🌿</button>
+      <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:10px;">設定画面の「称号設定」でいつでも変更できます</div>
+    </div>
+  </div>
+
+  <!-- TENDENCY HISTORY VIEWER (settings) -->
+  <div class="rewards-overlay" id="tendencyHistOverlay" style="z-index:9500;" onclick="if(event.target===this)closeTendencyHistModal()">
+    <div class="tendency-sheet" id="tendencyHistSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🪞 TENDENCY HISTORY</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="tendencyHistDateLabel">傾向分析の記録</div>
+      </div>
+      <div id="tendencyHistResultArea" style="padding:16px 0 8px;"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeTendencyHistModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT HISTORY VIEWER (settings) -->
+  <div class="rewards-overlay" id="reportHistOverlay" style="z-index:9500;" onclick="if(event.target===this)closeReportHistModal()">
+    <div class="tendency-sheet" id="reportHistSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">📊 REPORT HISTORY</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="reportHistDateLabel">習慣分析の記録</div>
+      </div>
+      <div id="reportHistResultArea" style="padding:8px 0;"></div>
+      <div style="padding:0 16px 32px;" id="reportHistActions"></div>
     </div>
   </div>
 
@@ -3613,7 +3656,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderTitleSettingsSection(); renderTendencyHistorySection(); renderReportHistorySection(); }
 }
 
 /* ── TOAST ── */
@@ -7443,6 +7486,9 @@ function endAiSession(manual){
 /* ─── TENDENCY ANALYSIS (20枚) ───────────────────────────── */
 function openTendencyModal(award=null){
   const analysis=generateTendencyAnalysis();
+  const hist=Store.get('tendency_history',[]);
+  hist.unshift({...analysis,date:today(),awardTitle:award?.title||null});
+  Store.set('tendency_history',hist.slice(0,10));
   const area=document.getElementById('tendencyResultArea');
   const nudge=document.getElementById('tendencyNudge');
 
@@ -7454,6 +7500,7 @@ function openTendencyModal(award=null){
       <div style="font-size:36px;margin-bottom:6px;">${award.title.em}</div>
       <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px;">${award.title.name}</div>
       <div style="font-size:11px;color:var(--t-m);line-height:1.6;">Habioがあなたの歩みを、ちゃんと見ています。</div>
+      <div style="font-size:10px;color:var(--t-l);margin-top:6px;">設定画面の「称号設定」でいつでも変更できます</div>
     </div>`;
   }
 
@@ -7476,6 +7523,142 @@ function openTendencyModal(award=null){
 function closeTendencyModal(){
   document.getElementById('tendencyOverlay').classList.remove('show');
 }
+
+/* ─── TITLE SETTINGS (設定画面) ──────────────────────────── */
+function renderTitleSettingsSection(){
+  const earned=Store.get('earned_titles',[]);
+  const current=Store.get('current_display_title',null);
+  const list=document.getElementById('titleSettingsList');
+  if(!list) return;
+  if(!earned.length){
+    list.innerHTML='<div class="st-row" style="cursor:default;"><div class="st-info"><div class="st-note" style="padding:4px 0;">まだ称号を獲得していません。バッジを20・30・50枚交換すると獲得できます。</div></div></div>';
+    return;
+  }
+  let html='';
+  if(current){
+    html+=`<div class="st-row" style="cursor:default;background:rgba(113,180,148,.06);">
+      <div class="st-em">${current.em}</div>
+      <div class="st-info">
+        <div class="st-name" style="color:var(--g);">表示中の称号</div>
+        <div class="st-note">${current.name}</div>
+      </div>
+    </div>`;
+  }
+  earned.forEach((t,i)=>{
+    const isActive=current&&t.em===current.em&&t.name===current.name;
+    html+=`<div class="st-row" onclick="selectTitleByIdx(${i})">
+      <div class="st-em">${t.em}</div>
+      <div class="st-info">
+        <div class="st-name">${t.name}</div>
+        <div class="st-note">${t.date} 獲得</div>
+      </div>
+      <div class="st-r">${isActive?'<span style="color:var(--g);font-size:13px;font-weight:700;">✓</span>':'<span class="st-arr">›</span>'}</div>
+    </div>`;
+  });
+  list.innerHTML=html;
+}
+function selectTitleByIdx(i){
+  const earned=Store.get('earned_titles',[]);
+  const t=earned[i];
+  if(!t) return;
+  Store.set('current_display_title',{em:t.em,name:t.name});
+  renderTitleSettingsSection();
+  renderHomeTitle();
+  showToast('称号を「'+t.name+'」に変更しました 🏷');
+}
+
+/* ─── TENDENCY HISTORY (設定画面) ────────────────────────── */
+function renderTendencyHistorySection(){
+  const hist=Store.get('tendency_history',[]);
+  const sec=document.getElementById('tendencyHistSec');
+  const grp=document.getElementById('tendencyHistGroup');
+  const list=document.getElementById('tendencyHistList');
+  if(!list) return;
+  if(!hist.length){if(sec) sec.style.display='none';if(grp) grp.style.display='none';return;}
+  if(sec) sec.style.display='';
+  if(grp) grp.style.display='';
+  list.innerHTML=hist.map((h,i)=>`<div class="st-row" onclick="viewTendencyHistory(${i})">
+    <div class="st-em">🪞</div>
+    <div class="st-info">
+      <div class="st-name">${h.date} の傾向分析</div>
+      <div class="st-note">${(h.trend||'').replace(/\n/g,' ').slice(0,28)}…</div>
+    </div>
+    <div class="st-r"><span class="st-arr">›</span></div>
+  </div>`).join('');
+}
+function viewTendencyHistory(i){
+  const hist=Store.get('tendency_history',[]);
+  const h=hist[i];
+  if(!h) return;
+  const sec=(icon,title,body)=>`<div style="margin:0 16px 12px;padding:16px;background:var(--card);border-radius:var(--r-l);">
+    <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.06em;margin-bottom:8px;">${icon} ${title}</div>
+    <div style="font-size:13px;color:var(--t);line-height:1.85;">${(body||'').replace(/\n/g,'<br>')}</div>
+  </div>`;
+  const area=document.getElementById('tendencyHistResultArea');
+  if(area) area.innerHTML=sec('🌿','あなたに見えていた傾向',h.trend)+sec('⚠️','気をつけたかったこと',h.caution)+sec('💡','あの日の小さな提案',h.proposal);
+  const lbl=document.getElementById('tendencyHistDateLabel');
+  if(lbl) lbl.textContent=h.date+'の分析記録';
+  document.getElementById('tendencyHistOverlay').classList.add('show');
+  const sheet=document.getElementById('tendencyHistSheet');
+  if(sheet) sheet.scrollTop=0;
+}
+function closeTendencyHistModal(){
+  document.getElementById('tendencyHistOverlay').classList.remove('show');
+}
+
+/* ─── REPORT HISTORY (設定画面) ──────────────────────────── */
+function renderReportHistorySection(){
+  const hist=Store.get('habit_report_history',[]);
+  const sec=document.getElementById('reportHistSec');
+  const grp=document.getElementById('reportHistGroup');
+  const list=document.getElementById('reportHistList');
+  if(!list) return;
+  if(!hist.length){if(sec) sec.style.display='none';if(grp) grp.style.display='none';return;}
+  if(sec) sec.style.display='';
+  if(grp) grp.style.display='';
+  list.innerHTML=hist.map((h,i)=>`<div class="st-row" onclick="viewReportHistory(${i})">
+    <div class="st-em">📊</div>
+    <div class="st-info">
+      <div class="st-name">${h.date} の習慣分析</div>
+      <div class="st-note">${(h.planSection||h.proposeText||'').replace(/\n/g,' ').slice(0,28)}…</div>
+    </div>
+    <div class="st-r"><span class="st-arr">›</span></div>
+  </div>`).join('');
+}
+function viewReportHistory(i){
+  const hist=Store.get('habit_report_history',[]);
+  const h=hist[i];
+  if(!h) return;
+  const lbl=document.getElementById('reportHistDateLabel');
+  if(lbl) lbl.textContent=h.date+'の習慣分析レポート';
+  const result=document.getElementById('reportHistResultArea');
+  const actions=document.getElementById('reportHistActions');
+  if(result){
+    const sec=(icon,title,body,accent=false)=>`<div style="margin:0 16px 12px;padding:16px;background:var(--card);border-radius:var(--r-l);${accent?'border-left:3px solid var(--g);':''}">
+      <div style="font-size:10px;font-weight:700;color:${accent?'var(--g)':'var(--t-m)'};letter-spacing:.05em;margin-bottom:8px;">${icon} ${title}</div>
+      <div style="font-size:13px;color:var(--t);line-height:1.85;">${(body||'').replace(/\n/g,'<br>')}</div>
+    </div>`;
+    result.innerHTML=
+      sec('📅','過去1ヶ月のふりかえり',h.retroSection||h.habitSection||'')+
+      sec('✨','あなたの整いパターン',h.patternSection||h.moodSection||'')+
+      sec('⚠️','崩れやすいポイント',h.riskSection||h.pointSection||'')+
+      sec('🎯','次の1ヶ月作戦',h.planSection||h.proposeText||'',true)+
+      (h.weekStep?sec('👣','今週の小さな一歩',h.weekStep,true):'')+
+      (h.habitoComment?`<div style="margin:0 16px 16px;padding:16px;background:var(--g-p);border-radius:var(--r-l);border-left:3px solid var(--g);">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.05em;margin-bottom:8px;">🌿 Habioからのひと言</div>
+        <div style="font-size:13px;color:var(--t);line-height:1.85;white-space:pre-line;">${h.habitoComment}</div>
+      </div>`:'')+
+      `<div style="margin:0 16px;font-size:10px;color:var(--t-l);">生成日: ${h.date||''}</div>`;
+  }
+  if(actions) actions.innerHTML=`<button onclick="closeReportHistModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>`;
+  document.getElementById('reportHistOverlay').classList.add('show');
+  const sheet=document.getElementById('reportHistSheet');
+  if(sheet) sheet.scrollTop=0;
+}
+function closeReportHistModal(){
+  document.getElementById('reportHistOverlay').classList.remove('show');
+}
+
 function generateTendencyAnalysis(){
   const wins=Store.get('wins',[]);
   const streak=calcStreak(wins);
