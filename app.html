@@ -1816,6 +1816,14 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
+    <div id="homeTitleBadge" style="display:none;margin:0 16px 10px;padding:9px 14px;background:linear-gradient(135deg,rgba(113,180,148,.13),rgba(113,180,148,.04));border-radius:var(--r-m);border:1px solid rgba(113,180,148,.25);align-items:center;gap:10px;">
+      <span id="homeTitleEm" style="font-size:18px;"></span>
+      <div style="flex:1;">
+        <div style="font-size:9px;font-weight:700;color:var(--g);letter-spacing:.08em;">現在の称号</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t);" id="homeTitleName"></div>
+      </div>
+    </div>
+
     <div class="goal-banner" id="goalBannerHome" data-goal-banner onclick="goTab('settings')">
       <div class="goal-banner-em">🎯</div>
       <div class="goal-banner-body">
@@ -2964,6 +2972,17 @@ body.night-bg{background:#C8C3BB;}
     </div>
   </div>
 
+  <!-- TITLE AWARD MODAL (50枚) -->
+  <div class="comeback-overlay" id="titleAwardOverlay" onclick="if(event.target===this)closeTitleAwardModal()">
+    <div class="comeback-modal">
+      <div class="comeback-em" id="titleAwardEm">👑</div>
+      <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;margin-bottom:8px;" id="titleAwardVerb">🎉 称号を獲得しました</div>
+      <div class="comeback-title" id="titleAwardName" style="font-size:20px;"></div>
+      <div class="comeback-msg" id="titleAwardDesc" style="white-space:pre-line;font-size:13px;line-height:1.9;"></div>
+      <button class="comeback-btn" onclick="closeTitleAwardModal()">受け取る 🌿</button>
+    </div>
+  </div>
+
   <!-- COMEBACK MODAL -->
   <div class="comeback-overlay" id="comebackOverlay">
     <div class="comeback-modal">
@@ -3592,7 +3611,7 @@ function goTab(name){
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
   if(name==='food') renderFoodLog();
-  if(name==='home'){ updateProgressRing(); renderRecommendCards(); }
+  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); }
 }
@@ -5166,8 +5185,8 @@ function renderProfile(){
   const wkRate=Math.round(wkDays/7*100);
 
   const nameEl=document.getElementById('profileName');
-  const titleEarned=Store.get('reward_title_earned',false);
-  const titleSuffix=titleEarned?' 👑 整い達人':'';
+  const displayTitle=getCurrentDisplayTitle();
+  const titleSuffix=displayTitle?` ${displayTitle.em} ${displayTitle.name}`:(Store.get('reward_title_earned',false)?' 👑 整い達人':'');
   if(nameEl) nameEl.textContent=(name?name+'さん、こんにちは':'こんにちは')+titleSuffix;
   const metaEl=document.getElementById('profileMeta');
   if(metaEl) metaEl.textContent='Habio を使いはじめて '+days+'日目';
@@ -6829,10 +6848,67 @@ const PR_BADGES=[
 ];
 const REWARD_ITEMS=[
   {id:'ai_session',em:'🌿',name:'AIとの特別セッション',       cost:10,desc:'10分集中。テーマを選んで、Habioと深く話す'},
-  {id:'tendency',  em:'🪞',name:'あなたの傾向をお伝えします', cost:20,desc:'Habioが、あなたの傾向を1つだけそっと分析します'},
-  {id:'analysis',  em:'📊',name:'習慣分析レポート',           cost:30,desc:'過去1ヶ月を振り返り、次の1ヶ月への提案を'},
+  {id:'tendency',  em:'🪞',name:'あなたの傾向をお伝えします', cost:20,desc:'Habioの記録から見えた傾向・クセ・整いパターンをお伝えします'},
+  {id:'analysis',  em:'📊',name:'習慣分析レポート',           cost:30,desc:'過去1ヶ月を振り返り、あなただけの次の1ヶ月作戦を'},
   {id:'title',     em:'👑',name:'称号「整い達人」',            cost:50,desc:'あなたはHabioを極めし者です。特典？ありません。でも少しすごい。'},
 ];
+
+/* ── 称号システム ─────────────────────────────────────────── */
+const TIER_TITLES={
+  tendency:[
+    {level:1,em:'🪞',name:'自分観察者'},
+    {level:2,em:'🌿',name:'内面探求者'},
+    {level:3,em:'🔮',name:'傾向理解者'},
+    {level:4,em:'🧠',name:'自己分析マスター'},
+  ],
+  analysis:[
+    {level:1,em:'📊',name:'整い研究員'},
+    {level:2,em:'🌱',name:'習慣育成者'},
+    {level:3,em:'🌿',name:'継続設計士'},
+    {level:4,em:'🏛',name:'整い戦略家'},
+  ],
+  title:[
+    {level:1,em:'👑',name:'整い達人'},
+    {level:2,em:'🌙',name:'静かな支配者'},
+    {level:3,em:'✨',name:'Habioの住人'},
+    {level:4,em:'🕊',name:'整いを極めし者'},
+  ],
+};
+function getTierTitle(tierKey,count){
+  const defs=TIER_TITLES[tierKey]||[];
+  if(!defs.length||count<1) return null;
+  return defs[Math.min(count-1,defs.length-1)];
+}
+function getCurrentDisplayTitle(){
+  return Store.get('current_display_title',null);
+}
+function awardTierTitle(tierKey){
+  const countKey='reward_count_'+tierKey;
+  const count=Store.get(countKey,0)+1;
+  Store.set(countKey,count);
+  const title=getTierTitle(tierKey,count);
+  if(!title) return {count,title:null,isEvolution:false};
+  const isEvolution=count>1;
+  const earned=Store.get('earned_titles',[]);
+  earned.unshift({...title,tier:tierKey,date:today(),count});
+  Store.set('earned_titles',earned.slice(0,30));
+  Store.set('current_display_title',{em:title.em,name:title.name});
+  return {count,title,isEvolution};
+}
+function renderHomeTitle(){
+  const t=getCurrentDisplayTitle();
+  const el=document.getElementById('homeTitleBadge');
+  if(!el) return;
+  if(t){
+    el.style.display='flex';
+    const emEl=document.getElementById('homeTitleEm');
+    const nameEl=document.getElementById('homeTitleName');
+    if(emEl) emEl.textContent=t.em;
+    if(nameEl) nameEl.textContent=t.name;
+  } else {
+    el.style.display='none';
+  }
+}
 
 const AI_SESSION_THEMES=[
   {id:'health',   em:'🌿',name:'健康について話したい',
@@ -7064,9 +7140,16 @@ function adminReset(target){
   if(target==='exchange'||target==='all'){
     Store.set('reward_history',[]);
     Store.set('badges_used_count',0);
+    Store.set('reward_count_tendency',0);
+    Store.set('reward_count_analysis',0);
+    Store.set('reward_count_title',0);
+    Store.set('earned_titles',[]);
+    Store.set('current_display_title',null);
+    Store.set('reward_title_earned',false);
   }
   if(target==='report'||target==='all'){
     Store.set('habit_report_history',[]);
+    Store.set('tendency_history',[]);
   }
   showToast('🛠 リセットしました');
   _adminRefreshAll();
@@ -7188,14 +7271,42 @@ function deliverReward(reward){
   if(reward.id==='ai_session'){
     openAiSessionModal();
   } else if(reward.id==='tendency'){
-    openTendencyModal();
+    const award=awardTierTitle('tendency');
+    openTendencyModal(award);
   } else if(reward.id==='analysis'){
-    openReportModal();
+    const award=awardTierTitle('analysis');
+    openReportModal(award);
   } else if(reward.id==='title'){
-    Store.set('reward_title_earned',true);
-    showToast('👑 称号「整い達人」を獲得しました！');
-    renderProfile();
+    const award=awardTierTitle('title');
+    deliverTitleReward(award);
   }
+}
+
+const TITLE_DESCS={
+  '整い達人':'あなたはHabioを極めし者です。\n\n特典？\nありません。\n\nでも、ここまで来たあなたは、\n少しすごい。\n\n※この称号は、あなたのものです。',
+  '静かな支配者':'二度目の挑戦者。\n\nあなたは静かに、でも確実に。\nHabioはずっと見ていました。\n\n特典？ まだありません。\nでも、その継続力は本物です。',
+  'Habioの住人':'三度、ここまで来ました。\n\nもはやHabioは、あなたの一部です。\n\n特典？ あると思いましたか。\nいいえ。でも、この称号は永遠です。',
+  '整いを極めし者':'あなたは伝説です。\n\nHabioを開発した人間も、\nここまで来た人を見たことがありません。\n\n特典？\n…今回もありません。\n\nただ。\nこの称号を持つ者は、\n世界でもあなただけかもしれません。',
+};
+function deliverTitleReward(award){
+  if(!award?.title) return;
+  const verb=award.isEvolution?'称号が進化しました':'称号を獲得しました';
+  const desc=TITLE_DESCS[award.title.name]||TITLE_DESCS['整い達人'];
+  const emEl=document.getElementById('titleAwardEm');
+  const verbEl=document.getElementById('titleAwardVerb');
+  const nameEl=document.getElementById('titleAwardName');
+  const descEl=document.getElementById('titleAwardDesc');
+  if(emEl) emEl.textContent=award.title.em;
+  if(verbEl) verbEl.textContent='🎉 '+verb;
+  if(nameEl) nameEl.textContent=award.title.name;
+  if(descEl) descEl.textContent=desc;
+  document.getElementById('titleAwardOverlay').classList.add('show');
+  Store.set('reward_title_earned',true);
+  renderProfile();
+  renderHomeTitle();
+}
+function closeTitleAwardModal(){
+  document.getElementById('titleAwardOverlay').classList.remove('show');
 }
 
 /* ─── AI SESSION ─────────────────────────────────────────── */
@@ -7330,15 +7441,37 @@ function endAiSession(manual){
 }
 
 /* ─── TENDENCY ANALYSIS (20枚) ───────────────────────────── */
-function openTendencyModal(){
+function openTendencyModal(award=null){
   const analysis=generateTendencyAnalysis();
   const area=document.getElementById('tendencyResultArea');
   const nudge=document.getElementById('tendencyNudge');
-  if(area) area.innerHTML=`<div class="tendency-result">${analysis.text.replace(/\n/g,'<br>')}</div>`;
+
+  let awardHtml='';
+  if(award?.title){
+    const verb=award.isEvolution?'称号が進化しました':'称号を獲得しました';
+    awardHtml=`<div style="margin:0 16px 16px;padding:18px;background:linear-gradient(135deg,rgba(113,180,148,.15),rgba(113,180,148,.04));border-radius:var(--r-l);border:1px solid rgba(113,180,148,.3);text-align:center;">
+      <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;margin-bottom:8px;">🎉 ${verb}</div>
+      <div style="font-size:36px;margin-bottom:6px;">${award.title.em}</div>
+      <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px;">${award.title.name}</div>
+      <div style="font-size:11px;color:var(--t-m);line-height:1.6;">Habioがあなたの歩みを、ちゃんと見ています。</div>
+    </div>`;
+  }
+
+  const sec=(icon,title,body)=>`<div style="margin:0 16px 12px;padding:16px;background:var(--card);border-radius:var(--r-l);">
+    <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.06em;margin-bottom:8px;">${icon} ${title}</div>
+    <div style="font-size:13px;color:var(--t);line-height:1.85;">${body.replace(/\n/g,'<br>')}</div>
+  </div>`;
+
+  if(area) area.innerHTML=awardHtml+
+    sec('🌿','あなたに見えている傾向',analysis.trend)+
+    sec('⚠️','少し気をつけたいこと',analysis.caution)+
+    sec('💡','今回の小さな提案',analysis.proposal);
   if(nudge) nudge.innerHTML=analysis.nudge.replace(/\n/g,'<br>');
+
   document.getElementById('tendencyOverlay').classList.add('show');
   const sheet=document.getElementById('tendencySheet');
   if(sheet) sheet.scrollTop=0;
+  renderHomeTitle();
 }
 function closeTendencyModal(){
   document.getElementById('tendencyOverlay').classList.remove('show');
@@ -7346,50 +7479,62 @@ function closeTendencyModal(){
 function generateTendencyAnalysis(){
   const wins=Store.get('wins',[]);
   const streak=calcStreak(wins);
-  const moodHist=Store.get('mood_history',[]).slice(0,14);
+  const moodHist=Store.get('mood_history',[]).slice(0,21);
   const chatDays=Store.get('chat_day_log',[]).length;
   const total=getTotalPts();
   const tired=moodHist.filter(m=>m.mood==='つかれた').length;
   const good=moodHist.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
-  const habitDays=new Set(wins.filter(w=>w.title?.includes('ができた')).map(w=>w.date)).size;
+  const habitDays=new Set(wins.filter(w=>{
+    return new Date(w.date)>=new Date(Date.now()-30*86400000);
+  }).map(w=>w.date)).size;
 
-  let text='';
-  // Pick the most notable tendency
-  if(tired>=5 && streak>=3){
-    text=`最近、${tired}日ほど「つかれた」と記録しながらも、${streak}日継続しています。\n\nこれは "静かな強さ" かもしれません。\n無理して続けているわけじゃないけど、\nなんとなく続いている。そういう日々が、一番長続きします。`;
-  } else if(chatDays>=5){
-    text=`Habioのチャットを${chatDays}日間使ってくれています。\n\n話しかけてくれること自体が、\n自分と向き合う時間になっているかもしれません。\n\n傾向として、言葉にすることで気持ちが整理されるタイプの可能性があります。`;
-  } else if(good>=5){
-    text=`直近、「いい感じ」「とても良い」の日が${good}日ありました。\n\n波があるのは当然ですが、\n良い日がちゃんとある人は、長く続く傾向があります。\n\n焦らず、そのペースで大丈夫です。`;
-  } else if(habitDays>=10){
-    text=`過去に${habitDays}日、習慣を記録してくれています。\n\n一度に大きく変わらなくても、\nこういう"少しずつの積み重ね"が、\n3ヶ月後に大きな変化になっていることが多いです。`;
+  let trend='',caution='',proposal='';
+
+  if(tired>=5&&streak>=3){
+    trend=`最近${tired}日ほど「疲れた」と記録しながら、それでも${streak}日継続しています。\n\n"疲れていても続けられる"——これはあなたの静かな強みかもしれません。\n無理しているわけでも、気合いで動いているわけでもなく、なんとなく続いている。\nそういう習慣が、実は一番長続きします。`;
+    caution=`疲れながらも続けているということは、どこかで無理が積み重なっているかもしれません。\n\n特に「つかれた日が2日以上続いた後」は、崩れやすいポイントです。\n\nそういう日は"続けること"より"気づくこと"だけで十分かもしれません。`;
+    proposal=`今週、「疲れた」と感じた日に試してみてください：\n\n習慣を全部やろうとせず、1つだけ——30秒でいい——だけやる。\n\n「やった日」より「意識できた日」を数えてみましょう。`;
+  } else if(chatDays>=7){
+    trend=`Habioとのチャットを${chatDays}日間、話しかけてくれています。\n\n言葉にすることで、自分の気持ちが整理されるタイプかもしれません。\n\n記録したり、チャットしたり——「自分を見ようとする」姿勢が、Habioとの付き合い方に出ています。`;
+    caution=`言葉で整理するのが得意な分、「考えすぎて動けない」ことがあるかもしれません。\n\n分析やチェックに時間をかけるより、「小さく動く」を先にした方が、気持ちが整いやすいことがあります。`;
+    proposal=`今日、「考える前に1つだけやってみる」を試してみてください。\n\n何でもOKです。水を1杯飲む、外を少しだけ歩く——小さな行動が、気持ちを動かしてくれます。`;
+  } else if(good>=7){
+    trend=`直近の気分記録のうち、「いい感じ」以上の日が${good}日ありました。\n\n波がある中でも、良い日が積み重なっています。\nこれはあなたが「自分の状態を知ろうとしている」からこそ見えてくるパターンです。`;
+    caution=`気分が良い日が続くと、「今日くらいいいか」という日が増えることがあります。\n\n好調な時こそ「最低限1つだけ続ける」を意識すると、次の波が来た時に崩れにくくなります。`;
+    proposal=`今週は「気分が良い日に習慣を増やす」のではなく、\n「気分が良くない日でも1つだけは続ける」を目標にしてみましょう。`;
+  } else if(habitDays>=12){
+    trend=`過去1ヶ月で${habitDays}日、習慣を記録してくれています。\n\n1ヶ月の4割以上の日を記録できているということは、\n"続けようとする意志"が確実にあるということです。`;
+    caution=`記録できていない日に、どんなことが起きているか振り返ってみると、\n崩れやすいパターンが見えてくることがあります。\n\n「忙しい日」「疲れた日」「何もしたくない日」——どれが一番多いですか？`;
+    proposal=`崩れやすいパターンが分かったら、そのパターンに「最低限これだけ」を決めておきましょう。\n\n例：忙しい日は「水を1杯飲む」だけでOK。`;
   } else {
-    text=`累計${total}ptを積み重ねてきましたね。\n\n毎日完璧じゃなくていい。\n「今日も少しだけ整えた」\nその感覚を大切にしているあなたは、\nちゃんと前進しています。`;
+    trend=`累計${total}ptを積み重ねてきましたね。\n\n毎日完璧じゃなくていい。\n「今日も少しだけ整えた」その感覚を持ち続けること——\n\nそれがHabioとのいい付き合い方かもしれません。`;
+    caution=`まだ記録が少ない段階では、「続けるか否か」より\n「どんな時に続きやすいか」を探る方が重要かもしれません。\n\n記録できた日に、何が起きていたか、少し振り返ってみてください。`;
+    proposal=`今週は「完璧な日を作る」より「1日1つだけ記録する」を目標にしてみましょう。\n\nHabioを開くだけでも、それは前進です。`;
   }
 
-  const nudge=`📊 もう少し詳しく知りたいですか？\n\n「習慣分析レポート（30枚）」では、\n過去1ヶ月の記録をもとに、\nAIが今後の提案をお伝えします。`;
-  return {text,nudge};
+  const nudge=`📊 もっと詳しく自分のパターンを知りたいですか？\n\n「習慣分析レポート（30枚）」では、過去1ヶ月の記録とあなたの目標をもとに、次の1ヶ月の具体的な作戦を一緒に立てます。`;
+  return {trend,caution,proposal,nudge};
 }
 
 /* ─── HABIT REPORT (30枚) ──────────────────────────────── */
 const REPORT_QUESTIONS=[
   {id:'goal',   label:'1ヶ月後、どうなっていたいですか？',
     opts:['体を少し整えたい','気分を安定させたい','習慣を定着させたい','睡眠を改善したい','もう少し自分を好きになりたい']},
-  {id:'worry',  label:'今、一番気になっていること',
-    opts:['体のこと','気分・ストレス','眠れない','続けられない','特になし']},
-  {id:'feel',   label:'最近の気分傾向',
-    opts:['まあまあ良い','波がある','少しつかれている','落ち込む日が多い','特に問題ない']},
+  {id:'worry',  label:'今、一番整えたいこと・気になること',
+    opts:['体・食事のこと','気分・ストレス','眠れない・疲れやすい','続けられない','自分への自信']},
+  {id:'pace',   label:'自分のペースについて',
+    opts:['マイペースでいきたい','少しずつ着実に','できれば早く変わりたい','まずは崩れないようにしたい']},
 ];
+let _reportAward=null;
 
-function openReportModal(){
+function openReportModal(award=null){
+  _reportAward=award||null;
   const saved=Store.get('habit_report_history',[]);
   const e=id=>document.getElementById(id);
   if(e('reportTitle')) e('reportTitle').textContent='習慣分析レポート';
-  if(e('reportSub')) e('reportSub').textContent='過去1ヶ月を振り返り、次の1ヶ月への提案を。';
-
+  if(e('reportSub')) e('reportSub').textContent='あなただけの1ヶ月作戦を一緒に立てましょう。';
   if(saved.length){
-    // Show existing report with option to regenerate
-    showReportResult(saved[0]);
+    showReportResult(saved[0],_reportAward);
   } else {
     showReportIntake();
   }
@@ -7415,7 +7560,7 @@ function showReportIntake(){
         </div>
       </div>`).join('');
   }
-  if(actions) actions.innerHTML=`<button onclick="generateHabitReport()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">🌿 分析を始める</button>`;
+  if(actions) actions.innerHTML=`<button onclick="generateHabitReport()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">🌿 レポートを生成する</button>`;
 }
 function selectReportOption(btn){
   const qid=btn.dataset.qid;
@@ -7430,53 +7575,131 @@ function generateHabitReport(){
   });
   const report=buildReportContent(answers);
   Store.set('habit_report_history',[{...report,date:today()},...Store.get('habit_report_history',[]).slice(0,4)]);
-  showReportResult(report);
+  showReportResult(report,_reportAward);
+  _reportAward=null;
 }
 function buildReportContent(answers){
-  const wins=Store.get('wins',[]).filter(w=>{
-    const d=new Date(w.date);
-    return d>=new Date(Date.now()-30*86400000);
-  });
-  const streak=calcStreak(Store.get('wins',[]));
+  const allWins=Store.get('wins',[]);
+  const wins=allWins.filter(w=>new Date(w.date)>=new Date(Date.now()-30*86400000));
+  const streak=calcStreak(allWins);
   const moodHist=Store.get('mood_history',[]).slice(0,30);
   const tired=moodHist.filter(m=>m.mood==='つかれた').length;
   const good=moodHist.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
   const total=getTotalPts();
   const habitDays=new Set(wins.filter(w=>w.title?.includes('ができた')).map(w=>w.date)).size;
   const chatDays=Store.get('chat_day_log',[]).length;
+  const totalDays=Math.floor((Date.now()-new Date(Store.get('start_date',today())).getTime())/86400000)+1;
 
-  const habitSection=`過去1ヶ月で${habitDays}日、習慣を記録しました。\n現在${streak}日継続中。\nHabioとのチャットは${chatDays}日間使用しています。`;
-  const moodSection=`気分記録のうち、「つかれた」が${tired}日、\n「いい感じ」以上が${good}日でした。\n${tired>good?'少し疲れが溜まりやすい傾向があるかもしれません。':'良い状態の日が多い傾向です。'}`;
-  const pointSection=`累計${total}ptを積み重ねてきました。\n毎日少しずつ続けてきた証です。`;
+  // 1. ふりかえり
+  const retroSection=`Habio開始から${totalDays}日が経ちました。\n\n・過去1ヶ月の習慣記録：${habitDays}日\n・現在の継続ストリーク：${streak}日\n・Habioとのチャット：${chatDays}日間\n・気分の記録：良い日${good}日 / 疲れた日${tired}日`;
 
-  let proposeText='';
-  if(answers.goal?.includes('習慣')) proposeText='まず「1日1つだけ」を意識してみましょう。多くを求めず、小さな積み重ねを。';
-  else if(answers.goal?.includes('気分')) proposeText='朝の5分、気分を記録する習慣が気分の安定に繋がりやすいです。';
-  else if(answers.goal?.includes('睡眠')) proposeText='寝る30分前にスマホを遠ざけるだけで、睡眠の質が変わることがあります。';
-  else if(answers.goal?.includes('自分を好き')) proposeText='「今日できたこと」を1つだけメモする習慣が、自己肯定感を少しずつ育てます。';
-  else proposeText='焦らず、今のペースで続けることが一番の近道かもしれません。';
+  // 2. 整いパターン
+  let patternSection='';
+  if(streak>=5){
+    patternSection=`${streak}日継続していることから、"毎日少しずつ"が続きやすいタイプかもしれません。\n\n大きな目標より「今日1つだけ」を積み重ねる方法が合っているようです。\n\n波が来た時も、完全にゼロにしないことがあなたの強みです。`;
+  } else if(good>tired&&good>=3){
+    patternSection=`気分が良い日に記録が増える傾向が見えます。\n\n気分と習慣がリンクしているタイプかもしれません。\n\n気分を整えることを意識すると、習慣も自然に続きやすくなります。\nHabioのチャットや気分記録が、あなたの"整えスイッチ"になっているようです。`;
+  } else if(chatDays>=5){
+    patternSection=`Habioに話しかける日に、習慣も記録されやすい傾向があります。\n\n「チャットで整える → 習慣を記録」の流れが、あなたのリズムに合っているかもしれません。\n\n言葉にすることが、あなたにとっての整えアクションになっています。`;
+  } else {
+    patternSection=`記録が積み重なっている日を見ると、"続けようとする意志"は確実にあります。\n\n完璧な日でなくても、「今日も少し整えた」感覚が積み重なると、\n1ヶ月後に大きな変化になっていることが多いです。`;
+  }
 
-  return {answers,habitSection,moodSection,pointSection,proposeText,date:today()};
+  // 3. 崩れやすいポイント
+  let riskSection='';
+  if(tired>=6&&streak<3){
+    riskSection=`「疲れた」日が${tired}日あり、その後に記録が途切れやすい傾向があります。\n\n焦ると崩れやすいタイプかもしれません。だからこそ、"少し足りないくらい"が続きやすいかもしれません。\n\n「疲れた日は最低1つだけ」という最小ラインを決めておくと、継続が途切れにくくなります。`;
+  } else if(good<3&&tired>=3){
+    riskSection=`気分の波が大きい時期があるようです。\n\n気分の波が来た時に習慣が止まりやすい傾向があります。\n\n「気分に左右されない最小習慣」を1つ決めておくと、波の時期でも繋ぎ止めることができます。\n例：「Habioを開くだけでOK」など、とにかく小さなものが有効です。`;
+  } else if(habitDays<5){
+    riskSection=`まだ記録の積み上げが少ない段階です。\n\n「続けようとしても忘れてしまう」ことが主な課題かもしれません。\n\nHabioの通知設定や、「〇〇の後に習慣を記録する」という"くっつけ習慣"が有効です。`;
+  } else {
+    riskSection=`特定の崩れパターンを特定しにくい段階ですが、\n一般的に崩れやすいのは「忙しい週」「気分が落ちた時」「完璧にできない日」です。\n\nそういう日のための「最小ルール」を1つだけ決めておきましょう。`;
+  }
+
+  // 4. 次の1ヶ月作戦
+  const goal=answers.goal||'';
+  const pace=answers.pace||'';
+  let planSection='';
+  if(goal.includes('習慣')){
+    planSection=`「習慣を定着させたい」という目標に向けて：\n\n① 続けたい習慣を1つだけ選ぶ（複数は後で）\n② 「毎朝起きたらすぐ」など既存の行動に紐づける\n③ ${pace.includes('マイペース')?'週5日できたらOK':'完璧な日でなく「続けた日数」を数える'}\n\n最初の2週間は「とにかく1つ」。2週目から少しずつ広げましょう。`;
+  } else if(goal.includes('気分')||goal.includes('ストレス')){
+    planSection=`「気分を安定させたい」という目標に向けて：\n\n① 毎日の気分記録を続ける（5秒でOK）\n② 「疲れた」と感じた日は、予定を1つ減らすことを自分に許可する\n③ Habioに話しかける回数を今より少し増やす\n\n「整える」より「気づく」から始めましょう。`;
+  } else if(goal.includes('睡眠')){
+    planSection=`「睡眠を改善したい」という目標に向けて：\n\n① 就寝1時間前はスマホを遠ざける（できれば同じ部屋に置かない）\n② 目標起床時間を決め、今より15分だけ早くする\n③ 眠れない夜は「4-7-8呼吸法」を試す（4秒吸って・7秒止めて・8秒吐く）\n\n焦らず、小さく変えましょう。`;
+  } else if(goal.includes('自分を好き')){
+    planSection=`「自分をもっと好きになりたい」という目標に向けて：\n\n① 毎晩寝る前に「今日できたこと」を1つだけメモする\n② Habioのバッジを1枚獲得することを今週の小さな目標にする\n③ 自分を責めた瞬間、「でも今日これはできた」を1つ見つける練習をする\n\n自己肯定感は、小さな「できた」の積み重ねで育ちます。`;
+  } else {
+    planSection=`あなたのペースに合わせた作戦：\n\n① 今週は1日1つ、Habioを開いて何かを記録する\n② 完璧を求めず「今日も少し整えた」感覚を大切にする\n③ 月曜日に「今週の最低ラインは何か」を1つだけ決める\n\n焦らず、あなたのペースで。`;
+  }
+
+  // 5. 今週の小さな一歩
+  const worry=answers.worry||'';
+  let weekStep='';
+  if(worry.includes('続けられない')){
+    weekStep='今週の小さな一歩：続けたことに「✓」をつけるだけ。\n\n達成日数が積み重なるのを見るだけで、続ける理由になります。\n\n今週は「記録できた日数」を数えてみてください。';
+  } else if(worry.includes('眠れない')||worry.includes('疲れやすい')){
+    weekStep='今週の小さな一歩：寝る前にスマホを遠ざける、を1回だけ試してみる。\n\n難しければ、画面の明るさを最低にするだけでも。\n\n小さな変化が、3日後に違いを生むことがあります。';
+  } else if(worry.includes('気分')||worry.includes('ストレス')){
+    weekStep='今週の小さな一歩：「疲れた」「しんどい」と感じたら、Habioに一言だけ話しかける。\n\n言葉にするだけで、少し軽くなります。\n\n解決しなくていい。話すだけでOKです。';
+  } else if(worry.includes('体')||worry.includes('食事')){
+    weekStep='今週の小さな一歩：毎日水を2杯だけ多く飲む。\n\n体の変化は、小さなことから始まります。\n\n飲めた日はHabioに記録してみてください。';
+  } else {
+    weekStep='今週の小さな一歩：毎日Habioを開くだけ。\n\n何かしなくていい。開くだけで、意識が変わります。\n\n「開いた日数」を今週数えてみてください。';
+  }
+
+  // 6. Habioからのひと言
+  let habitoComment='';
+  if(streak>=7){
+    habitoComment=`${streak}日続いていますね。\n\n焦らなくていい。でも、この記録はちゃんと残っています。\n\n「続けた自分」を、少しだけ認めてあげてください。\nそれが次の1ヶ月の力になります。`;
+  } else if(tired>=5){
+    habitoComment=`疲れていても、ここに来てくれています。\n\nそれだけで、十分すごいことです。\n\n完璧じゃなくていい。\n「今日も少し整えた」——その感覚を大切に、来月も一緒に進みましょう。`;
+  } else if(total>=30){
+    habitoComment=`累計${total}pt。\n\nこの数字の向こうに、あなたの小さな積み重ねが見えます。\n\n焦る必要はありません。\nでもこのペースで続けていれば、1ヶ月後に確実に何かが変わっています。`;
+  } else {
+    habitoComment=`ここまで来てくれてありがとうございます。\n\nHabioはちゃんと見ています。\n\n完璧な月じゃなくていい。\n「来月もここに来ようと思える」——そのくらいで十分です。\n\n一緒に進みましょう。`;
+  }
+
+  return {answers,retroSection,patternSection,riskSection,planSection,weekStep,habitoComment,date:today()};
 }
-function showReportResult(report){
+function showReportResult(report,award=null){
   const intake=document.getElementById('reportIntakeArea');
   const result=document.getElementById('reportResultArea');
   const actions=document.getElementById('reportActions');
   if(intake) intake.style.display='none';
   if(result){
     result.style.display='';
-    result.innerHTML=`
-      <div class="report-section"><div class="report-section-title">📅 習慣の記録</div><div class="report-section-body">${(report.habitSection||'').replace(/\n/g,'<br>')}</div></div>
-      <div class="report-section"><div class="report-section-title">😌 気分の傾向</div><div class="report-section-body">${(report.moodSection||'').replace(/\n/g,'<br>')}</div></div>
-      <div class="report-section"><div class="report-section-title">⭐ ポイント</div><div class="report-section-body">${(report.pointSection||'').replace(/\n/g,'<br>')}</div></div>
-      <div class="report-section" style="border-left:3px solid var(--g);"><div class="report-section-title">🌿 次の1ヶ月への提案</div><div class="report-section-body">${(report.proposeText||'').replace(/\n/g,'<br>')}</div></div>
-      <div style="margin:0 16px;font-size:10px;color:var(--t-l);">生成日: ${report.date||today()}</div>`;
-  }
-  if(actions) actions.innerHTML=`
-    <div style="display:grid;gap:10px;">
-      <button onclick="closeReportModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">閉じる</button>
-      <button onclick="showReportIntake()" style="width:100%;padding:12px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--t);cursor:pointer;">再分析する</button>
+    let awardHtml='';
+    if(award?.title){
+      const verb=award.isEvolution?'称号が進化しました':'称号を獲得しました';
+      awardHtml=`<div style="margin:0 16px 16px;padding:18px;background:linear-gradient(135deg,rgba(113,180,148,.15),rgba(113,180,148,.04));border-radius:var(--r-l);border:1px solid rgba(113,180,148,.3);text-align:center;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;margin-bottom:8px;">🎉 ${verb}</div>
+        <div style="font-size:36px;margin-bottom:6px;">${award.title.em}</div>
+        <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px;">${award.title.name}</div>
+        <div style="font-size:11px;color:var(--t-m);line-height:1.6;">あなたの習慣への向き合い方が、ちゃんと見えています。</div>
+      </div>`;
+    }
+    const sec=(icon,title,body,accent=false)=>`<div style="margin:0 16px 12px;padding:16px;background:var(--card);border-radius:var(--r-l);${accent?'border-left:3px solid var(--g);':''}">
+      <div style="font-size:10px;font-weight:700;color:${accent?'var(--g)':'var(--t-m)'};letter-spacing:.05em;margin-bottom:8px;">${icon} ${title}</div>
+      <div style="font-size:13px;color:var(--t);line-height:1.85;">${body.replace(/\n/g,'<br>')}</div>
     </div>`;
+    result.innerHTML=awardHtml+
+      sec('📅','過去1ヶ月のふりかえり',report.retroSection||report.habitSection||'')+
+      sec('✨','あなたの整いパターン',report.patternSection||report.moodSection||'')+
+      sec('⚠️','崩れやすいポイント',report.riskSection||report.pointSection||'')+
+      sec('🎯','次の1ヶ月作戦',report.planSection||report.proposeText||'',true)+
+      (report.weekStep?sec('👣','今週の小さな一歩',report.weekStep,true):'')+
+      (report.habitoComment?`<div style="margin:0 16px 16px;padding:16px;background:var(--g-p);border-radius:var(--r-l);border-left:3px solid var(--g);">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.05em;margin-bottom:8px;">🌿 Habioからのひと言</div>
+        <div style="font-size:13px;color:var(--t);line-height:1.85;white-space:pre-line;">${report.habitoComment}</div>
+      </div>`:'')+
+      `<div style="margin:0 16px;font-size:10px;color:var(--t-l);">生成日: ${report.date||today()}</div>`;
+  }
+  if(actions) actions.innerHTML=`<div style="display:grid;gap:10px;">
+    <button onclick="closeReportModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">閉じる</button>
+    <button onclick="showReportIntake()" style="width:100%;padding:12px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--t);cursor:pointer;">再分析する（新しい回答で）</button>
+  </div>`;
+  renderHomeTitle();
 }
 
 function generateEmotionalComment(){
@@ -7640,15 +7863,20 @@ function openRewardsModal(){
   }
 
   // Exchange grid
+  const tierCountMap={tendency:Store.get('reward_count_tendency',0),analysis:Store.get('reward_count_analysis',0),title:Store.get('reward_count_title',0)};
   const eg=e('rewardsExchangeGrid');
   if(eg) eg.innerHTML=REWARD_ITEMS.map(r=>{
     const canEx=owned>=r.cost;
-    const redeemed=Store.get('reward_history',[]).some(h=>h.rewardId===r.id);
+    const exCount=tierCountMap[r.id]||0;
+    const countBadge=exCount>0?` <span style="font-size:10px;color:var(--g);font-weight:700;">×${exCount}交換済</span>`:'';
+    const tierTitle=exCount>0?getTierTitle(r.id,exCount):null;
+    const titleLine=tierTitle?`<div style="font-size:10px;color:var(--g);margin-top:2px;">${tierTitle.em} ${tierTitle.name}</div>`:'';
     return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;border:1.5px solid ${canEx?'var(--g)':'var(--border)'};display:flex;align-items:center;gap:12px;">
       <div style="font-size:26px;">${r.em}</div>
       <div style="flex:1;">
-        <div style="font-size:13px;font-weight:700;color:var(--t);">${r.name}${redeemed?' <span style="font-size:10px;color:var(--g);">✓ 使用済</span>':''}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t);">${r.name}${countBadge}</div>
         <div style="font-size:11px;color:var(--t-m);margin-top:2px;">${r.desc}</div>
+        ${titleLine}
       </div>
       <button onclick="exchangeReward('${r.id}')" style="padding:8px 12px;border-radius:8px;border:none;font-size:12px;font-weight:700;flex-shrink:0;cursor:${canEx?'pointer':'default'};background:${canEx?'var(--g)':'var(--border)'};color:${canEx?'#fff':'var(--t-m)'};">${r.cost}枚</button>
     </div>`;
@@ -7749,6 +7977,9 @@ function init(){
 
   // Restore active AI session timer if app restarted mid-session
   if(Store.get('ai_session_end_at',0)>Date.now()) startAiSessionTimer();
+
+  // 称号表示
+  renderHomeTitle();
 
   // 後追いバッジ判定: 既に条件を満たしているのに未付与のバッジを付与する
   (function retroBadgeCheck(){
