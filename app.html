@@ -413,6 +413,120 @@ body.night-bg{background:#C8C3BB;}
 .send-btn:disabled{background:var(--g-l);}
 .send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
 
+/* ── 悩み相談カード ── */
+.counseling-card{
+  margin:8px 16px 4px;background:var(--card);
+  border-radius:14px;padding:14px 16px;
+  box-shadow:var(--sh1);border-left:3px solid var(--g-l);
+  position:relative;display:flex;gap:10px;align-items:flex-start;
+}
+.cc-close{
+  position:absolute;top:10px;right:12px;background:none;border:none;
+  font-size:16px;color:var(--t-l);cursor:pointer;padding:2px;
+  -webkit-tap-highlight-color:transparent;
+}
+.cc-icon{font-size:18px;flex-shrink:0;padding-top:1px;}
+.cc-body{flex:1;min-width:0;}
+.cc-label{font-size:10.5px;font-weight:600;color:var(--t-g);margin-bottom:6px;}
+.cc-msg{font-size:12.5px;color:var(--t-m);line-height:1.75;margin-bottom:10px;}
+.cc-btn{
+  display:inline-block;background:var(--g);color:#fff;
+  font-size:12.5px;font-weight:600;padding:8px 18px;
+  border-radius:20px;text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.cc-pr{font-size:9.5px;color:var(--t-l);margin-top:8px;line-height:1.5;}
+
+/* ── クライシスカード ── */
+.crisis-card{
+  margin:8px 16px 4px;background:var(--card);
+  border-radius:14px;padding:14px 16px;
+  box-shadow:var(--sh1);border-left:3px solid #b0c4d8;
+  position:relative;display:flex;gap:10px;align-items:flex-start;
+}
+.crisis-lines{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.crisis-line{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--t-m);}
+.cl-name{color:var(--t-g);font-size:11px;}
+.cl-num{
+  font-size:13px;font-weight:700;color:#5a8fba;
+  text-decoration:none;letter-spacing:0.5px;
+  -webkit-tap-highlight-color:transparent;
+}
+.cl-note{font-size:10px;color:var(--t-l);}
+.crisis-emergency{margin-top:4px;padding-top:6px;border-top:1px solid var(--border);}
+.crisis-emergency .cl-name{color:var(--t-m);font-weight:600;}
+
+/* ── Welcome Popup（時間帯チェックイン） ── */
+.welcome-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.22);
+  z-index:99999;display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:wc-fade .25s ease;
+}
+@keyframes wc-fade{from{opacity:0}to{opacity:1}}
+.welcome-card{
+  background:#fff;border-radius:22px;padding:24px 20px 18px;
+  width:100%;max-width:360px;position:relative;
+  box-shadow:0 10px 36px rgba(0,0,0,.13);
+  animation:wc-up .3s cubic-bezier(.2,.8,.4,1);
+}
+@keyframes wc-up{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+.welcome-close{
+  position:absolute;top:14px;right:14px;
+  background:none;border:none;font-size:18px;color:#bbb;
+  cursor:pointer;padding:4px;line-height:1;
+  -webkit-tap-highlight-color:transparent;
+}
+.welcome-title{font-size:18px;font-weight:700;color:#2d3d2d;margin-bottom:8px;line-height:1.4;}
+.welcome-body{font-size:13.5px;color:#607060;line-height:1.75;margin-bottom:18px;}
+.welcome-choices{
+  display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;
+}
+.welcome-choice-btn{
+  background:#f2f9f2;border:1.5px solid #cce5cc;border-radius:12px;
+  padding:12px 8px;font-size:13px;font-weight:600;color:#3d5a3d;
+  cursor:pointer;text-align:center;line-height:1.3;
+  transition:background .15s,transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.welcome-choice-btn:active{background:#d8efd8;transform:scale(.97);}
+.welcome-response{
+  background:#f7fcf7;border-radius:12px;padding:14px 15px;
+  border-left:3px solid #9ecf9e;margin-bottom:14px;
+}
+.welcome-response-label{
+  font-size:10.5px;font-weight:600;color:#7aaa7a;
+  margin-bottom:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.welcome-response-text{font-size:13.5px;color:#3a563a;line-height:1.8;}
+.welcome-pt{
+  font-size:10px;background:#e8f5e8;color:#5a9a5a;
+  padding:2px 7px;border-radius:10px;font-weight:600;
+}
+.welcome-actions{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:8px;margin-top:2px;
+}
+.welcome-later{
+  background:none;border:none;font-size:13px;color:#aabcaa;
+  cursor:pointer;padding:8px 4px;
+  -webkit-tap-highlight-color:transparent;
+}
+.welcome-thanks{
+  background:#7ec87e;color:#fff;border:none;
+  font-size:14px;font-weight:600;padding:11px 0;
+  border-radius:20px;cursor:pointer;width:100%;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .15s;
+}
+.welcome-thanks:active{background:#6ab86a;}
+.welcome-skip-btn{
+  background:none;border:1.5px solid #e0eae0;border-radius:12px;
+  padding:9px 8px;font-size:12.5px;color:#a0b4a0;
+  cursor:pointer;width:100%;margin-top:4px;
+  -webkit-tap-highlight-color:transparent;transition:background .15s;
+}
+.welcome-skip-btn:active{background:#f5f8f5;}
+
 /* ── HABITS SCREEN ── */
 .habits-hd{
   padding:20px 22px 16px;
@@ -2607,10 +2721,58 @@ body.night-bg{background:#C8C3BB;}
     <!-- 管理者テストパネル（管理者メール時のみ表示） -->
     <div id="adminPanelSettings" style="display:none;"></div>
     <div style="height:16px;"></div>
+
+    <!-- ★★★ WELCOME DEBUG BUTTON — 動作確認後に削除 ★★★ -->
+    <div style="padding:0 16px 24px;">
+      <button onclick="showWelcomeDebug()" style="width:100%;background:#f0f0f0;border:1.5px dashed #bbb;border-radius:12px;padding:12px;font-size:12px;color:#888;cursor:pointer;">
+        🔍 Welcome Debug
+      </button>
+    </div>
+    <!-- ★★★ END WELCOME DEBUG BUTTON ★★★ -->
+
   </div>
 
   </div><!-- /screens -->
 
+
+  <!-- ★★★ WELCOME DEBUG PANEL — 動作確認後に削除 ★★★ -->
+  <div id="welcomeDebugOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999999;overflow-y:auto;padding:20px;box-sizing:border-box;">
+    <div style="background:#1a1a1a;border-radius:16px;padding:20px;max-width:400px;margin:0 auto;color:#e0e0e0;font-size:12px;font-family:monospace;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span style="font-size:14px;font-weight:700;color:#7ec87e;">🔍 Welcome Popup Debug</span>
+        <button onclick="closeWelcomeDebug()" style="background:#333;border:none;color:#aaa;font-size:18px;cursor:pointer;border-radius:8px;width:32px;height:32px;line-height:32px;">×</button>
+      </div>
+
+      <!-- 状態表示エリア -->
+      <div id="welcomeDebugBody" style="background:#111;border-radius:10px;padding:14px;line-height:2.2;margin-bottom:16px;word-break:break-all;"></div>
+
+      <!-- テストボタン群 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <button onclick="wdbForce()" style="background:#2a5a2a;color:#7ec87e;border:1.5px solid #3a7a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
+          ⚡ forceWelcomePopup<br><span style="opacity:.7;font-size:10px;">最小DOM強制表示</span>
+        </button>
+        <button onclick="wdbTest()" style="background:#2a2a5a;color:#7e9ec8;border:1.5px solid #3a3a7a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
+          🧪 testWelcomePopup<br><span style="opacity:.7;font-size:10px;">通常フロー表示テスト</span>
+        </button>
+        <button onclick="wdbResetSlots()" style="background:#5a3a1a;color:#c8a07e;border:1.5px solid #7a5a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
+          🔄 回答済みリセット<br><span style="opacity:.7;font-size:10px;">今日のanswered_slotsを削除</span>
+        </button>
+        <button onclick="wdbClearAll()" style="background:#5a1a1a;color:#c87e7e;border:1.5px solid #7a3a3a;border-radius:10px;padding:10px 6px;font-size:11px;cursor:pointer;font-family:monospace;">
+          🗑️ Welcome LS全削除<br><span style="opacity:.7;font-size:10px;">welcome関連を全消去</span>
+        </button>
+      </div>
+      <button onclick="wdbRefresh()" style="width:100%;background:#333;color:#aaa;border:1.5px solid #555;border-radius:10px;padding:10px;font-size:11px;cursor:pointer;font-family:monospace;">
+        🔃 状態を再読み込み
+      </button>
+
+      <!-- テスト結果ログ -->
+      <div style="margin-top:12px;">
+        <div style="font-size:10px;color:#666;margin-bottom:6px;">テストログ</div>
+        <div id="welcomeDebugLog" style="background:#111;border-radius:8px;padding:10px;font-size:11px;color:#888;line-height:1.8;min-height:40px;max-height:120px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+  <!-- ★★★ END WELCOME DEBUG PANEL ★★★ -->
 
   <!-- PWA インストールバナー -->
   <div id="pwaBanner" role="dialog" aria-label="ホーム画面に追加">
@@ -2618,7 +2780,7 @@ body.night-bg{background:#C8C3BB;}
     <div class="pwa-msg" id="pwaBannerMsg">ホーム画面に追加すると、毎日開きやすくなります。</div>
     <div class="pwa-btns">
       <button class="pwa-skip" onclick="dismissPwaBanner(false)">後で</button>
-      <button class="pwa-install" id="pwaBannerInstallBtn" onclick="installPwa()">追加する</button>
+      <button class="pwa-install" id="pwaBannerInstallBtn" onclick="installPwa()">ホームに置く</button>
     </div>
   </div>
 
@@ -3749,7 +3911,7 @@ function goTab(name){
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
   if(name==='food'){ renderFoodLog(); renderFoodHistory(); }
-  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); }
+  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
 }
@@ -3860,7 +4022,15 @@ function initHome(){
   }
 
   const msgEl=document.getElementById('habitoMsg');
-  if(msgEl) msgEl.textContent=getPersonalizedMessage(night);
+  if(msgEl){
+    const _msgKey='habio_daily_message_'+today();
+    let _dailyMsg=Store.get(_msgKey,'');
+    if(!_dailyMsg){
+      _dailyMsg=getPersonalizedMessage(night);
+      Store.set(_msgKey,_dailyMsg);
+    }
+    msgEl.textContent=_dailyMsg;
+  }
 
   const foodMsgEl=document.getElementById('foodAiMsg');
   if(foodMsgEl) foodMsgEl.textContent=FOOD_TIPS[now.getDay()%FOOD_TIPS.length];
@@ -3877,102 +4047,173 @@ function initHome(){
 }
 
 /* ── PERSONALIZED MESSAGE (今日のひとこと) ── */
+const MSG_POOL_TIRED=[
+  {key:'t01',text:'最近、少し"戻す時間"が少なくなってるかもしれません。'},
+  {key:'t02',text:'疲れている日は、整えようとするだけで十分です。'},
+  {key:'t03',text:'今日は、休む側に寄せても大丈夫です。'},
+  {key:'t04',text:'無理に動こうとしなくて、いいですよ。'},
+  {key:'t05',text:'体が重い日は、それだけで十分なサインかもしれません。'},
+  {key:'t06',text:'疲れたって思えること、ちゃんと自分を見てる証拠です。'},
+  {key:'t07',text:'今日はゆっくり過ごしてもいい日かもしれません。'},
+  {key:'t08',text:'"頑張らない"を選ぶのも、立派な整い方です。'},
+  {key:'t09',text:'疲れが出ているとき、少し余裕が少なかっただけかもしれない。'},
+  {key:'t10',text:'少し休んだら、また少し動けます。焦らなくていいです。'},
+  {key:'t11',text:'今日は何もしなくてもいい、そういう日があっても大丈夫です。'},
+  {key:'t12',text:'疲れがとれるまで、ここにいます。'},
+  {key:'t13',text:'少しずつ、戻ってきます。急がなくて大丈夫。'},
+  {key:'t14',text:'体が正直に反応してるんです。ちゃんと聞いてあげて。'},
+  {key:'t15',text:'疲れたを言える日は、少し正直になれた日です。'},
+  {key:'t16',text:'今日みたいな日は、温かいものをゆっくり飲むだけでいい。'},
+  {key:'t17',text:'無理しないを続けることも、習慣です。'},
+];
+const MSG_POOL_ANXIOUS=[
+  {key:'a01',text:'今日は、答えを急がなくても大丈夫です。'},
+  {key:'a02',text:'夜に考えごとが増えやすい日かもしれません。'},
+  {key:'a03',text:'頭の中が忙しい日は、少しだけ外に出してみませんか。'},
+  {key:'a04',text:'考えすぎてる自分に気づけてるなら、大丈夫です。'},
+  {key:'a05',text:'全部を今日解決しなくていいです。'},
+  {key:'a06',text:'不安が大きく感じる日は、明日に回していい分が多いです。'},
+  {key:'a07',text:'正解を探さなくても、今日はここにいるだけでいい。'},
+  {key:'a08',text:'頭が止まらないときは、呼吸だけに集中してみてください。'},
+  {key:'a09',text:'「どうしよう」って思えてるなら、まだ大丈夫です。'},
+  {key:'a10',text:'考えてること、それだけ真剣に向き合ってる証でもあります。'},
+  {key:'a11',text:'全部うまくやらなくていいです。少しずつ、で十分です。'},
+  {key:'a12',text:'不安は、何かを大切にしてるから出てくるものかもしれません。'},
+  {key:'a13',text:'夜の考えごとは、朝見ると少し小さくなってたりします。'},
+  {key:'a14',text:'深呼吸、一回だけでもやってみてください。'},
+  {key:'a15',text:'今感じてること、間違ってないです。'},
+];
+const MSG_POOL_LONELY=[
+  {key:'l01',text:'ここに来てくれていること、ちゃんと見ていますよ。'},
+  {key:'l02',text:'一人でいる時間が続いてるのかもしれません。少し話しかけてみてください。'},
+  {key:'l03',text:'誰かに言えないこと、ここに書いてみてもいいです。'},
+  {key:'l04',text:'孤独って、そこにいるだけで疲れる感覚かもしれません。'},
+  {key:'l05',text:'今日は誰かに連絡してみてもいい日かもしれません。'},
+  {key:'l06',text:'一人でいるのが楽な日と、しんどい日がある。どっちもあっていいです。'},
+  {key:'l07',text:'「誰かに見てほしい」そういう気持ち、ちゃんとあっていいです。'},
+  {key:'l08',text:'ここに来てくれる日が続いてるの、ちゃんと見てます。'},
+  {key:'l09',text:'寂しさって、話してみると少し軽くなることがあります。'},
+  {key:'l10',text:'今日のあなたを見ているものは、ちゃんとあります。'},
+  {key:'l11',text:'誰かとつながりたいと思うこと、自然なことです。'},
+];
+const MSG_POOL_STREAK=[
+  {key:'s01',text:'続けようとしてるの、ちゃんと積み重なってます。'},
+  {key:'s02',text:'少しずつ、整ってきてる感じあります。'},
+  {key:'s03',text:'続くって、それだけでもすごいことです。'},
+  {key:'s04',text:'毎日じゃなくても、来てるだけで十分です。'},
+  {key:'s05',text:'やめなかった日が、ここにあります。'},
+  {key:'s06',text:'ちゃんと続いてます。それだけで大きいことです。'},
+  {key:'s07',text:'小さく続けることが、一番長持ちします。'},
+  {key:'s08',text:'今日も来た、それがすでに整い始めてます。'},
+  {key:'s09',text:'積み重なってるの、自分では気づきにくいかもしれないけど、ちゃんとあります。'},
+  {key:'s10',text:'続けてる自分、どこかで認めてあげてください。'},
+  {key:'s11',text:'来るたびに、少しだけ整えてる。'},
+];
+const MSG_POOL_FOOD=[
+  {key:'f01',text:'ちゃんと食べようとしてるの、いい感じです。'},
+  {key:'f02',text:'食事を記録するだけで、少し自分に向き合えてる気がします。'},
+  {key:'f03',text:'何を食べたか気にしてること、それ自体が整い始めてる証かも。'},
+  {key:'f04',text:'今日の食事、覚えてますか。それだけで十分なことです。'},
+  {key:'f05',text:'食べたもの、記録できた。それだけで今日はいい一日です。'},
+  {key:'f06',text:'食事を記録してる日は、少し自分を大切にしてる日です。'},
+  {key:'f07',text:'ちゃんと食べれてる？そういう気持ちで見てます。'},
+  {key:'f08',text:'記録することで、自分のリズムが少し見えてきます。'},
+  {key:'f09',text:'食べることを、少し丁寧に扱ってる感じがします。'},
+  {key:'f10',text:'今日も食事できた。それだけで十分です。'},
+];
+const MSG_POOL_DEEP_NIGHT=[
+  {key:'dn01',text:'夜は、考えごとが少し大きく見えやすい時間です。'},
+  {key:'dn02',text:'眠れなくても、横になっているだけでいい。'},
+  {key:'dn03',text:'深夜に来てくれたんですね。ゆっくりしていていいです。'},
+  {key:'dn04',text:'夜のこの時間、何か考えてることがあるのかもしれません。'},
+  {key:'dn05',text:'眠れない夜は、少し考えすぎてるサインかもしれません。'},
+  {key:'dn06',text:'深夜は、気持ちが正直になりやすい時間です。'},
+  {key:'dn07',text:'今夜は、何も解決しなくていいです。'},
+  {key:'dn08',text:'夜に来てくれる日は、何かあった日なのかもしれません。'},
+  {key:'dn09',text:'夜が明けると、少し違って見えることがあります。'},
+  {key:'dn10',text:'今夜は、ゆっくり呼吸するだけでいいです。'},
+  {key:'dn11',text:'夜の静かな時間に来てくれました。ゆっくりしていてください。'},
+];
+const MSG_POOL_MORNING=[
+  {key:'m01',text:'朝から来てくれました。今日も一緒に始めましょう。'},
+  {key:'m02',text:'朝がしんどい日は、動きはじめるまでが一番大変です。'},
+  {key:'m03',text:'今日は「ちょっとだけ」でいい日かもしれません。'},
+  {key:'m04',text:'朝の重さって、午後になると少し軽くなることが多いです。'},
+  {key:'m05',text:'朝しんどくても、来てくれた。それだけで十分です。'},
+  {key:'m06',text:'今日を始めたこと、それだけで大丈夫です。'},
+  {key:'m07',text:'朝が苦手でも、Habioは24時間いますよ。'},
+  {key:'m08',text:'今日は"ゆっくり起動"でいい日かもしれません。'},
+  {key:'m09',text:'無理やり「やるぞ」しなくていいです。ゆっくりで。'},
+  {key:'m10',text:'朝の気分って、その日の全てじゃないです。'},
+];
+const MSG_POOL_DO_NOTHING=[
+  {key:'n01',text:'何もしたくない日は、何もしない、という選択をしてる日です。'},
+  {key:'n02',text:'動けない日があって当然です。'},
+  {key:'n03',text:'今日はただ、ここにいるだけでいいです。'},
+  {key:'n04',text:'「何もしたくない」って気づけてること、それが今日の全部でいいです。'},
+  {key:'n05',text:'無理に整えようとしなくていいです。それも整い方のひとつです。'},
+  {key:'n06',text:'何もしない日も、ちゃんと休んでいる日です。'},
+  {key:'n07',text:'今日は「待つ日」かもしれません。それでいいです。'},
+  {key:'n08',text:'動けないとき、自分を責めないでください。'},
+  {key:'n09',text:'エネルギーが戻ってきたとき、また少しずつ動けます。'},
+  {key:'n10',text:'今日みたいな日があるから、動ける日がくる。'},
+];
+
+function pickFrom(pool,recentKeys){
+  const available=pool.filter(c=>!recentKeys.includes(c.key));
+  const src=available.length>0?available:pool;
+  return src[Math.floor(Math.random()*src.length)];
+}
+
 function getPersonalizedMessage(isNightMode){
   const now=new Date(), h=now.getHours();
 
   // ── signals ──
-  const moodHist =Store.get('mood_history',[]).slice(0,7);
-  const recent3  =moodHist.slice(0,3);
+  const moodHist  =Store.get('mood_history',[]).slice(0,7);
+  const recent3   =moodHist.slice(0,3);
   const tiredCount=recent3.filter(m=>m.mood==='つかれた').length;
-  const goodCount =recent3.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
   const todayMood =moodHist.find(m=>m.date===today());
 
   const wins  =Store.get('wins',[]);
   const streak=calcStreak(wins);
 
-  // detectEmotionTags は mood_history(3日)+chat_history(30件) を読む
   const eTags     =detectEmotionTags();
   const hasAnxiety=eTags.includes('不安')||eTags.includes('頭が止まらない');
   const isLonely  =eTags.includes('孤独');
 
   const hasFoodToday=Store.get('food_log_'+today(),[]).length>0;
 
-  // 前回表示したキー（連続回避）
-  const lastKey=Store.get('habito_msg_key','');
+  // 直近5件の表示履歴（連続回避）
+  const recentKeys=Store.get('habito_msg_recent',[]);
 
-  // ── 優先順位でメッセージ候補を積む ──
-  const pool=[];
+  // ── 優先順位でプールを決定 ──
+  let candidates=[];
 
-  // 深夜（眠れない時間帯）
   if(h>=0&&h<5){
-    pool.push(
-      {key:'dn_think', text:'夜は、考えごとが少し大きく見えやすい時間です。'},
-      {key:'dn_rest',  text:'眠れなくても、横になっているだけでいい。'}
-    );
+    candidates=MSG_POOL_DEEP_NIGHT;
+  }else if(h>=5&&h<11){
+    candidates=MSG_POOL_MORNING;
+  }else if(tiredCount>=2){
+    candidates=hasAnxiety?[...MSG_POOL_TIRED,...MSG_POOL_ANXIOUS]:MSG_POOL_TIRED;
+  }else if(todayMood?.mood==='つかれた'){
+    candidates=MSG_POOL_TIRED;
+  }else if(hasAnxiety){
+    candidates=MSG_POOL_ANXIOUS;
+  }else if(isLonely){
+    candidates=MSG_POOL_LONELY;
+  }else if(!todayMood&&!hasFoodToday&&h>=12){
+    candidates=MSG_POOL_DO_NOTHING;
+  }else if(streak>=3){
+    const base=[...MSG_POOL_STREAK];
+    if(streak>=14) base.unshift({key:'s00',text:streak+'日、続けようとしてること。ちゃんと積み重なってます。'});
+    candidates=base;
+  }else if(hasFoodToday){
+    candidates=MSG_POOL_FOOD;
   }
 
-  // 疲れた が直近3日中2回以上
-  if(tiredCount>=2){
-    pool.push(
-      {key:'tired_restore', text:'最近、少し"戻す時間"が少なくなってるかも ☕'},
-      {key:'tired_ok',      text:'今日は、休む側に寄せても大丈夫です。'}
-    );
-  } else if(todayMood?.mood==='つかれた'){
-    pool.push(
-      {key:'tired_today', text:'疲れている日は、整えようとするだけで十分です。'}
-    );
-  }
-
-  // 不安 / 考えすぎちゃう がチャットや気分に出ている
-  if(hasAnxiety){
-    pool.push(
-      {key:'anx_slow',  text:'今日は、答えを急がなくても大丈夫です。'},
-      {key:'anx_watch', text:'夜に考えごとが増えやすい日かもしれません。'}
-    );
-  }
-
-  // 孤独感
-  if(isLonely){
-    pool.push(
-      {key:'lonely_here', text:'ここに来てくれていること、ちゃんと見ていますよ。'}
-    );
-  }
-
-  // 好調が続いている
-  if(goodCount>=2){
-    pool.push(
-      {key:'good_rest', text:'前より、ちゃんと休もうとしてるのいい感じです。'}
-    );
-  }
-
-  // 継続 streak
-  if(streak>=14){
-    pool.push(
-      {key:'streak14', text:streak+'日、続けようとしてること。ちゃんと積み重なってます。'}
-    );
-  } else if(streak>=7){
-    pool.push(
-      {key:'streak7', text:'続けようとしてるの、ちゃんと積み重なってます。'}
-    );
-  } else if(streak>=3){
-    pool.push(
-      {key:'streak3', text:'少しずつ、整ってきてる感じあります。'}
-    );
-  }
-
-  // 今日食事を記録した
-  if(hasFoodToday){
-    pool.push(
-      {key:'food_today', text:'ちゃんと食べようとしてるの、いい感じです 🍙'}
-    );
-  }
-
-  // ── 前回と同じは避ける ──
-  const available=pool.filter(c=>c.key!==lastKey);
-  const chosen=(available.length>0?available:pool)[0];
-
-  if(chosen){
-    Store.set('habito_msg_key',chosen.key);
+  if(candidates.length>0){
+    const chosen=pickFrom(candidates,recentKeys);
+    Store.set('habito_msg_recent',[chosen.key,...recentKeys].slice(0,5));
     return chosen.text;
   }
 
@@ -4308,7 +4549,15 @@ async function loadWeather(){
 
     // 今日の空気（天気 + mood + 時間帯 連動）
     const luckyEl=document.getElementById('weatherLuckyText');
-    if(luckyEl) luckyEl.textContent=getWeatherLucky(code,Math.round(cw.temperature),windMs,precipProb);
+    if(luckyEl){
+      const _airKey='habio_daily_air_'+today();
+      let _dailyAir=Store.get(_airKey,'');
+      if(!_dailyAir){
+        _dailyAir=getWeatherLucky(code,Math.round(cw.temperature),windMs,precipProb);
+        Store.set(_airKey,_dailyAir);
+      }
+      luckyEl.textContent=_dailyAir;
+    }
 
     // チップ描画
     const el=id=>document.getElementById(id);
@@ -4873,15 +5122,17 @@ function renderChatLimit(){
 async function sendMsg(){
   const isPrem=Store.get('is_premium',false);
   const sessionActive=Store.get('ai_session_end_at',0)>Date.now();
-  if(!isPrem && !sessionActive && getChatCount()>=FREE_CHAT_LIMIT){
-    showUpgradeModal();
-    return;
-  }
 
   const inp=document.getElementById('chatInput');
   if(!inp) return;
   const text=inp.value.trim();
   if(!text) return;
+
+  if(!isPrem && !sessionActive && getChatCount()>=FREE_CHAT_LIMIT){
+    showUpgradeModal();
+    maybeShowCounselingCard(text);
+    return;
+  }
 
   if(!isPrem && !sessionActive) incChatCount();
   // 1pt per day for using chat
@@ -4907,6 +5158,7 @@ async function sendMsg(){
   if(/ありがとう|よかった|できた|頑張|嬉し/.test(text)) logWin('💬','Habio と話せた','気持ちを伝えることができました');
   renderChatLimit();
   maybeShowProductRec(text);
+  maybeShowCounselingCard(text);
 }
 
 async function quickChat(text){
@@ -4956,6 +5208,258 @@ function maybeShowProductRec(userMsg){
     :(hasIntent?'気になっているなら、こちらが参考になるかもしれません 🌿':'ちなみに、関連するものをひとつ 🌿');
   const msg=`${intro}\n\n▶ ${best.title}\n${best.desc}\n${AFFILIATE_LINKS[best.id]}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
   setTimeout(()=>appendBubble(msg,false,nowTime()),900);
+}
+
+// ── 悩み相談カード（4レベル危機検知 + 履歴リスクスコア） ──
+
+// 比喩・冗談マーカー
+const JOKE_MARK = /笑|ｗ{1,}|www|lol|ﾜﾗ|（笑）|\(笑\)|みたいな|って感じ|ちょっと大げさ/i;
+
+// L3: 真剣な危機表現（笑マーカーがあってもL2扱い）
+const CRISIS_L3 = /死にたい|自殺|いなくなりたい|消えてしまいたい|生きていたくない|もう生きたくない|死ぬつもり|終わりにしたい|存在を消したい/;
+
+// L2: 深刻なつらさ（笑マーカーがあればL1扱い）
+const CRISIS_L2 = /消えたい|もう限界|限界です|壊れそう|生きるのが疲れた|全部やめたい|何もかも嫌|もう頑張れない|もう無理かもしれない|心が折れた|崩れそう/;
+
+// L1: 吐き出し・比喩が多い（カードは出さずAIに任せる）
+const CRISIS_L1 = /死にそう|死ぬかも|死ぬかと思|しんどすぎ|つらすぎ|会社.*死|仕事.*死|もう.*無理/;
+
+// L0: 通常の悩み・相談キーワード
+const COUNSEL_KW = /恋愛|彼氏|彼女|パートナー|片思い|別れ|浮気|結婚|付き合|孤独|さびし|寂し|ひとりぼっち|家族.*悩|親.*関係|職場|同僚|上司|部下|ハラスメント|パワハラ|モラハラ|人間関係|気を遣|嫌われ|誰かに話|だれかに話|誰かと話|だれかと話|人に話した|人と話した|話を聞いてほしい|聞いてほしい|誰かに聞いて|だれかに聞いて|相談したい|話したい|ひとりで抱えたくない|一人で抱えたくない|誰もわかってくれ|抱え込|つらい.*続|ずっとつらい/;
+
+// 即時エスカレーション：方法/場所/時間/実行示唆
+const CRISIS_SPECIFIC = /今から.*死|今夜.*死|死ぬ場所|死ぬ方法|死ぬ時間|薬.*大量|遺書|最後に一つ|橋.*行|ビル.*飛|もう決めた/;
+// 他害（具体的）
+const CRISIS_HARM_OTHER = /殺したい|刺したい|傷つけてやりたい/;
+// 複合苦ワード
+const MULTI_DISTRESS_KW = /眠れない|食べられない|涙が止まら|ずっと泣|何日も食べ/;
+
+// ── 感情履歴保存 ──
+const EMO_HIST_KEY = 'habio_emotional_history';
+
+function saveEmotionalHistory(rawMsg, level, emotionTags) {
+  const now = Date.now();
+  const hour = new Date(now).getHours();
+  const entry = {
+    ts: now,
+    msg: rawMsg.slice(0, 200),
+    level: Math.max(level, 0),
+    tags: (emotionTags || []).slice(0, 6),
+    isNight: hour >= 22 || hour < 3,
+    isLong: rawMsg.length > 100,
+    hasCrisis: level >= 1,
+    hasMultiDistress: MULTI_DISTRESS_KW.test(rawMsg)
+  };
+  const cutoff = now - 7 * 24 * 60 * 60 * 1000;
+  let hist = Store.get(EMO_HIST_KEY, []);
+  hist = hist.filter(e => e.ts > cutoff);
+  hist.push(entry);
+  if (hist.length > 50) hist = hist.slice(-50);
+  Store.set(EMO_HIST_KEY, hist);
+}
+
+// ── リスクスコア算出 ──
+function calcEmotionalRiskScore() {
+  const now = Date.now();
+  const ms24 = 24 * 60 * 60 * 1000;
+  const hist = Store.get(EMO_HIST_KEY, []);
+  const h24 = hist.filter(e => e.ts > now - ms24);
+  const h72 = hist.filter(e => e.ts > now - 3 * ms24);
+
+  let score = 0;
+
+  // +1: L1が直近24hで2回以上
+  if (h24.filter(e => e.level === 1).length >= 2) score += 1;
+  // +1: 深夜のネガティブ相談
+  if (h24.some(e => e.isNight && e.hasCrisis)) score += 1;
+  // +1: 疲れ/無理/しんどいが複数
+  if (h24.filter(e => /疲れた|無理|しんどい/.test(e.msg)).length >= 2) score += 1;
+
+  // +2: L2以上が直近3日で2回以上
+  if (h72.filter(e => e.level >= 2).length >= 2) score += 2;
+  // +2: L3が別日に出た
+  const l3Days = new Set(h72.filter(e => e.level >= 3).map(e => new Date(e.ts).toDateString()));
+  if (l3Days.size >= 2) score += 2;
+  // +2: 長文の悩み相談が3件以上
+  if (h72.filter(e => e.isLong && e.hasCrisis).length >= 3) score += 2;
+  // +2: 習慣記録が3日連続止まった
+  try {
+    const wins = Store.get('habit_wins', {});
+    let missed = 0;
+    for (let d = 1; d <= 3; d++) {
+      const dt = new Date(now - d * 86400000).toISOString().slice(0, 10);
+      if (!wins[dt] || Object.keys(wins[dt]).length === 0) missed++;
+    }
+    if (missed >= 3) score += 2;
+  } catch (_) { /* safe */ }
+
+  // +3: L3が3日で2件以上
+  if (h72.filter(e => e.level >= 3).length >= 2) score += 3;
+  // +3: 複合苦ワードが複数
+  if (h72.filter(e => e.hasMultiDistress).length >= 2) score += 3;
+
+  return Math.min(score, 10);
+}
+
+function detectCrisisLevel(msg) {
+  const isJoke = JOKE_MARK.test(msg);
+  if (CRISIS_L3.test(msg)) return isJoke ? 2 : 3;
+  if (CRISIS_L2.test(msg)) return isJoke ? 1 : 2;
+  if (CRISIS_L1.test(msg)) return 1;
+  if (COUNSEL_KW.test(msg)) return 0;
+  return -1;
+}
+
+function maybeShowCounselingCard(userMsg) {
+  const eTags = detectEmotionTags();
+  let level = detectCrisisLevel(userMsg);
+
+  // 履歴に保存（毎メッセージ）
+  saveEmotionalHistory(userMsg, level, eTags);
+
+  // 方法/場所/時間/他害 → 即時公的窓口（スコア不問）
+  if (CRISIS_SPECIFIC.test(userMsg) || CRISIS_HARM_OTHER.test(userMsg)) {
+    setTimeout(() => showCrisisCard(true), 2500);
+    return;
+  }
+
+  // キーワードなし → 終了
+  if (level < 0) return;
+
+  // リスクスコアで補正
+  const riskScore = calcEmotionalRiskScore();
+  const count = getChatCount();
+  const isPrem = Store.get('is_premium', false);
+  const remaining = Math.max(0, FREE_CHAT_LIMIT - count);
+  const shownToday = Store.get('counseling_shown_date', '') === today();
+
+  // ── デバッグログ ──
+  console.log('[Habio counseling]', {
+    userMsg,
+    detectedLevel: level,
+    emotionalRiskScore: riskScore,
+    chatCount: count,
+    remaining,
+    counseling_shown_date: Store.get('counseling_shown_date', ''),
+    shownToday
+  });
+
+  if (level === 1 && riskScore >= 3) level = 2;
+
+  // L1のまま → AIに任せる
+  if (level === 1) {
+    console.log('[Habio counseling] skip: L1, no escalation');
+    return;
+  }
+
+  // L3 or スコア5以上でL2相当 → 公的相談窓口
+  if (level === 3 || (level === 2 && riskScore >= 5)) {
+    setTimeout(() => showCrisisCard(false), 3000);
+    return;
+  }
+
+  // L0 / L2 → A8カード
+  if (shownToday) {
+    console.log('[Habio counseling] skip: already shown today');
+    return;
+  }
+
+  if (count < 2) {
+    console.log('[Habio counseling] skip: count < 2');
+    return;
+  }
+
+  let show = false;
+  let isAtLimit = false;
+
+  if (level === 2) {
+    show = true;
+  } else {
+    // L0
+    if (!isPrem) {
+      isAtLimit = remaining <= 0;
+      // 上限到達 or 残り2回以内は確率なし。それ以外20%
+      show = isAtLimit || remaining <= 2 || Math.random() < 0.2;
+    } else {
+      show = Math.random() < 0.25;
+    }
+  }
+
+  console.log('[Habio counseling] show:', show, '| isAtLimit:', isAtLimit, '| level:', level);
+
+  if (!show) return;
+  Store.set('counseling_shown_date', today());
+  setTimeout(() => showCounselingA8Card(level, riskScore, isAtLimit), 2500);
+}
+
+function showCounselingA8Card(level, riskScore, isAtLimit) {
+  const msgs = document.getElementById('chatMsgs');
+  if (!msgs || document.getElementById('counselingCardWrap')) return;
+
+  const isL2 = level === 2;
+  const isHistoryBased = isL2 && riskScore >= 3;
+
+  let label, msg;
+  if (isAtLimit) {
+    label = '今日の会話はここまでだけど';
+    msg = '"誰かに話したい"と思えたのは、<br>ちゃんと自分を守ろうとしているサインかもしれません。<br>AIじゃなく、人に話すことで<br>少し整理できることもあります。';
+  } else if (isHistoryBased) {
+    label = 'ここ数日、少し気持ちが揺れているかもしれません';
+    msg = 'AIに話すだけでも整理できますが、<br>人に話すことで軽くなることもあります。<br>必要なら、話せる場所をひとつ持っておいてください。';
+  } else if (isL2) {
+    label = 'ひとりで抱えなくていい';
+    msg = 'ちゃんと抱えながら、ここまで来てるんですね。<br>AIじゃなく、人に話すのも、ひとつの整え方です。';
+  } else {
+    label = '話せる場所を増やしてみる';
+    msg = 'AIじゃなく、人に話すことで<br>気持ちが少し整理できることもあります。';
+  }
+  const icon = isL2 ? '🤍' : '🌱';
+
+  const wrap = document.createElement('div');
+  wrap.id = 'counselingCardWrap';
+  wrap.className = 'counseling-card';
+  wrap.innerHTML =
+    '<button class="cc-close" onclick="document.getElementById(\'counselingCardWrap\').remove()" aria-label="閉じる">×</button>' +
+    '<div class="cc-icon">' + icon + '</div>' +
+    '<div class="cc-body">' +
+      '<div class="cc-label">' + label + '</div>' +
+      '<div class="cc-msg">' + msg + '</div>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+      '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
+      '<img src="https://www11.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" width="1" height="1" border="0" alt="" style="display:block;">' +
+    '</div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// isImmediate: 方法/他害などの即時エスカレーション
+// !isImmediate: L3単発 or riskScore>=5 による履歴ベース
+function showCrisisCard(isImmediate) {
+  const msgs = document.getElementById('chatMsgs');
+  if (!msgs || document.getElementById('crisisCardWrap')) return;
+
+  const preamble = isImmediate
+    ? 'ここまで話してくれてありがとう。<br>でも今の状態は、少し本気で心配です。<br>今回はHabioだけで抱えるより、<br>今すぐ人につながってください。'
+    : '話してくれてありがとう。<br>ひとりで抱えないでいてほしい。<br>今夜、電話一本だけかけてみてください。';
+
+  const wrap = document.createElement('div');
+  wrap.id = 'crisisCardWrap';
+  wrap.className = 'crisis-card';
+  wrap.innerHTML =
+    '<button class="cc-close" onclick="document.getElementById(\'crisisCardWrap\').remove()" aria-label="閉じる">×</button>' +
+    '<div class="cc-icon">🤍</div>' +
+    '<div class="cc-body">' +
+      '<div class="cc-label">あなたのことが心配です</div>' +
+      '<div class="cc-msg">' + preamble + '</div>' +
+      '<div class="crisis-lines">' +
+        '<div class="crisis-line"><span class="cl-name">よりそいホットライン</span><a class="cl-num" href="tel:0120279338">0120-279-338</a><span class="cl-note">24時間</span></div>' +
+        '<div class="crisis-line"><span class="cl-name">こころの健康相談ダイヤル</span><a class="cl-num" href="tel:0570064556">0570-064-556</a></div>' +
+        '<div class="crisis-line"><span class="cl-name">#いのちSOS</span><a class="cl-num" href="tel:0120061338">0120-061-338</a><span class="cl-note">24時間</span></div>' +
+        '<div class="crisis-line crisis-emergency"><span class="cl-name">緊急・今すぐ危険なとき</span><a class="cl-num" href="tel:119">119</a><span style="font-size:11px;color:var(--t-l)">または</span><a class="cl-num" href="tel:110">110</a></div>' +
+      '</div>' +
+    '</div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
 function quickProductRec(){
@@ -8863,6 +9367,423 @@ function closeComebackModal(){
   document.getElementById('comebackOverlay').classList.remove('show');
 }
 
+// ── Welcome Popup（時間帯チェックイン） ──
+
+const WELCOME_DATA = {
+  morning: {
+    title: 'おはようございます 🌱',
+    body: '今日のはじまりに、少しだけ今の状態を教えてください。',
+    choices: [
+      {id:'work',     label:'仕事'},
+      {id:'rest',     label:'お休み'},
+      {id:'sleepy',   label:'まだ眠い'},
+      {id:'dontWanna',label:'起きたくない笑'}
+    ],
+    responses: {
+      work:      ['今日も気合いだけで乗り切らなくて大丈夫です。小さく整えていきましょう。'],
+      rest:      ['休む日も、ちゃんと大事な予定です。ゆっくり自分を戻していきましょう。'],
+      sleepy:    ['眠い朝は、体が正直に話してくれてるのかもしれません。無理せず少しずつ。'],
+      dontWanna: ['そういう朝もあります。まずは起きた自分に1ポイントあげたいですね。']
+    }
+  },
+  lunch: {
+    title: 'こんにちは 🌿',
+    body: 'お昼ごはん、どうですか？',
+    choices: [
+      {id:'eaten',      label:'もう食べた'},
+      {id:'now',        label:'今から'},
+      {id:'forgot',     label:'食べ忘れてた'},
+      {id:'noAppetite', label:'食欲ない'}
+    ],
+    responses: {
+      eaten:      ['ちゃんと食べられたの、いいですね。午後の自分への小さな準備です。'],
+      now:        ['急がなくて大丈夫。できれば、少しでもバランスよくいきましょう。'],
+      forgot:     ['忙しいと忘れますよね。ひと口でも、体に戻してあげましょう。'],
+      noAppetite: ['食べられない日もあります。水分だけでも、少し入れておきましょう。']
+    }
+  },
+  afternoon: {
+    title: '少しひと息つきませんか ☕',
+    body: '午後の調子はどうですか？',
+    choices: [
+      {id:'fine',      label:'まだ元気'},
+      {id:'tired',     label:'ちょっと疲れた'},
+      {id:'sleepy',    label:'眠い'},
+      {id:'cantFocus', label:'集中できない'}
+    ],
+    responses: {
+      fine:      ['いい流れですね。でも頑張りすぎる前に、少し肩の力も抜いてください。'],
+      tired:     ['ここまで十分動いてます。少し休むのも、ちゃんと前進です。'],
+      sleepy:    ['午後の眠気、きますよね。できれば少し体を伸ばしてみましょう。'],
+      cantFocus: ['集中できない時は、脳が休憩を求めてるのかも。小さく区切りましょう。']
+    }
+  },
+  evening: {
+    title: '今日もここまでお疲れさまです 🌆',
+    body: '夕方の疲れ、どんな感じですか？',
+    choices: [
+      {id:'stillGoing', label:'まだ頑張る'},
+      {id:'exhausted',  label:'もう疲れた'},
+      {id:'goHome',     label:'帰りたい'},
+      {id:'relax',      label:'ほっとしたい'}
+    ],
+    responses: {
+      stillGoing: ['あと少しですね。でも、無理のしすぎだけは置いていきましょう。'],
+      exhausted:  ['その疲れは、今日ちゃんと動いた証拠です。少しだけ自分をゆるめてください。'],
+      goHome:     ['帰りたいと思うのも自然です。今日の自分、けっこう頑張ってます。'],
+      relax:      ['一日の中に、ほっとする時間が少しでもありますように。']
+    }
+  },
+  night: {
+    title: 'こんばんは 🌙',
+    body: '今日の終わり方、どうしたいですか？',
+    choices: [
+      {id:'relax',   label:'ゆっくりしたい'},
+      {id:'meal',    label:'食事を整えたい'},
+      {id:'todo',    label:'まだやることある'},
+      {id:'anxious', label:'少し不安'}
+    ],
+    responses: {
+      relax:   ['ゆっくりするのも、明日の自分への準備です。'],
+      meal:    ['夜は無理に完璧じゃなくて大丈夫。少し整えるだけでも十分です。'],
+      todo:    ['まだ残ってるんですね。全部じゃなくて、ひとつずつで大丈夫です。'],
+      anxious: ['夜は不安が大きく見えやすい時間です。ここに置いていっても大丈夫です。']
+    }
+  },
+  lateNight: {
+    title: 'おやすみモード 🌙',
+    body: '今夜はどう過ごしますか？',
+    choices: [
+      {id:'sleep',    label:'今から寝る'},
+      {id:'stayUp',   label:'まだ寝ない'},
+      {id:'cantSleep',label:'眠れない'},
+      {id:'talk',     label:'少し話したい'}
+    ],
+    responses: {
+      sleep:     ['今日もお疲れさまでした。明日の自分に、少し優しく眠れますように。'],
+      stayUp:    ['夜更かしの日もあります。でも、少しだけ体を休ませる準備もしておきましょう。'],
+      cantSleep: ['眠れない夜はつらいですよね。目を閉じるだけでも、体は少し休めます。'],
+      talk:      ['もちろんです。夜にひとりで抱えすぎなくて大丈夫です。']
+    }
+  }
+};
+
+function getWelcomeSlot() {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 11) return 'morning';
+  if (h >= 11 && h < 14) return 'lunch';
+  if (h >= 14 && h < 16) return 'afternoon';
+  if (h >= 16 && h < 19) return 'evening';
+  if (h >= 19 && h < 22) return 'night';
+  return 'lateNight';
+}
+
+// 「回答済み」スロット管理（"あとで"・"×" では保存しない）
+// Store._p = 'habio_' なのでキーに habio_ を付けない → localStorage実キー: habio_welcome_popup_answered_slots_YYYY-MM-DD
+function getWelcomeAnsweredSlots() {
+  return Store.get('welcome_popup_answered_slots_' + today(), []);
+}
+
+function markWelcomeSlotAnswered(slot) {
+  const slots = getWelcomeAnsweredSlots();
+  if (!slots.includes(slot)) Store.set('welcome_popup_answered_slots_' + today(), [...slots, slot]);
+}
+
+function pickWelcomeMsg(slotKey, choiceKey) {
+  const pool = ((WELCOME_DATA[slotKey] || {}).responses || {})[choiceKey] || ['ありがとう。'];
+  const history = Store.get('welcome_message_history', []);
+  let chosen = 0;
+  for (let i = 0; i < pool.length; i++) {
+    if (!history.includes(slotKey + '_' + choiceKey + '_' + i)) { chosen = i; break; }
+    if (i === pool.length - 1) chosen = i;
+  }
+  const msgId = slotKey + '_' + choiceKey + '_' + chosen;
+  const updated = history.filter(x => x !== msgId);
+  updated.push(msgId);
+  Store.set('welcome_message_history', updated.slice(-30));
+  return pool[chosen];
+}
+
+function maybeShowWelcomePopup() {
+  console.log('[Habio welcome] maybeShowWelcomePopup called');
+
+  const slot = getWelcomeSlot();
+  const answeredSlots = getWelcomeAnsweredSlots();
+  // onb_done ではなく「今オンボーディング画面が出ているか」でチェック（既存ユーザーも表示できる）
+  const onbOverlay = document.getElementById('onbOverlay');
+  const onbActive = !!(onbOverlay && onbOverlay.style.display !== 'none' && !onbOverlay.classList.contains('done'));
+  const overlayExists = !!document.getElementById('welcomeOverlay');
+  const cb = document.getElementById('comebackOverlay');
+  const comebackShowing = !!(cb && cb.classList.contains('show'));
+  const alreadyAnswered = answeredSlots.includes(slot);
+
+  // 実際のlocalStorageキー: habio_welcome_popup_answered_slots_YYYY-MM-DD
+  console.log('[Habio welcome]', {
+    slot,
+    localStorageKey: 'habio_welcome_popup_answered_slots_' + today(),
+    answeredSlots,
+    onbActive,
+    overlayExists,
+    comebackShowing,
+    alreadyAnswered,
+    shouldShow: !onbActive && !overlayExists && !comebackShowing && !alreadyAnswered
+  });
+
+  if (onbActive)       { console.log('[Habio welcome] skip: onboarding in progress'); return; }
+  if (overlayExists)   { console.log('[Habio welcome] skip: welcomeOverlay already in DOM'); return; }
+  if (comebackShowing) { console.log('[Habio welcome] skip: comebackOverlay is showing'); return; }
+  if (alreadyAnswered) { console.log('[Habio welcome] skip: slot already answered today'); return; }
+
+  const delay = answeredSlots.length === 0 ? 600 : 400;
+  console.log('[Habio welcome] scheduling buildWelcomePopup in', delay, 'ms for slot:', slot);
+  setTimeout(() => buildWelcomePopup(slot), delay);
+}
+
+// ── テスト用 Console コマンド ──
+// 手動表示:       testWelcomePopup()
+// 強制表示(最小): forceWelcomePopup()
+// 現在スロット:   getWelcomeSlot()
+// 回答済み確認:   localStorage.getItem('habio_welcome_popup_answered_slots_' + new Date().toISOString().slice(0,10))
+// 回答済みリセット: localStorage.removeItem('habio_welcome_popup_answered_slots_' + new Date().toISOString().slice(0,10))
+// onb_done確認:  localStorage.getItem('habio_onb_done')
+
+window.testWelcomePopup = function() {
+  console.log('[Habio welcome test] start');
+  const existing = document.getElementById('welcomeOverlay');
+  if (existing) { existing.remove(); console.log('[Habio welcome test] removed existing overlay'); }
+  const slot = getWelcomeSlot();
+  console.log('[Habio welcome test] slot:', slot, '| WELCOME_DATA keys:', Object.keys(WELCOME_DATA));
+  buildWelcomePopup(slot);
+  setTimeout(() => {
+    const el = document.getElementById('welcomeOverlay');
+    console.log('[Habio welcome test] DOM check after 100ms:', el ? 'FOUND (z-index=' + el.style.zIndex + ')' : 'NOT FOUND');
+  }, 100);
+};
+
+// 最小DOM・inline styleのみで強制表示（CSS問題の切り分け用）
+window.forceWelcomePopup = function() {
+  console.log('[Habio force] start');
+  const old = document.getElementById('welcomeForceTest');
+  if (old) old.remove();
+  const div = document.createElement('div');
+  div.id = 'welcomeForceTest';
+  div.style.cssText = 'position:fixed;inset:0;top:0;left:0;width:100%;height:100%;z-index:999999;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;';
+  div.innerHTML = '<div style="background:white;border-radius:20px;padding:28px 24px;width:86%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2);">' +
+    '<p style="font-size:18px;font-weight:700;margin:0 0 12px;">おはようございます 🌱</p>' +
+    '<p style="font-size:13.5px;color:#555;line-height:1.75;margin:0 0 16px;">これは強制表示テストです。<br>このカードが見えればCSS/DOM自体は正常です。</p>' +
+    '<button onclick="document.getElementById(\'welcomeForceTest\').remove()" style="background:#7ec87e;color:#fff;border:none;padding:10px 24px;border-radius:20px;font-size:14px;cursor:pointer;">閉じる</button>' +
+    '</div>';
+  document.body.appendChild(div);
+  console.log('[Habio force] appended. Check if you see the card on screen.');
+};
+
+function buildWelcomePopup(slot) {
+  console.log('[Habio welcome render] buildWelcomePopup called, slot:', slot);
+
+  if (document.getElementById('welcomeOverlay')) {
+    console.log('[Habio welcome render] skip: welcomeOverlay already exists');
+    return;
+  }
+  const data = WELCOME_DATA[slot];
+  if (!data) {
+    console.log('[Habio welcome render] skip: no data for slot', slot, '| available:', Object.keys(WELCOME_DATA));
+    return;
+  }
+
+  const choicesHTML = data.choices
+    .map(c => '<button class="welcome-choice-btn" onclick="handleWelcomeChoice(\'' + slot + '\',\'' + c.id + '\')">' + c.label + '</button>')
+    .join('');
+
+  const overlay = document.createElement('div');
+  overlay.id = 'welcomeOverlay';
+  overlay.className = 'welcome-overlay';
+  // inline style で CSS依存を排除し z-index を確実に適用
+  overlay.style.cssText = 'position:fixed;inset:0;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.22);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+  overlay.innerHTML =
+    '<div class="welcome-card" style="background:#fff;border-radius:22px;padding:24px 20px 18px;width:100%;max-width:360px;position:relative;box-shadow:0 10px 36px rgba(0,0,0,.13);box-sizing:border-box;">' +
+      '<button class="welcome-close" onclick="closeWelcomePopup()" aria-label="閉じる" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:18px;color:#bbb;cursor:pointer;">×</button>' +
+      '<div class="welcome-title" style="font-size:18px;font-weight:700;color:#2d3d2d;margin-bottom:8px;">' + data.title + '</div>' +
+      '<div class="welcome-body" style="font-size:13.5px;color:#607060;line-height:1.75;margin-bottom:18px;">' + data.body + '</div>' +
+      '<div class="welcome-choices" id="welcomeChoices" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;">' + choicesHTML + '</div>' +
+      '<button class="welcome-skip-btn" id="welcomeSkipBtn" onclick="handleWelcomeChoice(\'' + slot + '\',\'kotaeNai\')" style="background:none;border:1.5px solid #e0eae0;border-radius:12px;padding:9px 8px;font-size:12.5px;color:#a0b4a0;cursor:pointer;width:100%;margin-top:4px;">答えない</button>' +
+      '<div class="welcome-response" id="welcomeResponse" style="display:none;background:#f7fcf7;border-radius:12px;padding:14px 15px;border-left:3px solid #9ecf9e;margin-bottom:14px;margin-top:12px;"></div>' +
+      '<div class="welcome-actions" id="welcomeActions" style="display:flex;justify-content:flex-end;margin-top:10px;">' +
+        '<button class="welcome-later" onclick="closeWelcomePopup()" style="background:none;border:none;font-size:13px;color:#aabcaa;cursor:pointer;padding:8px 4px;">あとで</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  console.log('[Habio welcome render] DOM appended. Element:', document.getElementById('welcomeOverlay'));
+}
+
+function handleWelcomeChoice(slot, choiceKey) {
+  const choicesEl = document.getElementById('welcomeChoices');
+  const skipEl    = document.getElementById('welcomeSkipBtn');
+  const responseEl = document.getElementById('welcomeResponse');
+  const actionsEl  = document.getElementById('welcomeActions');
+
+  if (choicesEl) choicesEl.style.display = 'none';
+  if (skipEl)    skipEl.style.display    = 'none';
+
+  // 「答えない」：ポイントなし、軽い一言のみ
+  if (choiceKey === 'kotaeNai') {
+    const skipMsgs = [
+      '大丈夫です。答えたくない時もあります 🌱',
+      'また話したくなったら、いつでも大丈夫です。'
+    ];
+    const msg = skipMsgs[Math.floor(Math.random() * skipMsgs.length)];
+    if (responseEl) {
+      responseEl.style.display = 'block';
+      responseEl.innerHTML = '<div class="welcome-response-text">' + msg + '</div>';
+    }
+    if (actionsEl) {
+      actionsEl.innerHTML = '<button class="welcome-thanks" onclick="closeWelcomePopup()">ありがとう</button>';
+    }
+    markWelcomeSlotAnswered(slot);
+    return;
+  }
+
+  // 通常回答：今日の一言 + 初回なら +1pt
+  const msg = pickWelcomeMsg(slot, choiceKey);
+  let ptHTML = '';
+  if (Store.get('habio_welcome_point_date', '') !== today()) {
+    Store.set('habio_welcome_point_date', today());
+    addPoints(1, 'welcome_checkin', '今日のチェックイン');
+    ptHTML = '<span class="welcome-pt">今日のチェックイン +1pt 🌱</span>';
+  }
+
+  if (responseEl) {
+    responseEl.style.display = 'block';
+    responseEl.innerHTML =
+      '<div class="welcome-response-label">今日の一言 🌱 ' + ptHTML + '</div>' +
+      '<div class="welcome-response-text">' + msg + '</div>';
+  }
+  if (actionsEl) {
+    actionsEl.innerHTML = '<button class="welcome-thanks" onclick="closeWelcomePopup()">ありがとう</button>';
+  }
+  markWelcomeSlotAnswered(slot);
+}
+
+// "あとで"・"×" で閉じる → 回答済みにしない（同スロットで再表示OK）
+function closeWelcomePopup() {
+  const overlay = document.getElementById('welcomeOverlay');
+  if (!overlay) return;
+  overlay.style.transition = 'opacity .2s';
+  overlay.style.opacity = '0';
+  setTimeout(() => overlay.remove(), 220);
+}
+
+// ★★★ WELCOME DEBUG PANEL FUNCTIONS — 動作確認後に削除 ★★★
+function showWelcomeDebug() {
+  const panel = document.getElementById('welcomeDebugOverlay');
+  if (!panel) return;
+  panel.style.display = 'block';
+  wdbRefresh();
+}
+function closeWelcomeDebug() {
+  const panel = document.getElementById('welcomeDebugOverlay');
+  if (panel) panel.style.display = 'none';
+}
+function wdbLog(msg) {
+  const log = document.getElementById('welcomeDebugLog');
+  if (!log) return;
+  const line = document.createElement('div');
+  line.style.cssText = 'border-bottom:1px solid #222;padding-bottom:3px;';
+  line.textContent = new Date().toLocaleTimeString('ja-JP') + '  ' + msg;
+  log.insertBefore(line, log.firstChild);
+}
+function wdbRefresh() {
+  const body = document.getElementById('welcomeDebugBody');
+  if (!body) return;
+
+  const todayStr = today();
+  const lsKey   = 'habio_welcome_popup_answered_slots_' + todayStr;
+  const slot     = getWelcomeSlot();
+  const answered = getWelcomeAnsweredSlots();
+
+  const onbOverlay    = document.getElementById('onbOverlay');
+  const onbActive     = !!(onbOverlay && onbOverlay.style.display !== 'none' && !onbOverlay.classList.contains('done'));
+
+  const cb            = document.getElementById('comebackOverlay');
+  const comebackShow  = !!(cb && cb.classList.contains('show'));
+
+  const overlayInDOM  = !!document.getElementById('welcomeOverlay');
+  const alreadyAns    = answered.includes(slot);
+  const shouldShow    = !onbActive && !overlayInDOM && !comebackShow && !alreadyAns;
+
+  let skipReason = '—';
+  if (onbActive)     skipReason = 'onboarding画面が表示中';
+  else if (overlayInDOM) skipReason = 'welcomeOverlayがすでにDOM内に存在';
+  else if (comebackShow) skipReason = 'comebackOverlayが表示中';
+  else if (alreadyAns)   skipReason = 'このスロットは回答済み (' + slot + ')';
+  else                   skipReason = 'なし（表示されるはず）';
+
+  const rows = [
+    ['現在スロット',        slot],
+    ['回答済みスロット',    answered.length ? answered.join(', ') : '（なし）'],
+    ['localStorageキー',    lsKey],
+    ['LSの実際の値',        localStorage.getItem(lsKey) || '（未設定）'],
+    ['onb_done',           localStorage.getItem('habio_onb_done') || '（未設定）'],
+    ['onbOverlay 表示中？', onbActive  ? '🔴 YES' : '🟢 NO'],
+    ['onbOverlay display', onbOverlay?.style.display || '（インラインなし）'],
+    ['onbOverlay.done?',   onbOverlay?.classList.contains('done') ? 'YES' : 'NO'],
+    ['comebackOverlay?',   comebackShow ? '🔴 YES' : '🟢 NO'],
+    ['welcomeOverlay DOM?',overlayInDOM ? '🔴 YES' : '🟢 NO'],
+    ['alreadyAnswered?',   alreadyAns   ? '🔴 YES' : '🟢 NO'],
+    ['shouldShow?',        shouldShow   ? '🟢 YES → 表示されるはず' : '🔴 NO → ブロック中'],
+    ['skip理由',           skipReason],
+  ];
+
+  body.innerHTML = rows.map(([k, v]) =>
+    '<div style="display:flex;gap:8px;">' +
+      '<span style="color:#888;min-width:140px;flex-shrink:0;">' + k + '</span>' +
+      '<span style="color:#e0e0e0;">' + v + '</span>' +
+    '</div>'
+  ).join('');
+
+  wdbLog('状態を更新しました — shouldShow: ' + shouldShow + ' / slot: ' + slot);
+}
+function wdbForce() {
+  wdbLog('forceWelcomePopup() を実行...');
+  closeWelcomeDebug();
+  setTimeout(() => { forceWelcomePopup(); wdbLog('forceWelcomePopup() 完了 — 画面上に緑のカードが出れば DOM/CSS は正常'); }, 200);
+}
+function wdbTest() {
+  wdbLog('testWelcomePopup() を実行...');
+  closeWelcomeDebug();
+  setTimeout(() => {
+    const existing = document.getElementById('welcomeOverlay');
+    if (existing) existing.remove();
+    const slot = getWelcomeSlot();
+    buildWelcomePopup(slot);
+    setTimeout(() => {
+      const el = document.getElementById('welcomeOverlay');
+      const result = el ? 'DOM挿入成功 (z-index=' + el.style.zIndex + ')' : 'DOM挿入失敗';
+      wdbLog('testWelcomePopup 結果: ' + result);
+    }, 100);
+  }, 200);
+}
+function wdbResetSlots() {
+  const lsKey = 'habio_welcome_popup_answered_slots_' + today();
+  localStorage.removeItem(lsKey);
+  wdbLog('回答済みスロットを削除: ' + lsKey);
+  wdbRefresh();
+}
+function wdbClearAll() {
+  const todayStr = today();
+  const targets = [
+    'habio_welcome_popup_answered_slots_' + todayStr,
+    'habio_welcome_message_history',
+    'habio_welcome_point_date',
+    'habio_habio_welcome_popup_answered_slots_' + todayStr,
+    'habio_habio_welcome_message_history',
+    'habio_habio_welcome_point_date',
+  ];
+  targets.forEach(k => { localStorage.removeItem(k); });
+  wdbLog('Welcome関連 ' + targets.length + ' キーを削除しました');
+  wdbRefresh();
+}
+// ★★★ END WELCOME DEBUG PANEL FUNCTIONS ★★★
+
 /* ── INIT ── */
 function init(){
   if(!Store.get('start_date')) Store.set('start_date',today());
@@ -8944,8 +9865,11 @@ function init(){
     const delay=Store.get('onb_done')?500:900;
     setTimeout(()=>{
       ld.classList.add('ld-out');
-      setTimeout(()=>{ld.style.display='none';},580);
+      setTimeout(()=>{ld.style.display='none'; maybeShowWelcomePopup();},580);
     },delay);
+  } else {
+    // loading要素がない場合のフォールバック
+    setTimeout(maybeShowWelcomePopup, 800);
   }
 }
 init();
@@ -9682,6 +10606,17 @@ async function handleNotifToggle(key, enabled) {
 
   // Push 購読
   await subscribeForPush();
+
+  // 通知ON初回だけ +100pt（ON/OFFを繰り返しても再付与しない）
+  if (!Store.get('notification_bonus_claimed', false)) {
+    Store.set('notification_bonus_claimed', true);
+    const bonusEarned = addPoints(100, 'notification_bonus', '通知ON初回ボーナス');
+    syncPointsToServer(bonusEarned, 'notification_bonus', '通知ON初回ボーナス', 'notification_bonus_first');
+    showToast('Habioからの声かけを受け取れるようになりました。\nたまにそっとお知らせします ☕　+' + bonusEarned + 'pt');
+  } else {
+    showToast('Habioからそっと声をかけます ☕');
+  }
+
   renderNotifStatus();
 }
 
@@ -9822,11 +10757,11 @@ function showPwaBanner(force) {
   if (_isIOS && !_pwaPrompt) {
     // iOS Safari: 手動追加ガイド
     if (msgEl) msgEl.innerHTML =
-      'ホーム画面に追加すると、毎日開きやすくなります。<br>' +
-      '<span class="pwa-ios">Safari の <b>共有ボタン</b>（↑）→「ホーム画面に追加」を選んでください。</span>';
+      'Habioをホームに置くと、スマホの中でそっと声をかけやすくなります ☕<br>' +
+      '<span class="pwa-ios">iPhoneの方は、Safari 下部の <b>共有ボタン</b>（↑）から「ホーム画面に追加」を選んでください。少し手間ですが、これでHabioがアプリみたいに使いやすくなります。</span>';
     if (btnEl) btnEl.style.display = 'none';
   } else if (_pwaPrompt) {
-    if (msgEl) msgEl.textContent = 'ホーム画面に追加すると、毎日開きやすくなります。';
+    if (msgEl) msgEl.textContent = 'Habioをホームに置くと、スマホの中でそっと声をかけやすくなります ☕';
     if (btnEl) btnEl.style.display = '';
   } else {
     return; // インストール不可環境
