@@ -1988,7 +1988,7 @@ body.night-bg{background:#C8C3BB;}
     <div class="habio-card mb14">
       <div class="habio-av">🌱</div>
       <div>
-        <div class="habio-from">TODAY'S MESSAGE</div>
+        <div class="habio-from">今日のひとこと</div>
         <div class="habio-msg" id="habitoMsg">今日は水分を少し意識してみましょう。それだけで、体は喜びます。</div>
       </div>
     </div>
@@ -3860,7 +3860,7 @@ function initHome(){
   }
 
   const msgEl=document.getElementById('habitoMsg');
-  if(msgEl){ const msgs=night?NIGHT_MSGS:DAY_MSGS; msgEl.textContent=msgs[now.getDay()%msgs.length]; }
+  if(msgEl) msgEl.textContent=getPersonalizedMessage(night);
 
   const foodMsgEl=document.getElementById('foodAiMsg');
   if(foodMsgEl) foodMsgEl.textContent=FOOD_TIPS[now.getDay()%FOOD_TIPS.length];
@@ -3874,6 +3874,111 @@ function initHome(){
   const diff=Math.round((new Date()-new Date(start))/(1000*60*60*24))+1;
   const pmEl=document.getElementById('profileMeta');
   if(pmEl) pmEl.textContent='Habio を使いはじめて '+diff+'日目';
+}
+
+/* ── PERSONALIZED MESSAGE (今日のひとこと) ── */
+function getPersonalizedMessage(isNightMode){
+  const now=new Date(), h=now.getHours();
+
+  // ── signals ──
+  const moodHist =Store.get('mood_history',[]).slice(0,7);
+  const recent3  =moodHist.slice(0,3);
+  const tiredCount=recent3.filter(m=>m.mood==='つかれた').length;
+  const goodCount =recent3.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
+  const todayMood =moodHist.find(m=>m.date===today());
+
+  const wins  =Store.get('wins',[]);
+  const streak=calcStreak(wins);
+
+  // detectEmotionTags は mood_history(3日)+chat_history(30件) を読む
+  const eTags     =detectEmotionTags();
+  const hasAnxiety=eTags.includes('不安')||eTags.includes('頭が止まらない');
+  const isLonely  =eTags.includes('孤独');
+
+  const hasFoodToday=Store.get('food_log_'+today(),[]).length>0;
+
+  // 前回表示したキー（連続回避）
+  const lastKey=Store.get('habito_msg_key','');
+
+  // ── 優先順位でメッセージ候補を積む ──
+  const pool=[];
+
+  // 深夜（眠れない時間帯）
+  if(h>=0&&h<5){
+    pool.push(
+      {key:'dn_think', text:'夜は、考えごとが少し大きく見えやすい時間です。'},
+      {key:'dn_rest',  text:'眠れなくても、横になっているだけでいい。'}
+    );
+  }
+
+  // 疲れた が直近3日中2回以上
+  if(tiredCount>=2){
+    pool.push(
+      {key:'tired_restore', text:'最近、少し"戻す時間"が少なくなってるかも ☕'},
+      {key:'tired_ok',      text:'今日は、休む側に寄せても大丈夫です。'}
+    );
+  } else if(todayMood?.mood==='つかれた'){
+    pool.push(
+      {key:'tired_today', text:'疲れている日は、整えようとするだけで十分です。'}
+    );
+  }
+
+  // 不安 / 考えすぎちゃう がチャットや気分に出ている
+  if(hasAnxiety){
+    pool.push(
+      {key:'anx_slow',  text:'今日は、答えを急がなくても大丈夫です。'},
+      {key:'anx_watch', text:'夜に考えごとが増えやすい日かもしれません。'}
+    );
+  }
+
+  // 孤独感
+  if(isLonely){
+    pool.push(
+      {key:'lonely_here', text:'ここに来てくれていること、ちゃんと見ていますよ。'}
+    );
+  }
+
+  // 好調が続いている
+  if(goodCount>=2){
+    pool.push(
+      {key:'good_rest', text:'前より、ちゃんと休もうとしてるのいい感じです。'}
+    );
+  }
+
+  // 継続 streak
+  if(streak>=14){
+    pool.push(
+      {key:'streak14', text:streak+'日、続けようとしてること。ちゃんと積み重なってます。'}
+    );
+  } else if(streak>=7){
+    pool.push(
+      {key:'streak7', text:'続けようとしてるの、ちゃんと積み重なってます。'}
+    );
+  } else if(streak>=3){
+    pool.push(
+      {key:'streak3', text:'少しずつ、整ってきてる感じあります。'}
+    );
+  }
+
+  // 今日食事を記録した
+  if(hasFoodToday){
+    pool.push(
+      {key:'food_today', text:'ちゃんと食べようとしてるの、いい感じです 🍙'}
+    );
+  }
+
+  // ── 前回と同じは避ける ──
+  const available=pool.filter(c=>c.key!==lastKey);
+  const chosen=(available.length>0?available:pool)[0];
+
+  if(chosen){
+    Store.set('habito_msg_key',chosen.key);
+    return chosen.text;
+  }
+
+  // ── フォールバック: 従来の曜日固定テキスト ──
+  const msgs=isNightMode?NIGHT_MSGS:DAY_MSGS;
+  return msgs[now.getDay()%msgs.length];
 }
 
 /* ── DAILY CONTENT ── */
