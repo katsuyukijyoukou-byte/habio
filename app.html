@@ -1567,6 +1567,79 @@ body.night-bg{background:#C8C3BB;}
   font-size:13px;color:var(--t-m);line-height:1.8;
 }
 
+/* ── EMOTIONAL COMMENT ── */
+.emotional-comment{
+  margin:0 16px 16px;padding:14px 16px;
+  background:var(--g-p);border-radius:var(--r-l);
+  font-size:12px;color:var(--t);line-height:1.7;
+  border-left:3px solid var(--g);
+}
+.emotional-comment .em-label{font-size:10px;font-weight:700;color:var(--g);margin-bottom:4px;}
+
+/* ── PROGRESS HINTS ── */
+.progress-hints{padding:0 16px 20px;display:flex;flex-direction:column;gap:8px;}
+.progress-hint{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--card);border-radius:var(--r-m);
+  font-size:12px;color:var(--t);border:1px solid var(--border);
+}
+.progress-hint .ph-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-hint .ph-bar{height:100%;background:var(--g);border-radius:2px;transition:width .5s ease;}
+
+/* ── AI SESSION MODAL ── */
+.ai-session-theme-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:14px 16px;background:var(--card);border-radius:var(--r-l);
+  border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);
+  cursor:pointer;text-align:left;
+  transition:background .15s,border-color .15s;
+}
+.ai-session-theme-btn:active{background:var(--g-p);border-color:var(--g);}
+.ai-session-theme-btn .btn-em{font-size:22px;flex-shrink:0;}
+.session-active-box{
+  margin:16px;padding:20px;background:var(--g-p);
+  border-radius:var(--r-xl);border:2px solid var(--g);text-align:center;
+}
+.session-timer-num{font-size:40px;font-weight:800;color:var(--g);letter-spacing:2px;font-variant-numeric:tabular-nums;}
+.session-timer-lbl{font-size:11px;color:var(--t-m);margin-top:4px;}
+.session-end-btn{
+  margin-top:14px;padding:10px 24px;border-radius:var(--r-f);
+  background:transparent;border:1.5px solid var(--g);
+  color:var(--g);font-size:13px;font-weight:700;cursor:pointer;
+}
+
+/* ── TENDENCY / REPORT MODAL ── */
+.tendency-sheet{
+  width:100%;max-height:90%;background:var(--bg-w);
+  border-radius:var(--r-l) var(--r-l) 0 0;overflow-y:auto;
+  padding:0 0 40px;
+  transform:translateY(30px);transition:transform .35s cubic-bezier(.25,.85,.25,1);
+}
+.rewards-overlay.show .tendency-sheet{transform:translateY(0);}
+.tendency-result{
+  margin:0 16px 16px;padding:20px;
+  background:var(--card);border-radius:var(--r-xl);
+  border-left:4px solid var(--g);line-height:1.8;font-size:13px;color:var(--t);
+}
+.report-question-card{
+  margin:0 16px 12px;padding:16px;background:var(--card);
+  border-radius:var(--r-l);border:1.5px solid var(--border);
+}
+.report-q-label{font-size:12px;font-weight:700;color:var(--t);margin-bottom:10px;}
+.report-q-options{display:flex;flex-wrap:wrap;gap:8px;}
+.report-q-option{
+  padding:7px 14px;border-radius:var(--r-f);border:1.5px solid var(--border);
+  font-size:12px;background:var(--bg);color:var(--t);cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.report-q-option.selected{background:var(--g);border-color:var(--g);color:#fff;}
+.report-section{
+  margin:0 16px 16px;padding:16px;background:var(--card);
+  border-radius:var(--r-l);
+}
+.report-section-title{font-size:12px;font-weight:700;color:var(--g);margin-bottom:8px;}
+.report-section-body{font-size:12px;color:var(--t);line-height:1.8;}
+
 /* ── COMEBACK MODAL ── */
 .comeback-overlay{
   position:absolute;inset:0;
@@ -2723,6 +2796,11 @@ body.night-bg{background:#C8C3BB;}
           </div>
         </div>
       </div>
+      <!-- AI emotional comment -->
+      <div class="emotional-comment" id="rwEmotionalComment"></div>
+      <!-- Progress hints -->
+      <div class="rewards-sec-lbl" id="rwProgressHintsLbl">💡 あと少し</div>
+      <div class="progress-hints" id="rewardsProgressHints" style="display:none;"></div>
       <div class="rewards-sec-lbl">⭐ POINT BADGES — 10pt ごとに獲得</div>
       <div class="badges-grid" id="pointBadgesGrid"></div>
       <div class="rewards-sec-lbl">🔥 STREAK BADGES — 継続で獲得</div>
@@ -2782,6 +2860,81 @@ body.night-bg{background:#C8C3BB;}
           会員を辞める
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- AI SESSION MODAL -->
+  <div class="rewards-overlay" id="aiSessionOverlay" style="z-index:9500;" onclick="onAiSessionOverlayClick(event)">
+    <div class="rewards-sheet" id="aiSessionSheet">
+      <div class="rewards-handle"></div>
+      <!-- Step 1: テーマ選択 -->
+      <div id="aiSessionStep1">
+        <div style="padding:20px 20px 4px;">
+          <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🌿 HABIO 特別セッション</div>
+          <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;">今日は何について話しますか？</div>
+          <div style="font-size:12px;color:var(--t-m);margin-top:4px;">10分、あなたのための時間です。</div>
+        </div>
+        <div id="aiSessionThemeList" style="display:grid;gap:8px;padding:16px;"></div>
+      </div>
+      <!-- Step 2: サブテーマ選択 -->
+      <div id="aiSessionStep2" style="display:none;">
+        <div style="padding:16px 20px 4px;display:flex;align-items:center;gap:10px;">
+          <button onclick="aiSessionGoStep(1)" style="background:none;border:none;font-size:20px;color:var(--t-m);cursor:pointer;padding:0;">←</button>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🌿 HABIO 特別セッション</div>
+            <div style="font-size:15px;font-weight:800;color:var(--t);margin-top:2px;">もう少し教えてください</div>
+          </div>
+        </div>
+        <div id="aiSessionSubList" style="display:grid;gap:8px;padding:0 16px 24px;"></div>
+      </div>
+      <!-- Step 3: セッション進行中 -->
+      <div id="aiSessionStep3" style="display:none;">
+        <div style="padding:24px 20px 8px;text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--g);">🌿 特別セッション進行中</div>
+          <div class="session-active-box">
+            <div class="session-timer-num" id="aiSessionTimerDisplay">10:00</div>
+            <div class="session-timer-lbl">残り時間</div>
+          </div>
+          <div style="font-size:12px;color:var(--t-m);margin-top:12px;line-height:1.7;">チャットタブで会話を続けましょう。<br>時間が来たら、Habioが締めくくります。</div>
+        </div>
+        <div style="padding:0 16px 8px;display:grid;gap:10px;">
+          <button onclick="closeAiSessionAndGoChat()" style="padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">💬 チャットを開く</button>
+          <button class="session-end-btn" onclick="endAiSession(true)">セッションを終了する</button>
+        </div>
+        <div style="height:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENDENCY MODAL -->
+  <div class="rewards-overlay" id="tendencyOverlay" style="z-index:9500;" onclick="if(event.target===this)closeTendencyModal()">
+    <div class="tendency-sheet" id="tendencySheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🪞 YOUR TENDENCY</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;">あなたの傾向をお伝えします</div>
+        <div style="font-size:12px;color:var(--t-m);margin-top:4px;">Habioが利用履歴から、そっと分析しました。</div>
+      </div>
+      <div id="tendencyResultArea" style="padding:16px 0 8px;"></div>
+      <div style="margin:0 16px 16px;padding:14px 16px;background:var(--g-p);border-radius:var(--r-l);font-size:12px;color:var(--t-m);line-height:1.7;" id="tendencyNudge"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeTendencyModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HABIT REPORT MODAL -->
+  <div class="rewards-overlay" id="reportOverlay" style="z-index:9500;" onclick="if(event.target===this)closeReportModal()">
+    <div class="tendency-sheet" id="reportSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">📊 HABIT ANALYSIS</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="reportTitle">習慣分析レポート</div>
+        <div style="font-size:12px;color:var(--t-m);margin-top:4px;" id="reportSub">過去1ヶ月を振り返り、次の1ヶ月への提案を。</div>
+      </div>
+      <div id="reportIntakeArea" style="padding:8px 0;"></div>
+      <div id="reportResultArea" style="display:none;padding:8px 0;"></div>
+      <div style="padding:0 16px 32px;" id="reportActions"></div>
     </div>
   </div>
 
@@ -3187,6 +3340,8 @@ async function generateAIResponse(userMessage, context=null){
   const ctx=context||buildAIContext();
 
   // Build context payload for the worker
+  const sessionTheme=Store.get('ai_session_theme',null);
+  const sessionActive=Store.get('ai_session_end_at',0)>Date.now();
   const ctxPayload={
     streak: ctx.streak||0,
     hour: ctx.hour||new Date().getHours(),
@@ -3201,6 +3356,9 @@ async function generateAIResponse(userMessage, context=null){
       Store.get('onb_answers',{}).q_ideal||'',
       Store.get('sleep_goal',7)
     ),
+    sessionTheme: sessionActive&&sessionTheme?`${sessionTheme.name}→${sessionTheme.sub}`:null,
+    noAffiliate: sessionActive&&Store.get('ai_session_no_affiliate',false),
+    suggestRelation: sessionActive&&Store.get('ai_session_is_relation',false),
   };
 
   // Send last 10 messages as history (5 exchanges)
@@ -6472,10 +6630,29 @@ const PR_BADGES=[
   {id:'pr_lv3',em:'🏅',name:'PR探索者 Lv.3',count:30,level:3},
 ];
 const REWARD_ITEMS=[
-  {id:'ai_msg',   em:'🤖',name:'AIとの特別会話',  cost:10,desc:'Habio AIと特別なテーマで深く話す'},
-  {id:'theme',    em:'🎨',name:'テーマカラー解放', cost:20,desc:'限定テーマカラーが使えるようになる'},
-  {id:'analysis', em:'📊',name:'習慣分析レポート', cost:30,desc:'AIが1ヶ月の習慣を詳しく分析'},
-  {id:'title',    em:'👑',name:'称号「整い達人」', cost:50,desc:'プロフィールに特別称号が表示される'},
+  {id:'ai_session',em:'🌿',name:'AIとの特別セッション',       cost:10,desc:'10分集中。テーマを選んで、Habioと深く話す'},
+  {id:'tendency',  em:'🪞',name:'あなたの傾向をお伝えします', cost:20,desc:'Habioが、あなたの傾向を1つだけそっと分析します'},
+  {id:'analysis',  em:'📊',name:'習慣分析レポート',           cost:30,desc:'過去1ヶ月を振り返り、次の1ヶ月への提案を'},
+  {id:'title',     em:'👑',name:'称号「整い達人」',            cost:50,desc:'あなたはHabioを極めし者です。特典？ありません。でも少しすごい。'},
+];
+
+const AI_SESSION_THEMES=[
+  {id:'health',   em:'🌿',name:'健康について話したい',
+    subs:['睡眠を整えたい','疲れを減らしたい','食生活を見直したい','運動不足を改善したい','ストレスを減らしたい']},
+  {id:'diet',     em:'🥗',name:'楽して痩せたい',
+    subs:['お金をかけずに痩せたい','お金をかけても最短で','運動せずに体を整えたい','食事を少し変えたい','忙しくてもできる方法','続けられる方法が知りたい'],
+    noAffiliateIdx:[0,2,4]},
+  {id:'worry',    em:'🌙',name:'悩み相談したい',
+    subs:['家族のこと','恋人・パートナーのこと','仕事のこと','お金のこと','将来のこと','その他の悩み'],
+    relationIdx:1},
+  {id:'relation', em:'🤝',name:'人間関係',
+    subs:['職場の人間関係','距離感が難しい','気を遣いすぎる','嫌われたくない','LINEや返信が気になる','人付き合いで疲れる']},
+  {id:'morning',  em:'🌅',name:'朝活したい',
+    subs:['早起きしたい','朝にやる気が出ない','夜更かしをやめたい','朝習慣を作りたい','朝の時間を有効活用したい','続けられる朝活が知りたい']},
+  {id:'continue', em:'🔥',name:'続けられない',
+    subs:['三日坊主になる','やる気が続かない','完璧を求めすぎる','時間がない','途中で飽きる','誰かに応援されたい']},
+  {id:'myself',   em:'✨',name:'自分を整えたい',
+    subs:['心を落ち着かせたい','自信を持ちたい','ネガティブ思考を減らしたい','生活リズムを整えたい','自分を好きになりたい','毎日を少しラクにしたい']},
 ];
 
 function getTodayPts(){
@@ -6693,33 +6870,319 @@ function exchangeReward(rewardId){
   const hist=Store.get('reward_history',[]);
   hist.unshift({rewardId,name:reward.name,cost:reward.cost,date:today(),ts:new Date().toISOString()});
   Store.set('reward_history',hist.slice(0,50));
-  deliverReward(reward);
-  openRewardsModal();
+  closeRewardsModal();
+  setTimeout(()=>deliverReward(reward),300);
 }
 
 function deliverReward(reward){
-  if(reward.id==='ai_msg'){
-    closeRewardsModal();
-    setTimeout(()=>{
-      goTab('chat');
-      const inp=document.getElementById('chatInput');
-      if(inp) inp.value='最近の私の習慣について、特別に深く分析してもらえますか？';
-      showToast('🤖 特別AIメッセージを準備しました！');
-    },300);
-  } else if(reward.id==='theme'){
-    const lock=document.getElementById('themeLock');
-    if(lock) lock.style.display='none';
-    document.querySelectorAll('.theme-swatch').forEach(s=>{s.style.filter='';s.style.pointerEvents='';});
-    Store.set('reward_theme_unlocked',true);
-    showToast('🎨 テーマカラーが解放されました！');
+  if(reward.id==='ai_session'){
+    openAiSessionModal();
+  } else if(reward.id==='tendency'){
+    openTendencyModal();
   } else if(reward.id==='analysis'){
-    closeRewardsModal();
-    setTimeout(()=>openPremiumFeature('report'),300);
+    openReportModal();
   } else if(reward.id==='title'){
     Store.set('reward_title_earned',true);
     showToast('👑 称号「整い達人」を獲得しました！');
     renderProfile();
   }
+}
+
+/* ─── AI SESSION ─────────────────────────────────────────── */
+let _aiSessionTimer=null;
+let _aiSessionTheme=null;
+
+function openAiSessionModal(){
+  _aiSessionTheme=null;
+  aiSessionGoStep(1);
+  document.getElementById('aiSessionOverlay').classList.add('show');
+  const sheet=document.getElementById('aiSessionSheet');
+  if(sheet) sheet.scrollTop=0;
+}
+function onAiSessionOverlayClick(e){
+  if(e.target===document.getElementById('aiSessionOverlay')) closeAiSessionModal();
+}
+function closeAiSessionModal(){
+  document.getElementById('aiSessionOverlay').classList.remove('show');
+}
+function aiSessionGoStep(n){
+  [1,2,3].forEach(i=>document.getElementById('aiSessionStep'+i).style.display=(i===n?'':'none'));
+  if(n===1) renderAiSessionThemes();
+  if(n===3) startAiSessionTimer();
+}
+function renderAiSessionThemes(){
+  const list=document.getElementById('aiSessionThemeList');
+  if(!list) return;
+  list.innerHTML=AI_SESSION_THEMES.map(t=>`
+    <button class="ai-session-theme-btn" onclick="selectAiTheme('${t.id}')">
+      <span class="btn-em">${t.em}</span><span>${t.name}</span>
+    </button>`).join('');
+}
+function selectAiTheme(themeId){
+  _aiSessionTheme=AI_SESSION_THEMES.find(t=>t.id===themeId);
+  if(!_aiSessionTheme) return;
+  const list=document.getElementById('aiSessionSubList');
+  if(list) list.innerHTML=_aiSessionTheme.subs.map((s,i)=>`
+    <button class="ai-session-theme-btn" onclick="selectAiSubtheme(${i})">
+      <span class="btn-em" style="font-size:16px;">›</span><span>${s}</span>
+    </button>`).join('');
+  aiSessionGoStep(2);
+}
+function selectAiSubtheme(subIdx){
+  if(!_aiSessionTheme) return;
+  const sub=_aiSessionTheme.subs[subIdx];
+  const isNoAffiliate=_aiSessionTheme.noAffiliateIdx?.includes(subIdx);
+  const isRelation=_aiSessionTheme.id==='worry'&&_aiSessionTheme.relationIdx===subIdx;
+  Store.set('ai_session_no_affiliate',isNoAffiliate);
+  Store.set('ai_session_is_relation',isRelation);
+  Store.set('ai_session_theme',{id:_aiSessionTheme.id,name:_aiSessionTheme.name,sub});
+  const endAt=Date.now()+10*60*1000;
+  Store.set('ai_session_end_at',endAt);
+  aiSessionGoStep(3);
+  // Start session in chat with opening message
+  closeAiSessionAndGoChat(true);
+}
+async function closeAiSessionAndGoChat(isStart){
+  closeAiSessionModal();
+  setTimeout(async ()=>{
+    goTab('chat');
+    if(isStart){
+      const theme=Store.get('ai_session_theme',{});
+      const openMsg=`🌿 Habio 特別セッション開始\n\nこの10分は、あなたのための時間です。\n\n「${theme.sub||theme.name}」について、一緒に考えていきましょう。\n\nどんな小さなことでも話してください。ここだけの話です。`;
+      appendBubble(openMsg,false,nowTime());
+      // Context override for session
+      const inp=document.getElementById('chatInput');
+      if(inp) inp.focus();
+    }
+  },300);
+}
+function startAiSessionTimer(){
+  if(_aiSessionTimer) clearInterval(_aiSessionTimer);
+  const update=()=>{
+    const endAt=Store.get('ai_session_end_at',0);
+    if(!endAt){clearInterval(_aiSessionTimer);return;}
+    const rem=Math.max(0,endAt-Date.now());
+    const m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    const el=document.getElementById('aiSessionTimerDisplay');
+    if(el) el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(rem<=0){clearInterval(_aiSessionTimer);endAiSession(false);}
+  };
+  update();
+  _aiSessionTimer=setInterval(update,1000);
+}
+function endAiSession(manual){
+  if(_aiSessionTimer){clearInterval(_aiSessionTimer);_aiSessionTimer=null;}
+  Store.set('ai_session_end_at',0);
+  closeAiSessionModal();
+  if(!manual){
+    setTimeout(async ()=>{
+      const closeMsg='🌙 今回のセッションはここまでです。\n\nまた必要な時は、いつでもHabioに来てくださいね。\nゆっくり休んでください 🌿';
+      appendBubble(closeMsg,false,nowTime());
+    },400);
+  }
+}
+
+/* ─── TENDENCY ANALYSIS (20枚) ───────────────────────────── */
+function openTendencyModal(){
+  const analysis=generateTendencyAnalysis();
+  const area=document.getElementById('tendencyResultArea');
+  const nudge=document.getElementById('tendencyNudge');
+  if(area) area.innerHTML=`<div class="tendency-result">${analysis.text.replace(/\n/g,'<br>')}</div>`;
+  if(nudge) nudge.innerHTML=analysis.nudge.replace(/\n/g,'<br>');
+  document.getElementById('tendencyOverlay').classList.add('show');
+  const sheet=document.getElementById('tendencySheet');
+  if(sheet) sheet.scrollTop=0;
+}
+function closeTendencyModal(){
+  document.getElementById('tendencyOverlay').classList.remove('show');
+}
+function generateTendencyAnalysis(){
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  const moodHist=Store.get('mood_history',[]).slice(0,14);
+  const chatDays=Store.get('chat_day_log',[]).length;
+  const total=getTotalPts();
+  const tired=moodHist.filter(m=>m.mood==='つかれた').length;
+  const good=moodHist.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
+  const habitDays=new Set(wins.filter(w=>w.title?.includes('ができた')).map(w=>w.date)).size;
+
+  let text='';
+  // Pick the most notable tendency
+  if(tired>=5 && streak>=3){
+    text=`最近、${tired}日ほど「つかれた」と記録しながらも、${streak}日継続しています。\n\nこれは "静かな強さ" かもしれません。\n無理して続けているわけじゃないけど、\nなんとなく続いている。そういう日々が、一番長続きします。`;
+  } else if(chatDays>=5){
+    text=`Habioのチャットを${chatDays}日間使ってくれています。\n\n話しかけてくれること自体が、\n自分と向き合う時間になっているかもしれません。\n\n傾向として、言葉にすることで気持ちが整理されるタイプの可能性があります。`;
+  } else if(good>=5){
+    text=`直近、「いい感じ」「とても良い」の日が${good}日ありました。\n\n波があるのは当然ですが、\n良い日がちゃんとある人は、長く続く傾向があります。\n\n焦らず、そのペースで大丈夫です。`;
+  } else if(habitDays>=10){
+    text=`過去に${habitDays}日、習慣を記録してくれています。\n\n一度に大きく変わらなくても、\nこういう"少しずつの積み重ね"が、\n3ヶ月後に大きな変化になっていることが多いです。`;
+  } else {
+    text=`累計${total}ptを積み重ねてきましたね。\n\n毎日完璧じゃなくていい。\n「今日も少しだけ整えた」\nその感覚を大切にしているあなたは、\nちゃんと前進しています。`;
+  }
+
+  const nudge=`📊 もう少し詳しく知りたいですか？\n\n「習慣分析レポート（30枚）」では、\n過去1ヶ月の記録をもとに、\nAIが今後の提案をお伝えします。`;
+  return {text,nudge};
+}
+
+/* ─── HABIT REPORT (30枚) ──────────────────────────────── */
+const REPORT_QUESTIONS=[
+  {id:'goal',   label:'1ヶ月後、どうなっていたいですか？',
+    opts:['体を少し整えたい','気分を安定させたい','習慣を定着させたい','睡眠を改善したい','もう少し自分を好きになりたい']},
+  {id:'worry',  label:'今、一番気になっていること',
+    opts:['体のこと','気分・ストレス','眠れない','続けられない','特になし']},
+  {id:'feel',   label:'最近の気分傾向',
+    opts:['まあまあ良い','波がある','少しつかれている','落ち込む日が多い','特に問題ない']},
+];
+
+function openReportModal(){
+  const saved=Store.get('habit_report_history',[]);
+  const e=id=>document.getElementById(id);
+  if(e('reportTitle')) e('reportTitle').textContent='習慣分析レポート';
+  if(e('reportSub')) e('reportSub').textContent='過去1ヶ月を振り返り、次の1ヶ月への提案を。';
+
+  if(saved.length){
+    // Show existing report with option to regenerate
+    showReportResult(saved[0]);
+  } else {
+    showReportIntake();
+  }
+  document.getElementById('reportOverlay').classList.add('show');
+  const sheet=document.getElementById('reportSheet');
+  if(sheet) sheet.scrollTop=0;
+}
+function closeReportModal(){
+  document.getElementById('reportOverlay').classList.remove('show');
+}
+function showReportIntake(){
+  const intake=document.getElementById('reportIntakeArea');
+  const result=document.getElementById('reportResultArea');
+  const actions=document.getElementById('reportActions');
+  if(result) result.style.display='none';
+  if(intake){
+    intake.style.display='';
+    intake.innerHTML=REPORT_QUESTIONS.map(q=>`
+      <div class="report-question-card">
+        <div class="report-q-label">${q.label}</div>
+        <div class="report-q-options" id="rq_${q.id}">
+          ${q.opts.map((o,i)=>`<button class="report-q-option" data-qid="${q.id}" data-idx="${i}" onclick="selectReportOption(this)">${o}</button>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+  if(actions) actions.innerHTML=`<button onclick="generateHabitReport()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">🌿 分析を始める</button>`;
+}
+function selectReportOption(btn){
+  const qid=btn.dataset.qid;
+  document.querySelectorAll(`[data-qid="${qid}"]`).forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function generateHabitReport(){
+  const answers={};
+  REPORT_QUESTIONS.forEach(q=>{
+    const sel=document.querySelector(`#rq_${q.id} .selected`);
+    answers[q.id]=sel?sel.textContent:'未回答';
+  });
+  const report=buildReportContent(answers);
+  Store.set('habit_report_history',[{...report,date:today()},...Store.get('habit_report_history',[]).slice(0,4)]);
+  showReportResult(report);
+}
+function buildReportContent(answers){
+  const wins=Store.get('wins',[]).filter(w=>{
+    const d=new Date(w.date);
+    return d>=new Date(Date.now()-30*86400000);
+  });
+  const streak=calcStreak(Store.get('wins',[]));
+  const moodHist=Store.get('mood_history',[]).slice(0,30);
+  const tired=moodHist.filter(m=>m.mood==='つかれた').length;
+  const good=moodHist.filter(m=>m.mood==='いい感じ'||m.mood==='とても良い').length;
+  const total=getTotalPts();
+  const habitDays=new Set(wins.filter(w=>w.title?.includes('ができた')).map(w=>w.date)).size;
+  const chatDays=Store.get('chat_day_log',[]).length;
+
+  const habitSection=`過去1ヶ月で${habitDays}日、習慣を記録しました。\n現在${streak}日継続中。\nHabioとのチャットは${chatDays}日間使用しています。`;
+  const moodSection=`気分記録のうち、「つかれた」が${tired}日、\n「いい感じ」以上が${good}日でした。\n${tired>good?'少し疲れが溜まりやすい傾向があるかもしれません。':'良い状態の日が多い傾向です。'}`;
+  const pointSection=`累計${total}ptを積み重ねてきました。\n毎日少しずつ続けてきた証です。`;
+
+  let proposeText='';
+  if(answers.goal?.includes('習慣')) proposeText='まず「1日1つだけ」を意識してみましょう。多くを求めず、小さな積み重ねを。';
+  else if(answers.goal?.includes('気分')) proposeText='朝の5分、気分を記録する習慣が気分の安定に繋がりやすいです。';
+  else if(answers.goal?.includes('睡眠')) proposeText='寝る30分前にスマホを遠ざけるだけで、睡眠の質が変わることがあります。';
+  else if(answers.goal?.includes('自分を好き')) proposeText='「今日できたこと」を1つだけメモする習慣が、自己肯定感を少しずつ育てます。';
+  else proposeText='焦らず、今のペースで続けることが一番の近道かもしれません。';
+
+  return {answers,habitSection,moodSection,pointSection,proposeText,date:today()};
+}
+function showReportResult(report){
+  const intake=document.getElementById('reportIntakeArea');
+  const result=document.getElementById('reportResultArea');
+  const actions=document.getElementById('reportActions');
+  if(intake) intake.style.display='none';
+  if(result){
+    result.style.display='';
+    result.innerHTML=`
+      <div class="report-section"><div class="report-section-title">📅 習慣の記録</div><div class="report-section-body">${(report.habitSection||'').replace(/\n/g,'<br>')}</div></div>
+      <div class="report-section"><div class="report-section-title">😌 気分の傾向</div><div class="report-section-body">${(report.moodSection||'').replace(/\n/g,'<br>')}</div></div>
+      <div class="report-section"><div class="report-section-title">⭐ ポイント</div><div class="report-section-body">${(report.pointSection||'').replace(/\n/g,'<br>')}</div></div>
+      <div class="report-section" style="border-left:3px solid var(--g);"><div class="report-section-title">🌿 次の1ヶ月への提案</div><div class="report-section-body">${(report.proposeText||'').replace(/\n/g,'<br>')}</div></div>
+      <div style="margin:0 16px;font-size:10px;color:var(--t-l);">生成日: ${report.date||today()}</div>`;
+  }
+  if(actions) actions.innerHTML=`
+    <div style="display:grid;gap:10px;">
+      <button onclick="closeReportModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--g);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;">閉じる</button>
+      <button onclick="showReportIntake()" style="width:100%;padding:12px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--t);cursor:pointer;">再分析する</button>
+    </div>`;
+}
+
+function generateEmotionalComment(){
+  const streak=calcStreak(Store.get('wins',[]));
+  const moodHist=Store.get('mood_history',[]).slice(0,7);
+  const tired=moodHist.filter(m=>m.mood==='つかれた').length;
+  const chatDays=Store.get('chat_day_log',[]).length;
+  const hdEarned=Store.get('badges_hidden',[]);
+  const total=getTotalPts();
+
+  if(hdEarned.includes('quiet_strength')&&tired>=2){
+    return {em:'💪',text:'疲れている日でも、続けていますね。\n"静かな強さ"が、ちゃんと見えています。'};
+  }
+  if(streak>=7){
+    return {em:'🔥',text:`${streak}日継続中。\n完璧じゃなくても、ちゃんと続いています。`};
+  }
+  if(chatDays>=3){
+    return {em:'💬',text:'話しかけてくれる日が続いていますね。\n言葉にしてくれることが、整う一歩になっています。'};
+  }
+  if(tired>=3){
+    return {em:'🌙',text:'最近、無理しながらも続けていますね。\n今日は少し休んでも大丈夫ですよ。'};
+  }
+  if(total>=50){
+    return {em:'🌿',text:`累計${total}pt。\nこの積み重ね、ちゃんと記録されています。`};
+  }
+  return {em:'🌱',text:'ここに来てくれていること、\nちゃんと見ていますよ。'};
+}
+
+function buildProgressHints(ptEarned,stEarned,prEarned,total,streak){
+  const hints=[];
+  // Next point badge
+  const nextPt=POINT_BADGES.find(b=>!ptEarned.includes(b.id));
+  if(nextPt){
+    const rem=nextPt.pts-total;
+    const pct=Math.min(100,Math.round((total/nextPt.pts)*100));
+    if(rem<=20) hints.push({icon:nextPt.em,text:`あと ${rem}pt で「${nextPt.name}」獲得！`,pct});
+  }
+  // Next streak badge
+  const nextSt=STREAK_BADGES.find(b=>!stEarned.includes(b.id));
+  if(nextSt){
+    const rem=nextSt.days-streak;
+    const pct=Math.min(100,Math.round((streak/nextSt.days)*100));
+    if(rem<=5) hints.push({icon:nextSt.em,text:`あと ${rem}日 継続で「${nextSt.name}」獲得！`,pct});
+  }
+  // Next PR badge
+  const prTotal=Store.get('pr_action_total',0);
+  const nextPr=PR_BADGES.find(b=>!prEarned.includes(b.id));
+  if(nextPr){
+    const rem=nextPr.count-prTotal;
+    const pct=Math.min(100,Math.round((prTotal/nextPr.count)*100));
+    if(rem<=5) hints.push({icon:nextPr.em,text:`あと ${rem}件 のPR習慣で「${nextPr.name}」に進化！`,pct});
+  }
+  return hints;
 }
 
 function openRewardsModal(){
@@ -6730,6 +7193,7 @@ function openRewardsModal(){
   const hdEarned=Store.get('badges_hidden',[]);
   const prEarned=Store.get('badges_pr',[]);
   const {totalEarned,owned,used}=getBadgeCounts();
+  const streak=calcStreak(Store.get('wins',[]));
   const e=id=>document.getElementById(id);
 
   if(e('rwTotalPts')) e('rwTotalPts').textContent=total+' pt';
@@ -6737,6 +7201,12 @@ function openRewardsModal(){
   if(e('rwTotalBadges')) e('rwTotalBadges').textContent=totalEarned;
   if(e('rwUsedBadges')) e('rwUsedBadges').textContent=used;
 
+  // Emotional comment
+  const ec=generateEmotionalComment();
+  const ecEl=e('rwEmotionalComment');
+  if(ecEl) ecEl.innerHTML=`<div class="em-label">${ec.em} Habio より</div>${ec.text.replace(/\n/g,'<br>')}`;
+
+  // Point badges
   const pg=e('pointBadgesGrid');
   if(pg) pg.innerHTML=POINT_BADGES.map(b=>{
     const got=ptEarned.includes(b.id);
@@ -6747,6 +7217,7 @@ function openRewardsModal(){
     </div>`;
   }).join('');
 
+  // Streak badges — show evolution path emoji
   const sg=e('streakBadgesGrid');
   if(sg) sg.innerHTML=STREAK_BADGES.map(b=>{
     const got=stEarned.includes(b.id);
@@ -6757,6 +7228,7 @@ function openRewardsModal(){
     </div>`;
   }).join('');
 
+  // Anniversary badges
   const ag=e('anniversaryBadgesGrid');
   if(ag){
     const birthBadges=anEarned.filter(id=>id.startsWith('birthday_'));
@@ -6773,42 +7245,69 @@ function openRewardsModal(){
     }
   }
 
+  // Hidden badges — mystery UX
   const hg=e('hiddenBadgesGrid');
   if(hg) hg.innerHTML=HIDDEN_BADGES.map(b=>{
     const got=hdEarned.includes(b.id);
-    return `<div class="badge-item${got?'':' locked'}" title="${b.desc}">
-      <div class="badge-em">${got?b.em:'？'}</div>
-      <div class="badge-nm">${got?b.name:'???'}</div>
-      <div class="badge-pts">${got?'獲得済':'隠し実績'}</div>
-    </div>`;
+    return got
+      ? `<div class="badge-item" title="${b.desc}">
+          <div class="badge-em">${b.em}</div>
+          <div class="badge-nm">${b.name}</div>
+          <div class="badge-pts">獲得済</div>
+        </div>`
+      : `<div class="badge-item locked" style="cursor:default;" title="ある行動をすると解放されます">
+          <div class="badge-em" style="font-size:20px;opacity:.5;">🔒</div>
+          <div class="badge-nm">？？？？？</div>
+          <div class="badge-pts">隠し実績</div>
+        </div>`;
   }).join('');
 
+  // PR badges — show evolution chain
   const prg=e('prBadgesGrid');
   if(prg){
     const prTotal=Store.get('pr_action_total',0);
     prg.innerHTML=PR_BADGES.map(b=>{
       const got=prEarned.includes(b.id);
-      return `<div class="badge-item${got?'':' locked'}">
-        <div class="badge-em">${b.em}</div>
-        <div class="badge-nm">${b.name}</div>
-        <div class="badge-pts">${got?'獲得済':prTotal+'/'+b.count+'件'}</div>
-      </div>`;
+      const pct=Math.min(100,Math.round((prTotal/b.count)*100));
+      return got
+        ? `<div class="badge-item"><div class="badge-em">${b.em}</div><div class="badge-nm">${b.name}</div><div class="badge-pts">獲得済</div></div>`
+        : `<div class="badge-item locked">
+            <div class="badge-em">${b.em}</div>
+            <div class="badge-nm">${b.name}</div>
+            <div class="badge-pts">${prTotal}/${b.count}件</div>
+          </div>`;
     }).join('');
   }
 
+  // Progress hints
+  const hints=buildProgressHints(ptEarned,stEarned,prEarned,total,streak);
+  const phEl=e('rewardsProgressHints');
+  if(phEl){
+    phEl.style.display=hints.length?'':'none';
+    phEl.innerHTML=hints.map(h=>`
+      <div class="progress-hint">
+        <span style="font-size:18px;">${h.icon}</span>
+        <span style="flex:1;font-size:11px;">${h.text}</span>
+        <div class="ph-bar-wrap"><div class="ph-bar" style="width:${h.pct}%;"></div></div>
+      </div>`).join('');
+  }
+
+  // Exchange grid
   const eg=e('rewardsExchangeGrid');
   if(eg) eg.innerHTML=REWARD_ITEMS.map(r=>{
     const canEx=owned>=r.cost;
-    return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;border:1.5px solid var(--border);display:flex;align-items:center;gap:12px;">
+    const redeemed=Store.get('reward_history',[]).some(h=>h.rewardId===r.id);
+    return `<div style="background:var(--card);border-radius:12px;padding:14px 16px;border:1.5px solid ${canEx?'var(--g)':'var(--border)'};display:flex;align-items:center;gap:12px;">
       <div style="font-size:26px;">${r.em}</div>
       <div style="flex:1;">
-        <div style="font-size:13px;font-weight:700;color:var(--t);">${r.name}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t);">${r.name}${redeemed?' <span style="font-size:10px;color:var(--g);">✓ 使用済</span>':''}</div>
         <div style="font-size:11px;color:var(--t-m);margin-top:2px;">${r.desc}</div>
       </div>
-      <button onclick="exchangeReward('${r.id}')" style="padding:8px 12px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:${canEx?'pointer':'default'};background:${canEx?'var(--g)':'var(--border)'};color:${canEx?'#fff':'var(--t-m)'};">${r.cost}枚</button>
+      <button onclick="exchangeReward('${r.id}')" style="padding:8px 12px;border-radius:8px;border:none;font-size:12px;font-weight:700;flex-shrink:0;cursor:${canEx?'pointer':'default'};background:${canEx?'var(--g)':'var(--border)'};color:${canEx?'#fff':'var(--t-m)'};">${r.cost}枚</button>
     </div>`;
   }).join('');
 
+  // History
   const hist=Store.get('reward_history',[]);
   const hs=e('rewardsHistorySection');
   const hl=e('rewardsHistoryList');
@@ -6899,6 +7398,9 @@ function init(){
   const streak=calcStreak(Store.get('wins',[]));
   if(streak>0) checkStreakBadges(streak);
   checkBirthdayBadge();
+
+  // Restore active AI session timer if app restarted mid-session
+  if(Store.get('ai_session_end_at',0)>Date.now()) startAiSessionTimer();
 
   // 後追いバッジ判定: 既に条件を満たしているのに未付与のバッジを付与する
   (function retroBadgeCheck(){
