@@ -2495,6 +2495,7 @@ body.night-bg{background:#C8C3BB;}
         </div>
         <div style="display:flex;gap:8px;width:100%;padding:0 4px 0 2px;">
           <input id="settingsEmail" type="email" placeholder="your@email.com" inputmode="email" autocomplete="email"
+            oninput="renderAdminPanel('adminPanelSettings')"
             style="flex:1;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg);color:var(--t);outline:none;min-width:0;">
           <button onclick="checkEmailPremium()"
             style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">確認</button>
@@ -6797,7 +6798,11 @@ function getBadgeCounts(){
 /* ── ADMIN TEST PANEL ── */
 const ADMIN_EMAIL='katsuyuki.jyoukou@gmail.com';
 function isAdmin(){
-  return (Store.get('user_email','')||'').trim().toLowerCase()===ADMIN_EMAIL;
+  const storeEmail=(Store.get('user_email','')||'').trim().toLowerCase();
+  const inputEmail=(document.getElementById('settingsEmail')?.value||'').trim().toLowerCase();
+  const result=storeEmail===ADMIN_EMAIL||inputEmail===ADMIN_EMAIL;
+  console.log('[isAdmin]',{storeEmail,inputEmail,ADMIN_EMAIL,result});
+  return result;
 }
 
 function renderAdminPanel(containerId){
@@ -6850,9 +6855,7 @@ function adminAddBadges(){
   const bonus=(Store.get('test_badge_bonus',0)||0)+100;
   Store.set('test_badge_bonus',bonus);
   showToast('🛠 テスト用バッジ +100枚 付与しました（累計: '+bonus+'枚）');
-  _refreshAdminPanels();
-  // rewardsモーダルが開いていれば更新
-  if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
+  _adminRefreshAll();
 }
 
 function adminAddPoints(){
@@ -6863,7 +6866,16 @@ function adminAddPoints(){
   checkPointBadges(total);
   renderPointsCard();
   showToast('🛠 テスト用ポイント +1000pt 付与しました（累計 '+total+'pt）');
+  _adminRefreshAll();
+}
+
+function _adminRefreshAll(){
   _refreshAdminPanels();
+  // wins画面のバッジカウントを更新
+  const {totalEarned}=getBadgeCounts();
+  const wpb=document.getElementById('winsPageBadgeCount');
+  if(wpb) wpb.textContent=totalEarned+'枚獲得';
+  // rewardsモーダルが開いていれば全体を再描画
   if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
 }
 
@@ -6886,8 +6898,7 @@ function adminReset(target){
     Store.set('habit_report_history',[]);
   }
   showToast('🛠 リセットしました');
-  _refreshAdminPanels();
-  if(document.getElementById('rewardsOverlay')?.classList.contains('show')) openRewardsModal();
+  _adminRefreshAll();
 }
 
 function _refreshAdminPanels(){
