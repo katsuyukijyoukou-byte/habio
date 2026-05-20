@@ -4719,7 +4719,6 @@ async function quickChat(text){
 
 // ユーザーのメッセージにキーワードが含まれていたら自動で商品を1件提案する
 function maybeShowProductRec(userMsg){
-  // 推薦意図フレーズ（これがあればスコアを2倍にする）
   const hasIntent=/おすすめ|オススメ|いいもの|良いもの|何かない|何がいい|どれがいい|教えて|紹介して|ある[？?]|ない[？?]|何を使|何を飲|何を食/.test(userMsg);
 
   const scores={};
@@ -4728,70 +4727,70 @@ function maybeShowProductRec(userMsg){
     kws.forEach(k=>{ if(userMsg.includes(k)) scores[id]=(scores[id]||0)+2; });
   });
 
-  // 推薦意図あり + カテゴリ語一致 → スコア2倍
   const maxScore=Math.max(0,...Object.values(scores));
   if(hasIntent && maxScore>0){
     Object.keys(scores).forEach(id=>{ if(scores[id]>0) scores[id]*=2; });
   }
-
-  // 推薦意図のみ（カテゴリ語なし）→ チャット履歴ベースのクイックレコメンドに委譲
-  if(hasIntent && maxScore===0){
-    setTimeout(()=>quickProductRec(),900);
-    return;
-  }
-
-  // キーワード不一致かつ意図なし → 何も出さない
+  if(hasIntent && maxScore===0){ setTimeout(()=>quickProductRec(),900); return; }
   if(maxScore===0) return;
+
+  // 感情 × 時間帯ボーナス
+  const slot=getTimeSlot(new Date().getHours());
+  const eTags=detectEmotionTags();
+  getEmotionPriorityIds(eTags,slot).forEach((id,i)=>{ scores[id]=(scores[id]||0)+Math.max(6-i*2,1); });
 
   const sorted=REC_DEFS.slice().sort((a,b)=>{
     const diff=(scores[b.id]||0)-(scores[a.id]||0);
     return diff!==0?diff:Math.random()-0.5;
   });
 
-  const lastRecId=Store.get('last_chat_rec_id','');
-  const picks=sorted.filter(d=>d.id!==lastRecId);
-  const best=picks.length?picks[0]:sorted[0];
+  const recentIds=getRecentRecIds();
+  const picks=sorted.filter(d=>AFFILIATE_LINKS[d.id]&&!recentIds.includes(d.id));
+  const best=picks.length?picks[0]:sorted.find(d=>AFFILIATE_LINKS[d.id]);
   if(!best||(scores[best.id]||0)===0) return;
 
-  const link=AFFILIATE_LINKS[best.id];
-  if(!link) return;
-
-  Store.set('last_chat_rec_id',best.id);
-  const intro=hasIntent
-    ?'気になっているなら、こちらが参考になるかもしれません 🌿'
-    :'ちなみに、関連するアイテムをひとつご紹介します 🌿';
-  const msg=`${intro}\n▶ ${best.title}\n${best.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+  addRecentRecId(best.id);
+  const suggestion=EMOTION_SUGGESTION[best.id];
+  const intro=suggestion
+    ?suggestion
+    :(hasIntent?'気になっているなら、こちらが参考になるかもしれません 🌿':'ちなみに、関連するものをひとつ 🌿');
+  const msg=`${intro}\n\n▶ ${best.title}\n${best.desc}\n${AFFILIATE_LINKS[best.id]}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
   setTimeout(()=>appendBubble(msg,false,nowTime()),900);
 }
 
 function quickProductRec(){
-  // 直近20件の会話テキストをまとめてスコアリング
+  const slot=getTimeSlot(new Date().getHours());
+  const eTags=detectEmotionTags();
+  const priorityIds=getEmotionPriorityIds(eTags,slot);
+
   const chatText=Store.get('chat_history',[]).slice(-20).map(m=>m.text||'').join(' ');
   const scores={};
   REC_DEFS.forEach(d=>{ scores[d.id]=0; });
   Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
     kws.forEach(k=>{ if(chatText.includes(k)) scores[id]=(scores[id]||0)+2; });
   });
+  priorityIds.forEach((id,i)=>{ scores[id]=(scores[id]||0)+Math.max(10-i*2,2); });
 
-  // スコア降順→同点はランダム
+  // deep_nightは安心感優先
+  if(slot==='deep_night'){
+    const safe=new Set(['hugmochi','rooibostea','pillowmist']);
+    REC_DEFS.forEach(d=>{ if(!safe.has(d.id)) scores[d.id]=(scores[d.id]||0)-15; });
+  }
+
   const sorted=REC_DEFS.slice().sort((a,b)=>{
     const diff=(scores[b.id]||0)-(scores[a.id]||0);
     return diff!==0?diff:Math.random()-0.5;
   });
 
-  // すでに直前で紹介した商品は2番手にずらす（連打対策）
-  const lastRecId=Store.get('last_rec_id','');
-  const picks=sorted.filter(d=>d.id!==lastRecId);
-  const pick=picks.length?picks[0]:sorted[0];
-  Store.set('last_rec_id',pick.id);
+  const recentIds=getRecentRecIds();
+  const picks=sorted.filter(d=>AFFILIATE_LINKS[d.id]&&!recentIds.includes(d.id));
+  const pick=picks.length?picks[0]:sorted.find(d=>AFFILIATE_LINKS[d.id]);
+  if(!pick) return;
+  addRecentRecId(pick.id);
 
-  const link=AFFILIATE_LINKS[pick.id];
-  const hasCtx=(scores[pick.id]||0)>0;
-  const intro=hasCtx
-    ?'今の会話の流れから、これが合いそうかなと思いました 🌿'
-    :'ご参考に、Habio おすすめのアイテムをひとつご紹介します 🌿';
-
-  const msg=`${intro}\n\nひとつ選択肢としてご紹介します 🌿\n▶ ${pick.title}\n${pick.desc}\n${link}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
+  const suggestion=EMOTION_SUGGESTION[pick.id];
+  const intro=suggestion||'ちなみに、ひとつご参考に 🌿';
+  const msg=`${intro}\n\n▶ ${pick.title}\n${pick.desc}\n${AFFILIATE_LINKS[pick.id]}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
   appendBubble(msg,false,nowTime());
   logRecEvent('rec_chip_'+pick.id);
 }
@@ -6683,44 +6682,184 @@ function onRecModalOverlayClick(e){
   if(e.target===document.getElementById('recModalOverlay')) closeRecModal();
 }
 
+/* ── 感情 × 時間帯 レコメンドエンジン ──────────────────── */
+
+function getTimeSlot(hour){
+  if(hour>=5&&hour<11)  return 'morning';
+  if(hour>=11&&hour<17) return 'afternoon';
+  if(hour>=17&&hour<21) return 'evening';
+  if(hour>=21&&hour<24) return 'night';
+  return 'deep_night';
+}
+
+const MOOD_TO_EMOTION={
+  'つかれた':'疲れた',
+  'まあまあ':'不安',
+  'ふつう':  '生活を少し整えたい',
+  'いい感じ':'生活を少し整えたい',
+};
+
+const CHAT_EMOTION_DETECT=[
+  {tag:'不安',           kws:['不安','心配','こわ','ドキドキ','落ち着かない','緊張','怖い']},
+  {tag:'孤独',           kws:['孤独','ひとり','寂し','誰もいない','誰かに話','ひとりぼっち']},
+  {tag:'疲れた',         kws:['疲れ','しんどい','だるい','つかれ','ぐったり','きつい']},
+  {tag:'頭が止まらない', kws:['眠れない','頭が止まらない','考えすぎ','ぐるぐる','寝れない','考えてしまう']},
+  {tag:'朝しんどい',     kws:['朝がつらい','朝しんど','朝起き','朝が苦手','起きられない']},
+  {tag:'生活を少し整えたい',kws:['整えたい','ちゃんとしたい','習慣','改善','少しずつ','変えたい']},
+];
+
+const EMOTION_PRODUCT_MAP={
+  '不安':{
+    morning:    ['vitaminc','rooibostea','zakkokumai'],
+    afternoon:  ['ashwaganda','rooibostea','cocolact'],
+    evening:    ['rooibostea','pillowmist','ashwaganda'],
+    night:      ['rooibostea','pillowmist','hugmochi','ashwaganda'],
+    deep_night: ['hugmochi','rooibostea','pillowmist'],
+  },
+  '孤独':{
+    morning:    ['rooibostea','zakkokumai','cocolact'],
+    afternoon:  ['rooibostea','cocolact','legfit'],
+    evening:    ['hugmochi','rooibostea','pillowmist'],
+    night:      ['hugmochi','rooibostea','pillowmist'],
+    deep_night: ['hugmochi','rooibostea'],
+  },
+  '疲れた':{
+    morning:    ['vitaminc','zakkokumai','rooibostea'],
+    afternoon:  ['legfit','mytrexneck','ashwaganda'],
+    evening:    ['hottab','legfit','mytrexneck','ashwaganda'],
+    night:      ['hottab','ashwaganda','hugmochi'],
+    deep_night: ['hugmochi','rooibostea'],
+  },
+  '頭が止まらない':{
+    morning:    ['rooibostea','vitaminc'],
+    afternoon:  ['ashwaganda','rooibostea'],
+    evening:    ['pillowmist','rooibostea','ashwaganda'],
+    night:      ['pillowmist','rooibostea','ashwaganda'],
+    deep_night: ['pillowmist','hugmochi','rooibostea'],
+  },
+  '朝しんどい':{
+    morning:    ['vitaminc','zakkokumai'],
+    afternoon:  ['vitaminc','zakkokumai','cocolact'],
+    evening:    ['zakkokumai','hottab','rooibostea'],
+    night:      ['hugmochi','rooibostea'],
+    deep_night: ['hugmochi','rooibostea'],
+  },
+  '生活を少し整えたい':{
+    morning:    ['zakkokumai','vitaminc','cocolact'],
+    afternoon:  ['zakkokumai','vitaminc','cocolact'],
+    evening:    ['zakkokumai','legfit','cocolact'],
+    night:      ['rooibostea','pillowmist'],
+    deep_night: ['rooibostea','hugmochi'],
+  },
+};
+
+const DEEP_NIGHT_DEFAULT=['hugmochi','rooibostea','pillowmist'];
+const NIGHT_DEFAULT     =['rooibostea','pillowmist','hottab'];
+
+const EMOTION_SUGGESTION={
+  rooibostea: '考えごとが増えてる夜は、温かいものをひとつ置いてあげてもいいかも。',
+  pillowmist:  '眠ろうとするほど考えてしまう夜は、"眠る準備"だけ整えてみてもいい。',
+  hottab:      '今日は、回復する側に寄せてもいい日。',
+  hugmochi:    '今日は、少し"包まれる感じ"が欲しい日かもしれない。',
+  ashwaganda:  'ずっと気を張ってる感じがあるなら、少しゆるめる選択をしてもいい。',
+  legfit:      '足がむくんでいる日は、気持ちまで重くなりやすい。',
+  zakkokumai:  'ちゃんと食べるって、思ってるより大事だったりする。',
+  vitaminc:    '朝のリズム、少しだけ整えてみる？',
+  mytrexneck:  '首や肩が固まってる日は、気持ちまで張りつめやすい。',
+  cocolact:    '自分の体をちゃんとケアする時間、最近取れてますか？',
+};
+
+function getRecentRecIds(){ return Store.get('last_rec_ids',[]); }
+function addRecentRecId(id){
+  const ids=Store.get('last_rec_ids',[]);
+  ids.unshift(id);
+  Store.set('last_rec_ids',ids.slice(0,5));
+}
+
+function detectEmotionTags(){
+  const tags=new Set();
+  Store.get('mood_history',[]).slice(0,3).forEach(m=>{
+    const t=MOOD_TO_EMOTION[m.mood]; if(t) tags.add(t);
+  });
+  const chatText=Store.get('chat_history',[]).slice(-30).map(m=>m.text||'').join(' ');
+  CHAT_EMOTION_DETECT.forEach(({tag,kws})=>{
+    if(kws.some(k=>chatText.includes(k))) tags.add(tag);
+  });
+  return [...tags];
+}
+
+function getEmotionPriorityIds(emotionTags,slot){
+  const seen=new Set(), ids=[];
+  emotionTags.forEach(tag=>{
+    const list=(EMOTION_PRODUCT_MAP[tag]||{})[slot]||[];
+    list.forEach(id=>{ if(!seen.has(id)){ seen.add(id); ids.push(id); }});
+  });
+  return ids;
+}
+
+/* ── ホーム画面 商品カード ─────────────────────────────── */
+
 function renderRecommendCards(){
   const el=document.getElementById('recCards');
   const lbl=document.getElementById('recLbl');
   const note=document.getElementById('recNote');
   if(!el) return;
 
-  const {streak,meals,hour}=buildAIContext();
-  const onbA=Store.get('onb_answers',{});
+  const hour=new Date().getHours();
+  const slot=getTimeSlot(hour);
+  const recentIds=getRecentRecIds();
+  const eTags=detectEmotionTags();
 
-  // チャット履歴を読んでキーワードスコアリング（+2点/ヒット）
-  const chatText=Store.get('chat_history',[]).slice(-30).map(m=>m.text||'').join(' ');
+  // 優先IDリスト（感情 × 時間帯）
+  let priorityIds=getEmotionPriorityIds(eTags,slot);
+  if(priorityIds.length===0){
+    priorityIds = slot==='deep_night' ? DEEP_NIGHT_DEFAULT
+                : slot==='night'      ? NIGHT_DEFAULT
+                : [];
+  }
+
+  // スコアリング
   const scores={};
   REC_DEFS.forEach(d=>{ scores[d.id]=0; });
+
+  // 感情優先ボーナス（1位+10、以降-2ずつ）
+  priorityIds.forEach((id,i)=>{ scores[id]=(scores[id]||0)+Math.max(10-i*2,2); });
+
+  // チャットキーワード補助スコア
+  const chatText=Store.get('chat_history',[]).slice(-30).map(m=>m.text||'').join(' ');
   Object.entries(REC_KEYWORDS).forEach(([id,kws])=>{
     kws.forEach(k=>{ if(chatText.includes(k)) scores[id]=(scores[id]||0)+2; });
   });
 
-  // 文脈シグナル（時間帯・連続日数・食事ログ・オンボーディング回答）で加点
-  if(hour>=20||isNight())    scores['slimmanage']+=2;
-  if(meals.length<=1)         scores['diet']+=1;
-  if(streak<3)                scores['exercise']+=1;
-  if(onbA.q1==='weight')     { scores['killerburner']+=2; scores['metabolism']+=2; }
-  else if(onbA.q1==='diet')  { scores['diet']+=2; scores['metabolism']+=1; }
-  else if(onbA.q1==='body')  { scores['exercise']+=2; scores['emsbelt']+=1; }
+  // deep_nightは安心感のある商品以外にペナルティ
+  if(slot==='deep_night'){
+    const safe=new Set(DEEP_NIGHT_DEFAULT);
+    REC_DEFS.forEach(d=>{ if(!safe.has(d.id)) scores[d.id]=(scores[d.id]||0)-20; });
+  }
 
-  // スコア降順ソート（同点はシャッフル）して上位3件
+  // 直近表示をソフト排除（0番=-15, 1番=-12, ... 4番=-3）
+  recentIds.forEach((id,i)=>{ scores[id]=(scores[id]||0)-Math.max(15-i*3,3); });
+
+  // 降順ソート（同点はランダム）
   const sorted=REC_DEFS.slice().sort((a,b)=>{
     const diff=(scores[b.id]||0)-(scores[a.id]||0);
-    return diff!==0 ? diff : Math.random()-0.5;
+    return diff!==0?diff:Math.random()-0.5;
   });
 
-  el.innerHTML=sorted.slice(0,3).map((d,i)=>`
+  // AFFILIATE_LINKSにあるものだけ上位3件
+  const picks=sorted.filter(d=>AFFILIATE_LINKS[d.id]).slice(0,3);
+  if(picks.length>0) addRecentRecId(picks[0].id);
+
+  el.innerHTML=picks.map((d,i)=>{
+    const suggestion=EMOTION_SUGGESTION[d.id];
+    return `
     <div class="rec-card${i===0?' primary':''}">
       <div class="rec-card-tag">${d.em} ${d.tag}</div>
       <div class="rec-card-title">${d.title}</div>
-      <div class="rec-card-desc">${d.desc}</div>
-      <button class="rec-card-cta" onclick="recCardClick('${d.id}')">${d.cta} →</button>
-    </div>`).join('');
+      <div class="rec-card-desc">${suggestion||d.desc}</div>
+      <button class="rec-card-cta" onclick="recCardClick('${d.id}')">${d.cta}</button>
+    </div>`;
+  }).join('');
 
   el.style.display='flex';
   if(lbl)  lbl.style.display='';
