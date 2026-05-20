@@ -2171,6 +2171,9 @@ body.night-bg{background:#C8C3BB;}
     <div class="settings-profile">
       <div class="profile-av">🌿</div>
       <div class="profile-name" id="profileName">こんにちは</div>
+      <div id="profileTitleDisplay" style="display:none;margin:5px auto 0;padding:4px 14px;background:rgba(113,180,148,.15);border-radius:20px;font-size:12px;font-weight:700;color:var(--g);letter-spacing:.03em;">
+        <span id="profileTitleEm"></span> <span id="profileTitleName"></span>
+      </div>
       <div class="profile-meta" id="profileMeta">Habio を使いはじめて 1日目</div>
       <div class="profile-plan">🌱 無料プラン</div>
       <div class="profile-stats">
@@ -2189,8 +2192,8 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
-    <!-- POINTS SECTION -->
-    <p class="sec-lbl">整いポイント</p>
+    <!-- ② 🌿 あなたの歩み -->
+    <p class="sec-lbl">🌿 あなたの歩み</p>
     <div class="st-group" id="pts-section">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:4px;">
         <div class="pts-hero">
@@ -2205,113 +2208,12 @@ body.night-bg{background:#C8C3BB;}
         </div>
       </div>
     </div>
-
-    <!-- FREE: アップグレード誘導 -->
-    <p class="sec-lbl" data-premium-hide>プレミアムプラン</p>
-    <div class="upgrade-banner mb14" data-premium-hide onclick="showUpgradeModal()">
-      <div class="upgrade-banner-top">
-        <div class="upgrade-em">💎</div>
-        <div>
-          <div class="upgrade-title">もっと深く、自分のリズムを知りたい方へ。</div>
-          <div class="upgrade-sub">整いポイント2倍・バッジ複数獲得・7日間無料</div>
-        </div>
-      </div>
-      <button class="upgrade-cta">プレミアムを試してみる →</button>
-    </div>
-    <!-- PREMIUM: ステータス表示 -->
-    <div data-premium-show style="display:none;margin:0 22px 16px;">
-      <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:var(--r-l);padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(124,58,237,.3);">
-        <div style="font-size:28px;">💎</div>
-        <div>
-          <div style="color:#fff;font-weight:700;font-size:15px;">プレミアム会員</div>
-          <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:2px;">整いポイント2倍・全スタイル・バッジ複数獲得</div>
-        </div>
-      </div>
-    </div>
-
-    <p class="sec-lbl">お知らせ</p>
     <div class="st-group">
-      <div class="st-row">
-        <div class="st-em">🔔</div>
-        <div class="st-info"><div class="st-name">Habio からの声かけ</div><div class="st-note">朝・昼・夜にやさしくお知らせ</div></div>
-        <div class="toggle on" id="tog-notif" onclick="toggleToggle(this,'notif')"></div>
-      </div>
-      <div class="st-row">
-        <div class="st-em">🌙</div>
-        <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
-        <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
-      </div>
-      <div id="notif-status-panel" style="display:none;padding:6px 16px 14px;">
-        <!-- ステータス一覧 -->
-        <div style="background:var(--bg-w);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-size:12.5px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
-            <span style="color:var(--t-m);">通知許可</span>
-            <span id="nsp-perm-val" style="font-weight:500;"></span>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
-            <span style="color:var(--t-m);">PWA起動</span>
-            <span id="nsp-pwa-val" style="font-weight:500;"></span>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;">
-            <span style="color:var(--t-m);">購読状態</span>
-            <span id="nsp-sub-val" style="font-weight:500;"></span>
-          </div>
-        </div>
-        <!-- iOS案内 -->
-        <div id="nsp-ios-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FFFBEA;border:1px solid #F0E080;border-radius:10px;font-size:12px;color:#7A6010;line-height:1.65;">
-          📲 通知を受け取るには、ホーム画面に追加してアプリとして開いてください。<br>
-          Safari の共有ボタン（↑）→「ホーム画面に追加」を選んでください。
-        </div>
-        <!-- ブロック案内 -->
-        <div id="nsp-denied-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FEF0F0;border:1px solid #FAD0D0;border-radius:10px;font-size:12px;color:#B03030;line-height:1.65;">
-          🔕 通知がブロックされています。<br>
-          ブラウザの設定から Habio の通知を「許可」に変更してください。
-        </div>
-        <!-- テスト送信ボタン -->
-        <button id="notif-test-btn" onclick="sendTestNotif()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:12px;background:var(--g);color:white;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity .2s;">
-          テスト通知を送る 🔔
-        </button>
-        <div id="notif-test-result" style="display:none;margin-top:8px;font-size:12px;text-align:center;padding:9px 12px;border-radius:9px;line-height:1.55;"></div>
-      </div>
+      <div id="ayumiRows"></div>
     </div>
 
-    <p class="sec-lbl">地域設定（天気表示）</p>
-    <div class="st-group">
-      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
-        <div style="display:flex;align-items:center;gap:14px;width:100%;">
-          <div class="st-em">🌤️</div>
-          <div class="st-info"><div class="st-name">お住まいの地域</div><div class="st-note">ホーム画面の天気表示に使用します</div></div>
-        </div>
-        <div style="margin-top:10px;width:100%;">
-          <select id="citySelect" onchange="saveCity(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg-w);color:var(--t);font-size:14px;font-family:inherit;appearance:none;">
-            <option value="">選択してください（未設定＝現在地）</option>
-            <option value="東京">東京</option>
-            <option value="横浜">横浜</option>
-            <option value="大阪">大阪</option>
-            <option value="京都">京都</option>
-            <option value="名古屋">名古屋</option>
-            <option value="神戸">神戸</option>
-            <option value="福岡">福岡</option>
-            <option value="広島">広島</option>
-            <option value="岡山">岡山</option>
-            <option value="仙台">仙台</option>
-            <option value="新潟">新潟</option>
-            <option value="金沢">金沢</option>
-            <option value="松山">松山</option>
-            <option value="熊本">熊本</option>
-            <option value="長崎">長崎</option>
-            <option value="鹿児島">鹿児島</option>
-            <option value="札幌">札幌</option>
-            <option value="那覇">那覇</option>
-          </select>
-        </div>
-        <div style="margin-top:6px;text-align:right;width:100%;">
-          <button onclick="useGeolocation()" style="font-size:11px;color:var(--t-g);font-weight:600;background:none;border:none;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;">📍 現在地を使用する</button>
-        </div>
-      </div>
-    </div>
-
-    <p class="sec-lbl">目標・習慣の設定</p>
+    <!-- ③ ⚙ 整え設定 -->
+    <p class="sec-lbl">⚙ 整え設定</p>
     <div class="goal-display-card" id="goalDisplayCard">
       <div class="goal-display-lbl">🎯 あなたの目標</div>
       <div class="goal-display-text" id="goalDisplayText"></div>
@@ -2341,17 +2243,84 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name">取り組み期間の設定</div><div class="st-note" id="periodNote">目標達成までの期間を設定します</div></div>
         <div class="st-r"><span class="pro-badge" id="periodProBadge">PRO</span><span class="st-val" id="periodVal" style="display:none;"></span><span class="st-arr">›</span></div>
       </div>
-    </div>
-
-    <p class="sec-lbl">Habio の話し方</p>
-    <div class="st-group">
       <div class="st-row" onclick="openStyleSheet()">
         <div class="st-em">💬</div>
         <div class="st-info"><div class="st-name">話し方のスタイル</div><div class="st-note" id="styleNote">Habio のトーンを選べます</div></div>
         <div class="st-r"><span class="st-val" id="styleVal">やさしめ</span><span class="st-arr">›</span></div>
       </div>
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;">
+          <div class="st-em">🌤️</div>
+          <div class="st-info"><div class="st-name">お住まいの地域</div><div class="st-note">ホーム画面の天気表示に使用します</div></div>
+        </div>
+        <div style="margin-top:10px;width:100%;">
+          <select id="citySelect" onchange="saveCity(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg-w);color:var(--t);font-size:14px;font-family:inherit;appearance:none;">
+            <option value="">選択してください（未設定＝現在地）</option>
+            <option value="東京">東京</option><option value="横浜">横浜</option><option value="大阪">大阪</option><option value="京都">京都</option>
+            <option value="名古屋">名古屋</option><option value="神戸">神戸</option><option value="福岡">福岡</option><option value="広島">広島</option>
+            <option value="岡山">岡山</option><option value="仙台">仙台</option><option value="新潟">新潟</option><option value="金沢">金沢</option>
+            <option value="松山">松山</option><option value="熊本">熊本</option><option value="長崎">長崎</option><option value="鹿児島">鹿児島</option>
+            <option value="札幌">札幌</option><option value="那覇">那覇</option>
+          </select>
+        </div>
+        <div style="margin-top:6px;text-align:right;width:100%;">
+          <button onclick="useGeolocation()" style="font-size:11px;color:var(--t-g);font-weight:600;background:none;border:none;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;">📍 現在地を使用する</button>
+        </div>
+      </div>
+      <div class="st-row">
+        <div class="st-em">🔔</div>
+        <div class="st-info"><div class="st-name">Habio からの声かけ</div><div class="st-note">朝・昼・夜にやさしくお知らせ</div></div>
+        <div class="toggle on" id="tog-notif" onclick="toggleToggle(this,'notif')"></div>
+      </div>
+      <div class="st-row">
+        <div class="st-em">🌙</div>
+        <div class="st-info"><div class="st-name">おやすみ前のひとこと</div><div class="st-note">21:00 に送ります</div></div>
+        <div class="toggle on" id="tog-sleep" onclick="toggleToggle(this,'sleep')"></div>
+      </div>
+      <div id="notif-status-panel" style="display:none;padding:6px 16px 14px;">
+        <div style="background:var(--bg-w);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-size:12.5px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
+            <span style="color:var(--t-m);">通知許可</span><span id="nsp-perm-val" style="font-weight:500;"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);">
+            <span style="color:var(--t-m);">PWA起動</span><span id="nsp-pwa-val" style="font-weight:500;"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;">
+            <span style="color:var(--t-m);">購読状態</span><span id="nsp-sub-val" style="font-weight:500;"></span>
+          </div>
+        </div>
+        <div id="nsp-ios-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FFFBEA;border:1px solid #F0E080;border-radius:10px;font-size:12px;color:#7A6010;line-height:1.65;">
+          📲 通知を受け取るには、ホーム画面に追加してアプリとして開いてください。<br>Safari の共有ボタン（↑）→「ホーム画面に追加」を選んでください。
+        </div>
+        <div id="nsp-denied-guide" style="display:none;margin-top:8px;padding:10px 13px;background:#FEF0F0;border:1px solid #FAD0D0;border-radius:10px;font-size:12px;color:#B03030;line-height:1.65;">
+          🔕 通知がブロックされています。<br>ブラウザの設定から Habio の通知を「許可」に変更してください。
+        </div>
+        <button id="notif-test-btn" onclick="sendTestNotif()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:12px;background:var(--g);color:white;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity .2s;">テスト通知を送る 🔔</button>
+        <div id="notif-test-result" style="display:none;margin-top:8px;font-size:12px;text-align:center;padding:9px 12px;border-radius:9px;line-height:1.55;"></div>
+      </div>
     </div>
 
+    <!-- ④ 💎 プレミアム -->
+    <p class="sec-lbl" data-premium-hide>💎 プレミアム</p>
+    <div class="upgrade-banner mb14" data-premium-hide onclick="showUpgradeModal()">
+      <div class="upgrade-banner-top">
+        <div class="upgrade-em">💎</div>
+        <div>
+          <div class="upgrade-title">もっと深く、自分のリズムを知りたい方へ。</div>
+          <div class="upgrade-sub">整いポイント2倍・バッジ複数獲得・7日間無料</div>
+        </div>
+      </div>
+      <button class="upgrade-cta">プレミアムを試してみる →</button>
+    </div>
+    <div data-premium-show style="display:none;margin:0 22px 16px;">
+      <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:var(--r-l);padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(124,58,237,.3);">
+        <div style="font-size:28px;">💎</div>
+        <div>
+          <div style="color:#fff;font-weight:700;font-size:15px;">プレミアム会員</div>
+          <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:2px;">整いポイント2倍・全スタイル・バッジ複数獲得</div>
+        </div>
+      </div>
+    </div>
     <p class="sec-lbl">プレミアムで見えること</p>
     <div class="prem-preview-wrap mb14">
       <div class="prem-preview-inner">
@@ -2377,7 +2346,6 @@ body.night-bg{background:#C8C3BB;}
         <div class="prem-lock-s">より深く振り返れます</div>
       </div>
     </div>
-
     <p class="sec-lbl">テーマカラー</p>
     <div class="prem-preview-wrap mb14" id="themeWrap">
       <div class="prem-preview-inner" id="themeInner">
@@ -2405,21 +2373,19 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
-    <!-- X SHARE SECTION -->
-    <p class="sec-lbl">Xでシェアしてポイント獲得</p>
+    <!-- ⑤ 📣 シェア・紹介 -->
+    <p class="sec-lbl">📣 シェア・紹介</p>
     <div class="st-group">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
         <p class="x-note" style="margin-bottom:10px;">
-          Xの投稿画面が開きます。<br>1日最大3回までポイント獲得できます。
+          Xの投稿画面が開きます。<br>1日1回までポイント獲得できます。
         </p>
         <div class="x-share-day-row">
           <span class="x-share-count-text">今日のシェア</span>
           <div class="x-share-dots">
             <div class="x-dot" id="xdot1"></div>
-            <div class="x-dot" id="xdot2"></div>
-            <div class="x-dot" id="xdot3"></div>
           </div>
-          <span class="x-share-count-text" id="x-share-count-text">0 / 3</span>
+          <span class="x-share-count-text" id="x-share-count-text">0 / 1</span>
         </div>
         <button type="button" class="x-tweet-btn" id="x-tweet-btn" onclick="shareOnX()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
@@ -2427,16 +2393,10 @@ body.night-bg{background:#C8C3BB;}
         </button>
       </div>
     </div>
-
-    <!-- REFERRAL SECTION -->
-    <p class="sec-lbl">友達紹介</p>
     <div class="st-group" id="ref-section">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;" id="ref-content">
-        <div class="no-email-hint" id="ref-no-email">
-          メールアドレスを設定すると<br>招待コードが発行されます
-        </div>
+        <div class="no-email-hint" id="ref-no-email">メールアドレスを設定すると<br>招待コードが発行されます</div>
         <div id="ref-loaded" style="display:none;width:100%;">
-          <!-- 招待コード -->
           <div class="ref-code-box">
             <div class="ref-code-inner">
               <div class="ref-code-label">あなたの招待コード</div>
@@ -2444,84 +2404,52 @@ body.night-bg{background:#C8C3BB;}
             </div>
             <button type="button" class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefCode(this)">コピー</button>
           </div>
-          <!-- 招待URL -->
           <div class="ref-url-row">
             <span class="ref-url-text" id="ref-url-text">https://habio.pages.dev/app?ref=...</span>
             <button type="button" class="ref-url-copy" id="ref-url-copy-btn" onclick="copyRefUrl(this)">URLコピー</button>
           </div>
-          <!-- Xで招待投稿 -->
           <button class="ref-x-btn" onclick="shareRefOnX()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.636L18.244 2.25z"/></svg>
             Xで招待URLを投稿する
           </button>
-          <!-- 報酬説明 -->
           <div class="ref-reward-grid">
-            <div class="ref-reward-card">
-              <div class="ref-reward-em">👤</div>
-              <div class="ref-reward-pts">+10pt</div>
-              <div class="ref-reward-lbl">友達が登録したとき<br>あなたに</div>
-            </div>
-            <div class="ref-reward-card">
-              <div class="ref-reward-em">🎁</div>
-              <div class="ref-reward-pts">+5pt</div>
-              <div class="ref-reward-lbl">招待された友達に<br>登録時</div>
-            </div>
-            <div class="ref-reward-card">
-              <div class="ref-reward-em">💎</div>
-              <div class="ref-reward-pts">+100pt</div>
-              <div class="ref-reward-lbl">友達がプレミアム<br>7日継続で</div>
-            </div>
+            <div class="ref-reward-card"><div class="ref-reward-em">👤</div><div class="ref-reward-pts">+10pt</div><div class="ref-reward-lbl">友達が登録したとき<br>あなたに</div></div>
+            <div class="ref-reward-card"><div class="ref-reward-em">🎁</div><div class="ref-reward-pts">+5pt</div><div class="ref-reward-lbl">招待された友達に<br>登録時</div></div>
+            <div class="ref-reward-card"><div class="ref-reward-em">💎</div><div class="ref-reward-pts">+100pt</div><div class="ref-reward-lbl">友達がプレミアム<br>7日継続で</div></div>
           </div>
-          <!-- 紹介統計 -->
           <div class="ref-stats-row">
-            <div class="ref-stat-card">
-              <div class="ref-stat-num" id="ref-count">0</div>
-              <div class="ref-stat-lbl">招待した友達</div>
-            </div>
-            <div class="ref-stat-card">
-              <div class="ref-stat-num" id="ref-prem-count">0</div>
-              <div class="ref-stat-lbl">プレミアム達成</div>
-            </div>
+            <div class="ref-stat-card"><div class="ref-stat-num" id="ref-count">0</div><div class="ref-stat-lbl">招待した友達</div></div>
+            <div class="ref-stat-card"><div class="ref-stat-num" id="ref-prem-count">0</div><div class="ref-stat-lbl">プレミアム達成</div></div>
           </div>
-          <p class="ref-note">
-            ※ 紹介日から7日以内に友達がプレミアム登録し、さらに7日間継続した場合にプレミアム報酬が付与されます<br>
-            ※ 自分の招待コードは使用できません
-          </p>
+          <p class="ref-note">※ 紹介日から7日以内に友達がプレミアム登録し、さらに7日間継続した場合にプレミアム報酬が付与されます<br>※ 自分の招待コードは使用できません</p>
         </div>
       </div>
     </div>
 
-    <p class="sec-lbl">アカウント</p>
+    <!-- ⑥ 👤 アカウント -->
+    <p class="sec-lbl">👤 アカウント</p>
     <div class="st-group">
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
         <div style="display:flex;align-items:center;gap:14px;width:100%;padding-bottom:8px;">
           <div class="st-em">✉️</div>
-          <div class="st-info">
-            <div class="st-name">メールアドレス</div>
-            <div class="st-note" id="emailNote">プレミアム確認・お知らせに使います</div>
-          </div>
+          <div class="st-info"><div class="st-name">メールアドレス</div><div class="st-note" id="emailNote">プレミアム確認・お知らせに使います</div></div>
         </div>
         <div style="display:flex;gap:8px;width:100%;padding:0 4px 0 2px;">
           <input id="settingsEmail" type="email" placeholder="your@email.com" inputmode="email" autocomplete="email"
             oninput="renderAdminPanel('adminPanelSettings')"
             style="flex:1;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg);color:var(--t);outline:none;min-width:0;">
-          <button onclick="checkEmailPremium()"
-            style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">確認</button>
+          <button onclick="checkEmailPremium()" style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">確認</button>
         </div>
       </div>
       <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:12px;">
         <div style="display:flex;align-items:center;gap:14px;width:100%;padding-bottom:8px;">
           <div class="st-em">🎂</div>
-          <div class="st-info">
-            <div class="st-name">誕生日（任意）</div>
-            <div class="st-note">毎年バースデーバッジをプレゼント</div>
-          </div>
+          <div class="st-info"><div class="st-name">誕生日（任意）</div><div class="st-note">毎年バースデーバッジをプレゼント</div></div>
         </div>
         <div style="display:flex;gap:8px;width:100%;padding:0 4px 0 2px;">
           <input id="settingsBirthday" type="date" inputmode="none"
             style="flex:1;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--bg);color:var(--t);outline:none;min-width:0;">
-          <button onclick="saveBirthday()"
-            style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">保存</button>
+          <button onclick="saveBirthday()" style="padding:10px 16px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">保存</button>
         </div>
       </div>
       <div class="st-row" onclick="window.location.href='index.html'">
@@ -2550,20 +2478,6 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
     </div>
-
-    <!-- TITLE SETTINGS SECTION -->
-    <p class="sec-lbl">🏷 称号設定</p>
-    <div class="st-group" id="titleSettingsGroup">
-      <div id="titleSettingsList"></div>
-    </div>
-
-    <!-- TENDENCY HISTORY SECTION -->
-    <p class="sec-lbl" id="tendencyHistSec" style="display:none;">🪞 傾向分析履歴</p>
-    <div class="st-group" id="tendencyHistGroup" style="display:none;"><div id="tendencyHistList"></div></div>
-
-    <!-- REPORT HISTORY SECTION -->
-    <p class="sec-lbl" id="reportHistSec" style="display:none;">📊 習慣分析レポート履歴</p>
-    <div class="st-group" id="reportHistGroup" style="display:none;"><div id="reportHistList"></div></div>
 
     <div class="st-ver">
       Habio v1.0<br>
@@ -3023,6 +2937,67 @@ body.night-bg{background:#C8C3BB;}
       </div>
       <div id="reportHistResultArea" style="padding:8px 0;"></div>
       <div style="padding:0 16px 32px;" id="reportHistActions"></div>
+    </div>
+  </div>
+
+  <!-- TITLE SELECT SHEET (設定 > 称号設定) -->
+  <div class="rewards-overlay" id="titleSelectOverlay" style="z-index:9400;" onclick="if(event.target===this)closeTitleSelectSheet()">
+    <div class="tendency-sheet" id="titleSelectSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🏷 YOUR TITLE</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;">表示する称号を選ぶ</div>
+        <div style="font-size:12px;color:var(--t-m);margin-top:4px;">タップで現在の称号が切り替わります。</div>
+      </div>
+      <div id="titleSelectList" style="padding:8px 0;"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeTitleSelectSheet()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENDENCY HISTORY LIST SHEET (設定 > 傾向分析の記録) -->
+  <div class="rewards-overlay" id="tendencyHistListOverlay" style="z-index:9400;" onclick="if(event.target===this)closeTendencyHistListSheet()">
+    <div class="tendency-sheet" id="tendencyHistListSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🪞 TENDENCY LOG</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;">傾向分析の記録</div>
+      </div>
+      <div id="tendencyHistListItems" style="padding:8px 0;"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeTendencyHistListSheet()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT HISTORY LIST SHEET (設定 > 習慣分析の記録) -->
+  <div class="rewards-overlay" id="reportHistListOverlay" style="z-index:9400;" onclick="if(event.target===this)closeReportHistListSheet()">
+    <div class="tendency-sheet" id="reportHistListSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">📊 REPORT LOG</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;">習慣分析レポートの記録</div>
+      </div>
+      <div id="reportHistListItems" style="padding:8px 0;"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeReportHistListSheet()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGE LIST SHEET (設定 > 獲得バッジ一覧) -->
+  <div class="rewards-overlay" id="badgesListOverlay" style="z-index:9400;" onclick="if(event.target===this)closeBadgesListModal()">
+    <div class="tendency-sheet" id="badgesListSheet">
+      <div class="rewards-handle"></div>
+      <div style="padding:20px 20px 4px;">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🎖 YOUR BADGES</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="badgesListTitle">獲得バッジ</div>
+      </div>
+      <div id="badgesListContent" style="padding:0 16px 8px;"></div>
+      <div style="padding:0 16px 32px;">
+        <button onclick="closeBadgesListModal()" style="width:100%;padding:14px;border-radius:var(--r-l);background:var(--card);border:1.5px solid var(--border);font-size:14px;font-weight:600;color:var(--t);cursor:pointer;">閉じる</button>
+      </div>
     </div>
   </div>
 
@@ -3656,7 +3631,7 @@ function goTab(name){
   if(name==='food') renderFoodLog();
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); }
   if(name==='habits') renderHabitCal();
-  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderTitleSettingsSection(); renderTendencyHistorySection(); renderReportHistorySection(); }
+  if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
 }
 
 /* ── TOAST ── */
@@ -5229,8 +5204,21 @@ function renderProfile(){
 
   const nameEl=document.getElementById('profileName');
   const displayTitle=getCurrentDisplayTitle();
-  const titleSuffix=displayTitle?` ${displayTitle.em} ${displayTitle.name}`:(Store.get('reward_title_earned',false)?' 👑 整い達人':'');
-  if(nameEl) nameEl.textContent=(name?name+'さん、こんにちは':'こんにちは')+titleSuffix;
+  if(nameEl) nameEl.textContent=(name?name+'さん、こんにちは':'こんにちは');
+  const titleDisplay=document.getElementById('profileTitleDisplay');
+  const titleEm=document.getElementById('profileTitleEm');
+  const titleName=document.getElementById('profileTitleName');
+  const legacyTitle=!displayTitle&&Store.get('reward_title_earned',false)?{em:'👑',name:'整い達人'}:null;
+  const activeTitle=displayTitle||legacyTitle;
+  if(titleDisplay){
+    if(activeTitle){
+      titleDisplay.style.display='';
+      if(titleEm) titleEm.textContent=activeTitle.em;
+      if(titleName) titleName.textContent=activeTitle.name;
+    } else {
+      titleDisplay.style.display='none';
+    }
+  }
   const metaEl=document.getElementById('profileMeta');
   if(metaEl) metaEl.textContent='Habio を使いはじめて '+days+'日目';
   const tw=document.getElementById('statTotalWins');
@@ -7524,6 +7512,162 @@ function closeTendencyModal(){
   document.getElementById('tendencyOverlay').classList.remove('show');
 }
 
+/* ─── あなたの歩み セクション (設定画面) ────────────────── */
+function renderAyumiSection(){
+  const earned=Store.get('earned_titles',[]);
+  const current=Store.get('current_display_title',null);
+  const tendencyHist=Store.get('tendency_history',[]);
+  const reportHist=Store.get('habit_report_history',[]);
+  const {owned}=getBadgeCounts();
+  const legacyTitle=!current&&Store.get('reward_title_earned',false)?{em:'👑',name:'整い達人'}:null;
+  const activeTitle=current||legacyTitle;
+
+  const titleNote=activeTitle?`${activeTitle.em} ${activeTitle.name}`:'まだ獲得していません';
+  const tendencyNote=tendencyHist.length?`${tendencyHist.length}件の記録あり`:'まだ記録がありません';
+  const reportNote=reportHist.length?`${reportHist.length}件の記録あり`:'まだ記録がありません';
+  const badgeNote=`${owned}枚獲得済み`;
+
+  const el=document.getElementById('ayumiRows');
+  if(!el) return;
+  el.innerHTML=`
+    <div class="st-row" onclick="openTitleSelectSheet()">
+      <div class="st-em">🏷</div>
+      <div class="st-info"><div class="st-name">称号設定</div><div class="st-note">${titleNote}</div></div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>
+    <div class="st-row" onclick="openTendencyHistListSheet()">
+      <div class="st-em">🪞</div>
+      <div class="st-info"><div class="st-name">傾向分析の記録</div><div class="st-note">${tendencyNote}</div></div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>
+    <div class="st-row" onclick="openReportHistListSheet()">
+      <div class="st-em">📊</div>
+      <div class="st-info"><div class="st-name">習慣分析レポートの記録</div><div class="st-note">${reportNote}</div></div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>
+    <div class="st-row" onclick="openBadgesListModal()">
+      <div class="st-em">🎖</div>
+      <div class="st-info"><div class="st-name">獲得バッジ一覧</div><div class="st-note">${badgeNote}</div></div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>`;
+}
+
+/* ─── 称号選択シート ─────────────────────────────────────── */
+function openTitleSelectSheet(){
+  const earned=Store.get('earned_titles',[]);
+  const current=Store.get('current_display_title',null);
+  const list=document.getElementById('titleSelectList');
+  if(!list) return;
+  if(!earned.length){
+    list.innerHTML='<div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--t-m);">まだ称号を獲得していません。<br>バッジを20・30・50枚交換すると獲得できます。</div>';
+  } else {
+    list.innerHTML=earned.map((t,i)=>{
+      const isActive=current&&t.em===current.em&&t.name===current.name;
+      return `<div class="st-row" onclick="selectTitleByIdx(${i})" style="${isActive?'background:rgba(113,180,148,.06);':''}">
+        <div class="st-em">${t.em}</div>
+        <div class="st-info">
+          <div class="st-name">${t.name}</div>
+          <div class="st-note">${t.date} 獲得</div>
+        </div>
+        <div class="st-r">${isActive?'<span style="color:var(--g);font-size:13px;font-weight:700;">✓ 表示中</span>':'<span class="st-arr">›</span>'}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('titleSelectOverlay').classList.add('show');
+  document.getElementById('titleSelectSheet').scrollTop=0;
+}
+function closeTitleSelectSheet(){
+  document.getElementById('titleSelectOverlay').classList.remove('show');
+}
+
+/* ─── 傾向分析履歴リストシート ──────────────────────────── */
+function openTendencyHistListSheet(){
+  const hist=Store.get('tendency_history',[]);
+  const list=document.getElementById('tendencyHistListItems');
+  if(!list) return;
+  if(!hist.length){
+    list.innerHTML='<div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--t-m);">まだ傾向分析の記録がありません。<br>バッジ20枚と交換すると利用できます。</div>';
+  } else {
+    list.innerHTML=hist.map((h,i)=>`<div class="st-row" onclick="viewTendencyHistory(${i})">
+      <div class="st-em">🪞</div>
+      <div class="st-info">
+        <div class="st-name">${h.date} の傾向分析</div>
+        <div class="st-note">${(h.trend||'').replace(/\n/g,' ').slice(0,30)}…</div>
+      </div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>`).join('');
+  }
+  document.getElementById('tendencyHistListOverlay').classList.add('show');
+  document.getElementById('tendencyHistListSheet').scrollTop=0;
+}
+function closeTendencyHistListSheet(){
+  document.getElementById('tendencyHistListOverlay').classList.remove('show');
+}
+
+/* ─── 習慣分析レポート履歴リストシート ──────────────────── */
+function openReportHistListSheet(){
+  const hist=Store.get('habit_report_history',[]);
+  const list=document.getElementById('reportHistListItems');
+  if(!list) return;
+  if(!hist.length){
+    list.innerHTML='<div style="padding:24px 16px;text-align:center;font-size:13px;color:var(--t-m);">まだ習慣分析レポートの記録がありません。<br>バッジ30枚と交換すると利用できます。</div>';
+  } else {
+    list.innerHTML=hist.map((h,i)=>`<div class="st-row" onclick="viewReportHistory(${i})">
+      <div class="st-em">📊</div>
+      <div class="st-info">
+        <div class="st-name">${h.date} の習慣分析</div>
+        <div class="st-note">${(h.planSection||h.proposeText||'').replace(/\n/g,' ').slice(0,28)}…</div>
+      </div>
+      <div class="st-r"><span class="st-arr">›</span></div>
+    </div>`).join('');
+  }
+  document.getElementById('reportHistListOverlay').classList.add('show');
+  document.getElementById('reportHistListSheet').scrollTop=0;
+}
+function closeReportHistListSheet(){
+  document.getElementById('reportHistListOverlay').classList.remove('show');
+}
+
+/* ─── バッジ一覧シート ───────────────────────────────────── */
+function openBadgesListModal(){
+  const ptE=Store.get('badges_pts',[]);
+  const stE=Store.get('badges_streak',[]);
+  const hdE=Store.get('badges_hidden',[]);
+  const prE=Store.get('badges_pr',[]);
+  const anE=Store.get('badges_anniversary',[]);
+  const list=document.getElementById('badgesListContent');
+  if(!list) return;
+
+  const row=(em,name,sub,dim=false)=>`<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);${dim?'opacity:.4;':''}">
+    <div style="font-size:22px;width:32px;text-align:center;flex-shrink:0;">${em}</div>
+    <div><div style="font-size:13px;font-weight:700;color:var(--t);">${name}</div><div style="font-size:11px;color:var(--t-m);margin-top:2px;">${sub}</div></div>
+  </div>`;
+
+  let html='';
+  POINT_BADGES.filter(b=>ptE.includes(b.id)).forEach(b=>{ html+=row(b.em,b.name,`${b.pts}pt達成`); });
+  STREAK_BADGES.filter(b=>stE.includes(b.id)).forEach(b=>{ html+=row(b.em,b.name,`${b.days}日継続達成`); });
+  HIDDEN_BADGES.filter(b=>hdE.includes(b.id)).forEach(b=>{ html+=row(b.em,b.name,b.desc); });
+  PR_BADGES.filter(b=>prE.includes(b.id)).forEach(b=>{ html+=row(b.em,b.name,`PR商品${b.count}個チェック達成`); });
+  anE.forEach(()=>{ html+=row('🎂','バースデーバッジ','お誕生日おめでとう'); });
+
+  if(!html){
+    html='<div style="padding:32px 0;text-align:center;font-size:13px;color:var(--t-m);">まだバッジを獲得していません。<br>習慣を続けるとバッジが解放されます。</div>';
+  } else {
+    const unearned=POINT_BADGES.filter(b=>!ptE.includes(b.id)).slice(0,3);
+    unearned.forEach(b=>{ html+=row('🔒',b.name,`${b.pts}pt で解放`,true); });
+  }
+
+  list.innerHTML=html;
+  const {owned}=getBadgeCounts();
+  const titleEl=document.getElementById('badgesListTitle');
+  if(titleEl) titleEl.textContent=`獲得バッジ ${owned}枚`;
+  document.getElementById('badgesListOverlay').classList.add('show');
+  document.getElementById('badgesListSheet').scrollTop=0;
+}
+function closeBadgesListModal(){
+  document.getElementById('badgesListOverlay').classList.remove('show');
+}
+
 /* ─── TITLE SETTINGS (設定画面) ──────────────────────────── */
 function renderTitleSettingsSection(){
   const earned=Store.get('earned_titles',[]);
@@ -7562,8 +7706,10 @@ function selectTitleByIdx(i){
   const t=earned[i];
   if(!t) return;
   Store.set('current_display_title',{em:t.em,name:t.name});
-  renderTitleSettingsSection();
+  renderAyumiSection();
   renderHomeTitle();
+  renderProfile();
+  closeTitleSelectSheet();
   showToast('称号を「'+t.name+'」に変更しました 🏷');
 }
 
@@ -8483,13 +8629,11 @@ function getXShareCount() {
 function renderXShareCount() {
   const count = getXShareCount();
   const countText = document.getElementById('x-share-count-text');
-  if (countText) countText.textContent = `${count} / 3`;
-  for (let i = 1; i <= 3; i++) {
-    const dot = document.getElementById(`xdot${i}`);
-    if (dot) dot.classList.toggle('filled', i <= count);
-  }
+  if (countText) countText.textContent = `${count} / 1`;
+  const dot = document.getElementById('xdot1');
+  if (dot) dot.classList.toggle('filled', count >= 1);
   const btn = document.getElementById('x-tweet-btn');
-  if (btn) btn.disabled = count >= 3;
+  if (btn) btn.disabled = count >= 1;
 }
 
 function shareOnX() {
@@ -8497,7 +8641,7 @@ function shareOnX() {
   if (_xShareInProgress) return;
 
   const count = getXShareCount();
-  if (count >= 3) {
+  if (count >= 1) {
     showToast('本日の共有ポイントは獲得済みです');
     return;
   }
@@ -8533,7 +8677,7 @@ function shareOnX() {
 
   setTimeout(() => {
     _xShareInProgress = false;
-    if (btn) btn.disabled = getXShareCount() >= 3;
+    if (btn) btn.disabled = getXShareCount() >= 1;
   }, 1000);
 }
 
