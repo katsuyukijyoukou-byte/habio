@@ -439,6 +439,42 @@ body.night-bg{background:#C8C3BB;}
 }
 .cc-pr{font-size:9.5px;color:var(--t-l);margin-top:8px;line-height:1.5;}
 
+/* ── チャット内商品カード ── */
+.chat-product-card{
+  margin:8px 16px 4px;background:var(--card);
+  border-radius:14px;padding:14px 16px;
+  box-shadow:var(--sh1);border-left:3px solid var(--g-l);
+}
+.cpc-intro{font-size:12.5px;color:var(--t-m);line-height:1.75;margin-bottom:10px;}
+.cpc-name{font-size:13px;font-weight:700;color:var(--t);margin-bottom:4px;}
+.cpc-desc{font-size:12px;color:var(--t-m);line-height:1.7;margin-bottom:10px;}
+.cpc-cta{
+  display:inline-block;background:var(--g);color:#fff;
+  font-size:12.5px;font-weight:600;padding:8px 18px;
+  border-radius:20px;text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.cpc-pr{font-size:9.5px;color:var(--t-l);margin-top:8px;line-height:1.5;}
+
+/* ── チェックイン後フォローアップ ── */
+.welcome-followup{
+  background:#f7fcf7;border-radius:12px;padding:12px 14px;
+  margin-bottom:10px;border-left:2.5px solid #9ecf9e;
+}
+.welcome-followup-msg{font-size:12.5px;color:#607060;line-height:1.75;margin-bottom:10px;}
+.welcome-followup-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.welcome-followup-btn{
+  display:inline-block;background:var(--g);color:#fff;
+  font-size:12px;font-weight:600;padding:7px 16px;
+  border-radius:18px;text-decoration:none;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.welcome-followup-sub{
+  font-size:11.5px;color:var(--t-g);background:none;
+  border:1.5px solid #cce5cc;padding:6px 12px;border-radius:16px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+
 /* ── クライシスカード ── */
 .crisis-card{
   margin:8px 16px 4px;background:var(--card);
@@ -5162,8 +5198,7 @@ function maybeShowProductRec(userMsg){
   const intro=suggestion
     ?suggestion
     :(hasIntent?'気になっているなら、こちらが参考になるかもしれません 🌿':'ちなみに、関連するものをひとつ 🌿');
-  const msg=`${intro}\n\n▶ ${best.title}\n${best.desc}\n${AFFILIATE_LINKS[best.id]}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
-  setTimeout(()=>appendBubble(msg,false,nowTime()),900);
+  setTimeout(()=>showProductCard(best, intro, 'rec_msg'), 900);
 }
 
 // ── 悩み相談カード（4レベル危機検知 + 履歴リスクスコア） ──
@@ -5267,9 +5302,17 @@ function detectCrisisLevel(msg) {
 }
 
 // ── A8相談カード キーワード（表示トリガー） ──
-const A8_KW = /誰かに話したい|だれかに話したい|誰かと話したい|だれかと話したい|話したい|相談したい|聞いてほしい|誰かに聞いてほしい|人に話したい|人と話したい|ひとりで抱えたくない|一人で抱えたくない|恋愛相談|人間関係|職場の悩み|家族の悩み|彼氏|彼女|パートナー|孤独|寂しい|つらい/;
+const A8_KW = /誰かに話したい|だれかに話したい|誰かと話したい|だれかと話したい|話したい|相談したい|聞いてほしい|誰かに聞いてほしい|人に話したい|人と話したい|ひとりで抱えたくない|一人で抱えたくない|恋愛相談|人間関係|職場の悩み|家族の悩み|彼氏|彼女|パートナー|孤独|寂しい|つらい|不安|不安定|モヤモヤ|落ち着かない|考えすぎ|しんどい|気持ちが重い|なんかつらい|心が重い/;
 // 履歴チェック用（より絞った相談意思キーワード）
 const A8_HIST_KW = /話したい|相談したい|聞いてほしい|ひとりで抱えたくない|一人で抱えたくない|誰かに話|だれかに話/;
+
+// ── A8表示スロット（1日を3分割、スロット別1回ずつ許可） ──
+function getA8Slot() {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 14) return 'morning';
+  if (h >= 14 && h < 19) return 'afternoon';
+  return 'night'; // 19〜5h
+}
 
 // ── 統合判定関数 ──
 function shouldShowA8CounselingCard(userMsg, context) {
@@ -5277,7 +5320,10 @@ function shouldShowA8CounselingCard(userMsg, context) {
 
   const level     = detectCrisisLevel(userMsg);
   const riskScore = calcEmotionalRiskScore();
-  const shownToday = Store.get('counseling_shown_date', '') === today();
+  const a8Slot    = getA8Slot();
+  const slotKey   = 'counseling_shown_slots_' + today();
+  const shownSlots = Store.get(slotKey, {});
+  const shownThisSlot = !!shownSlots[a8Slot];
 
   // 直近5件のユーザー発言テキスト（チャット上限トリガー用）
   const recentTexts = Store.get('chat_history', [])
@@ -5294,14 +5340,14 @@ function shouldShowA8CounselingCard(userMsg, context) {
   // ① L3高リスク → A8ではなく公的相談窓口（呼び出し元で処理）
   if (level >= 3) {
     reason = 'l3_risk';
-    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), a8Slot, shownThisSlot, level, riskScore, isChatLimit, show, reason, variant });
     return { show: false, reason, variant };
   }
 
-  // ② 今日すでに表示済み
-  if (shownToday) {
-    reason = 'shown_today';
-    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+  // ② このスロットですでに表示済み
+  if (shownThisSlot) {
+    reason = 'shown_this_slot';
+    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), a8Slot, shownThisSlot, level, riskScore, isChatLimit, show, reason, variant });
     return { show: false, reason, variant };
   }
 
@@ -5341,7 +5387,7 @@ function shouldShowA8CounselingCard(userMsg, context) {
 
   if (!show) reason = 'no_match';
 
-  console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+  console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), a8Slot, shownThisSlot, level, riskScore, isChatLimit, show, reason, variant });
   return { show, reason, variant };
 }
 
@@ -5367,7 +5413,12 @@ function maybeShowCounselingCard(userMsg, isChatLimit) {
   const decision = shouldShowA8CounselingCard(userMsg, { isChatLimit: !!isChatLimit });
   if (!decision.show) return;
 
-  Store.set('counseling_shown_date', today());
+  const a8Slot = getA8Slot();
+  const slotKey = 'counseling_shown_slots_' + today();
+  const shownSlots = Store.get(slotKey, {});
+  shownSlots[a8Slot] = true;
+  Store.set(slotKey, shownSlots);
+  console.log('[Habio A8 slot]', a8Slot, 'shown');
   setTimeout(() => showCounselingA8Card(decision.variant), 2000);
 }
 
@@ -5468,8 +5519,8 @@ function openA8ManualCard() {
 
 // ── テスト・リセット関数 ──
 window.resetCounselingA8 = function() {
-  Store.del('counseling_shown_date');
-  console.log('[Habio A8] counseling_shown_date をリセットしました。次の発言でカードが表示されます。');
+  Store.del('counseling_shown_slots_' + today());
+  console.log('[Habio A8] 今日のスロット記録をリセットしました。次の発言でカードが表示されます。');
 };
 window.testA8CounselingCard = function(variant) {
   showCounselingA8Card(variant || 'normal');
@@ -5509,6 +5560,26 @@ function showCrisisCard(isImmediate) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function showProductCard(def, intro, source) {
+  const msgs = document.getElementById('chatMsgs');
+  if (!msgs) return;
+  const isInternal = def.id === 'relation_insight';
+  const prText = isInternal
+    ? 'Habio姉妹サービス ／ AIを活用した感情整理ツールです。'
+    : 'PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります。';
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-product-card';
+  wrap.innerHTML =
+    '<div class="cpc-intro">' + intro.replace(/\n/g, '<br>') + '</div>' +
+    '<div class="cpc-name">' + def.title + '</div>' +
+    '<div class="cpc-desc">' + def.desc + '</div>' +
+    '<a class="cpc-cta" href="' + AFFILIATE_LINKS[def.id] + '" target="_blank" rel="nofollow">' + def.cta + '</a>' +
+    '<div class="cpc-pr">' + prText + '</div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  console.log('[Habio product card]', { emotion: (detectEmotionTags() || []).join(',') || 'none', product: def.id, source });
+}
+
 function quickProductRec(){
   const slot=getTimeSlot(new Date().getHours());
   const eTags=detectEmotionTags();
@@ -5541,8 +5612,7 @@ function quickProductRec(){
 
   const suggestion=EMOTION_SUGGESTION[pick.id];
   const intro=suggestion||'ちなみに、ひとつご参考に 🌿';
-  const msg=`${intro}\n\n▶ ${pick.title}\n${pick.desc}\n${AFFILIATE_LINKS[pick.id]}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
-  appendBubble(msg,false,nowTime());
+  showProductCard(pick, intro, 'rec_chip');
   logRecEvent('rec_chip_'+pick.id);
 }
 
@@ -6892,7 +6962,8 @@ const AFFILIATE_LINKS = {
   nanamitea:     "https://a.r10.to/h5VdLM",
   bananatea:     "https://a.r10.to/h5VvEi",
   traintube:     "https://a.r10.to/h8ZX3G",
-  rumay3d:       "https://a.r10.to/h5wUMN",
+  rumay3d:         "https://a.r10.to/h5wUMN",
+  relation_insight:"https://relation-insight-ai.vercel.app",
 };
 
 // 商品画像URL（URLが空の場合は画像非表示）
@@ -7359,7 +7430,8 @@ const REC_DEFS = [
   { id:'nanamitea',     em:'🍵', tag:'PR｜ダイエット茶',     title:'漢方屋の七美茶。腸活ダイエットドリンク。',                   desc:'ルイボス配合の漢方ダイエットティー。秘密発送対応。腸活・デトックス習慣に。',            cta:'楽天で詳細を見る' },
   { id:'bananatea',     em:'🍌', tag:'PR｜デトックス茶',     title:'超スッキリバナナ茶。腸活・デトックスに。',                   desc:'フルーツティー感覚で飲みやすいダイエットお茶。旅行や合宿にも便利な個包装。',            cta:'楽天で詳細を見る' },
   { id:'traintube',     em:'🏋', tag:'PR｜筋トレ・ストレッチ',title:'トレーニングチューブ5本セット。強度別で使い分け。',           desc:'強度別5色セットのゴムチューブ。自宅の筋トレ・ストレッチ・体幹トレーニングに。',         cta:'楽天で詳細を見る' },
-  { id:'rumay3d',       em:'📳', tag:'PR｜3D振動マシン',     title:'RUMAY 3D振動マシン。ブルブル全身運動。99段調節。',            desc:'3D振動でウエスト・体幹トレーニングに。産後や運動不足の方にも使いやすい設計。',         cta:'楽天で詳細を見る' },
+  { id:'rumay3d',        em:'📳', tag:'PR｜3D振動マシン',     title:'RUMAY 3D振動マシン。ブルブル全身運動。99段調節。',            desc:'3D振動でウエスト・体幹トレーニングに。産後や運動不足の方にも使いやすい設計。',         cta:'楽天で詳細を見る' },
+  { id:'relation_insight',em:'💭',tag:'姉妹サービス｜恋愛AI', title:'Relation Insight AI — 恋愛の"なぜ？"をAIと整理する。',     desc:'相手の言動や自分の気持ちを、AIと一緒に少し違う角度から見てみましょう。返信待ちの不安や関係の悩みを整理するヒントに。', cta:'気持ちを整理してみる' },
 ];
 
 // チャット会話キーワード → 商品スコアリング用マップ
@@ -7732,6 +7804,7 @@ const CHAT_EMOTION_DETECT=[
                                '考えすぎちゃう','ずっと考えちゃう','頭がいっぱい','モヤモヤ','頭の中がうるさい']},
   {tag:'朝しんどい',     kws:['朝がつらい','朝しんど','朝起き','朝が苦手','起きられない']},
   {tag:'生活を少し整えたい',kws:['整えたい','ちゃんとしたい','習慣','改善','少しずつ','変えたい']},
+  {tag:'恋愛',           kws:['恋愛','返信','既読','未読','彼氏','彼女','パートナー','脈あり','LINE','別れ','片思い','好きな人','恋愛不安']},
 ];
 
 const EMOTION_PRODUCT_MAP={
@@ -7777,22 +7850,30 @@ const EMOTION_PRODUCT_MAP={
     night:      ['rooibostea','pillowmist'],
     deep_night: ['rooibostea','hugmochi'],
   },
+  '恋愛':{
+    morning:    ['relation_insight'],
+    afternoon:  ['relation_insight'],
+    evening:    ['relation_insight'],
+    night:      ['relation_insight'],
+    deep_night: ['relation_insight'],
+  },
 };
 
 const DEEP_NIGHT_DEFAULT=['hugmochi','rooibostea','pillowmist'];
 const NIGHT_DEFAULT     =['rooibostea','pillowmist','hottab'];
 
 const EMOTION_SUGGESTION={
-  rooibostea: '考えごとが増えてる夜は、温かいものをひとつ置いてあげてもいいかも。',
-  pillowmist:  '眠ろうとするほど考えてしまう夜は、"眠る準備"だけ整えてみてもいい。',
-  hottab:      '今日は、回復する側に寄せてもいい日。',
-  hugmochi:    '今日は、少し"包まれる感じ"が欲しい日かもしれない。',
-  ashwaganda:  'ずっと気を張ってる感じがあるなら、少しゆるめる選択をしてもいい。',
-  legfit:      '足がむくんでいる日は、気持ちまで重くなりやすい。',
-  zakkokumai:  'ちゃんと食べるって、思ってるより大事だったりする。',
-  vitaminc:    '朝のリズム、少しだけ整えてみる？',
-  mytrexneck:  '首や肩が固まってる日は、気持ちまで張りつめやすい。',
-  cocolact:    '自分の体をちゃんとケアする時間、最近取れてますか？',
+  rooibostea:      '考えごとが増えてる夜は、温かいものをひとつ置いてあげてもいいかも。',
+  pillowmist:      '眠ろうとするほど考えてしまう夜は、"眠る準備"だけ整えてみてもいい。',
+  hottab:          '今日は、回復する側に寄せてもいい日。',
+  hugmochi:        '今日は、少し"包まれる感じ"が欲しい日かもしれない。',
+  ashwaganda:      'ずっと気を張ってる感じがあるなら、少しゆるめる選択をしてもいい。',
+  legfit:          '足がむくんでいる日は、気持ちまで重くなりやすい。',
+  zakkokumai:      'ちゃんと食べるって、思ってるより大事だったりする。',
+  vitaminc:        '朝のリズム、少しだけ整えてみる？',
+  mytrexneck:      '首や肩が固まってる日は、気持ちまで張りつめやすい。',
+  cocolact:        '自分の体をちゃんとケアする時間、最近取れてますか？',
+  relation_insight:'恋愛って、考え始めると止まらなくなる時ありますよね。',
 };
 
 function getRecentRecIds(){ return Store.get('last_rec_ids',[]); }
@@ -9704,10 +9785,56 @@ function handleWelcomeChoice(slot, choiceKey) {
       '<div class="welcome-response-label">今日の一言 🌱 ' + ptHTML + '</div>' +
       '<div class="welcome-response-text">' + msg + '</div>';
   }
+  const followupHTML = buildWelcomeFollowup(slot, choiceKey);
   if (actionsEl) {
-    actionsEl.innerHTML = '<button class="welcome-thanks" onclick="closeWelcomePopup()">ありがとう</button>';
+    actionsEl.innerHTML = followupHTML + '<button class="welcome-thanks" onclick="closeWelcomePopup()">ありがとう</button>';
   }
   markWelcomeSlotAnswered(slot);
+}
+
+// チェックイン感情に応じた小さなフォローアップカードを返す
+function buildWelcomeFollowup(slot, choiceKey) {
+  const TIRED = {
+    morning:   ['sleepy','dontWanna'],
+    afternoon: ['tired','sleepy','cantFocus'],
+    evening:   ['exhausted','goHome'],
+    night:     [],
+    lateNight: ['cantSleep']
+  };
+  const ANXIOUS = {
+    morning:   [],
+    afternoon: [],
+    evening:   [],
+    night:     ['anxious'],
+    lateNight: ['talk','cantSleep']
+  };
+
+  const tiredChoices  = TIRED[slot]   || [];
+  const anxiousChoices= ANXIOUS[slot] || [];
+
+  if (tiredChoices.includes(choiceKey)) {
+    const link = AFFILIATE_LINKS['rooibostea'] || '#';
+    return '<div class="welcome-followup">' +
+      '<div class="welcome-followup-msg">疲れている時は、温かいものを一つ置いてあげてもいいかも 🍵<br>あるいは、少し話すだけでも気持ちが整うことがあります。</div>' +
+      '<div class="welcome-followup-actions">' +
+        '<a class="welcome-followup-btn" href="' + link + '" target="_blank" rel="nofollow">温かいものを見てみる</a>' +
+        '<button class="welcome-followup-sub" onclick="closeWelcomePopup();openA8ManualCard()">少し話してみる</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  if (anxiousChoices.includes(choiceKey)) {
+    const a8Link = 'https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1';
+    return '<div class="welcome-followup">' +
+      '<div class="welcome-followup-msg">夜の不安は、誰かに話すだけで少し軽くなることもあります 🌙<br>必要な時に、逃げ場を持っておいてください。</div>' +
+      '<div class="welcome-followup-actions">' +
+        '<a class="welcome-followup-btn" href="' + a8Link + '" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+      '</div>' +
+      '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:none;">' +
+    '</div>';
+  }
+
+  return '';
 }
 
 // "あとで"・"×" で閉じる → 回答済みにしない（同スロットで再表示OK）
