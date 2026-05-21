@@ -5379,8 +5379,12 @@ function showCounselingA8Card(level, riskScore, isAtLimit) {
       '<div class="cc-msg">' + msg + '</div>' +
       '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
-      '<img src="https://www11.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" width="1" height="1" border="0" alt="" style="display:block;">' +
+      '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
+  console.log('[Habio A8 card] 表示 variant=' + (isAtLimit ? 'limit' : isHistoryBased ? 'history' : isL2 ? 'l2' : 'normal'), {
+    label, trackingPixel: 'www18.a8.net',
+    link: 'px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU'
+  });
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
 }
