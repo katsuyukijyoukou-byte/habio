@@ -5083,7 +5083,7 @@ async function sendMsg(){
 
   if(!isPrem && !sessionActive && getChatCount()>=FREE_CHAT_LIMIT){
     showUpgradeModal();
-    maybeShowCounselingCard(text);
+    maybeShowCounselingCard(text, true); // isChatLimit=true → 確率なし・相談文脈で必ず表示
     return;
   }
 
@@ -5263,131 +5263,182 @@ function detectCrisisLevel(msg) {
   return -1;
 }
 
-function maybeShowCounselingCard(userMsg) {
-  const eTags = detectEmotionTags();
-  let level = detectCrisisLevel(userMsg);
+// ── A8相談カード キーワード（表示トリガー） ──
+const A8_KW = /誰かに話したい|だれかに話したい|誰かと話したい|だれかと話したい|話したい|相談したい|聞いてほしい|誰かに聞いてほしい|人に話したい|人と話したい|ひとりで抱えたくない|一人で抱えたくない|恋愛相談|人間関係|職場の悩み|家族の悩み|彼氏|彼女|パートナー|孤独|寂しい|つらい/;
+// 履歴チェック用（より絞った相談意思キーワード）
+const A8_HIST_KW = /話したい|相談したい|聞いてほしい|ひとりで抱えたくない|一人で抱えたくない|誰かに話|だれかに話/;
 
-  // 履歴に保存（毎メッセージ）
-  saveEmotionalHistory(userMsg, level, eTags);
+// ── 統合判定関数 ──
+function shouldShowA8CounselingCard(userMsg, context) {
+  const isChatLimit = (context || {}).isChatLimit || false;
 
-  // 方法/場所/時間/他害 → 即時公的窓口（スコア不問）
-  if (CRISIS_SPECIFIC.test(userMsg) || CRISIS_HARM_OTHER.test(userMsg)) {
-    setTimeout(() => showCrisisCard(true), 2500);
-    return;
-  }
-
-  // キーワードなし → 終了
-  if (level < 0) return;
-
-  // リスクスコアで補正
+  const level     = detectCrisisLevel(userMsg);
   const riskScore = calcEmotionalRiskScore();
-  const count = getChatCount();
-  const isPrem = Store.get('is_premium', false);
-  const remaining = Math.max(0, FREE_CHAT_LIMIT - count);
   const shownToday = Store.get('counseling_shown_date', '') === today();
 
-  // ── デバッグログ ──
-  console.log('[Habio counseling]', {
-    userMsg,
-    detectedLevel: level,
-    emotionalRiskScore: riskScore,
-    chatCount: count,
-    remaining,
-    counseling_shown_date: Store.get('counseling_shown_date', ''),
-    shownToday
-  });
+  // 直近5件のユーザー発言テキスト（チャット上限トリガー用）
+  const recentTexts = Store.get('chat_history', [])
+    .filter(m => m.me).slice(-5).map(m => m.text || '').join(' ');
 
-  if (level === 1 && riskScore >= 3) level = 2;
+  // 深夜判定
+  const hour    = new Date().getHours();
+  const isNight = hour >= 22 || hour < 3;
 
-  // L1のまま → AIに任せる
-  if (level === 1) {
-    console.log('[Habio counseling] skip: L1, no escalation');
-    return;
+  let show    = false;
+  let reason  = 'no_match';
+  let variant = 'normal';
+
+  // ① L3高リスク → A8ではなく公的相談窓口（呼び出し元で処理）
+  if (level >= 3) {
+    reason = 'l3_risk';
+    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+    return { show: false, reason, variant };
   }
 
-  // L3 or スコア5以上でL2相当 → 公的相談窓口
-  if (level === 3 || (level === 2 && riskScore >= 5)) {
-    setTimeout(() => showCrisisCard(false), 3000);
-    return;
-  }
-
-  // L0 / L2 → A8カード
+  // ② 今日すでに表示済み
   if (shownToday) {
-    console.log('[Habio counseling] skip: already shown today');
-    return;
+    reason = 'shown_today';
+    console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+    return { show: false, reason, variant };
   }
 
-  if (count < 2) {
-    console.log('[Habio counseling] skip: count < 2');
-    return;
+  // ── トリガー判定（優先順位順） ──
+
+  // ① チャット上限 + 相談キーワード → 確率なしで必ず表示
+  if (!show && isChatLimit && A8_KW.test(recentTexts)) {
+    show = true; reason = 'chat_limit'; variant = 'limit';
   }
 
-  let show = false;
-  let isAtLimit = false;
+  // ② 直接キーワード（現在のメッセージ）
+  if (!show && A8_KW.test(userMsg)) {
+    show = true; reason = 'direct_keyword'; variant = isNight ? 'night' : 'normal';
+  }
 
-  if (level === 2) {
-    show = true;
-  } else {
-    // L0
-    if (!isPrem) {
-      isAtLimit = remaining <= 0;
-      // 上限到達 or 残り2回以内は確率なし。それ以外20%
-      show = isAtLimit || remaining <= 2 || Math.random() < 0.2;
-    } else {
-      show = Math.random() < 0.25;
+  // ③ L2（深刻な苦しさ）
+  if (!show && level === 2) {
+    show = true; reason = 'l2_distress'; variant = isNight ? 'night' : 'normal';
+  }
+
+  // ④ 履歴トリガー
+  if (!show) {
+    const hist = Store.get(EMO_HIST_KEY, []);
+    const now  = Date.now();
+    const h24  = hist.filter(e => e.ts > now - 24 * 60 * 60 * 1000);
+    const h72  = hist.filter(e => e.ts > now - 3  * 24 * 60 * 60 * 1000);
+
+    const counselInH24  = h24.filter(e => A8_HIST_KW.test(e.msg || '')).length;
+    const l2InH72       = h72.filter(e => e.level >= 2).length;
+    const nightCounsel  = h24.some(e => e.isNight && A8_HIST_KW.test(e.msg || ''));
+    const hasCounselHist= h72.some(e => A8_HIST_KW.test(e.msg || ''));
+
+    if (counselInH24 >= 2 || l2InH72 >= 2 || nightCounsel || hasCounselHist) {
+      show = true; reason = 'history'; variant = isNight ? 'night' : 'history';
     }
   }
 
-  console.log('[Habio counseling] show:', show, '| isAtLimit:', isAtLimit, '| level:', level);
+  if (!show) reason = 'no_match';
 
-  if (!show) return;
-  Store.set('counseling_shown_date', today());
-  setTimeout(() => showCounselingA8Card(level, riskScore, isAtLimit), 2500);
+  console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), level, riskScore, shownToday, isChatLimit, show, reason, variant });
+  return { show, reason, variant };
 }
 
-function showCounselingA8Card(level, riskScore, isAtLimit) {
+// ── エントリーポイント（sendMsgから呼ぶ） ──
+// isChatLimit=true のとき: チャット上限到達パスからの呼び出し
+function maybeShowCounselingCard(userMsg, isChatLimit) {
+  const eTags = detectEmotionTags();
+  const level = detectCrisisLevel(userMsg);
+  saveEmotionalHistory(userMsg, level, eTags);
+
+  // 即時エスカレーション（方法・場所・他害）
+  if (CRISIS_SPECIFIC.test(userMsg) || CRISIS_HARM_OTHER.test(userMsg)) {
+    setTimeout(() => showCrisisCard(true), 2000);
+    return;
+  }
+
+  // L3 → 公的相談窓口
+  if (level >= 3) {
+    setTimeout(() => showCrisisCard(false), 2500);
+    return;
+  }
+
+  const decision = shouldShowA8CounselingCard(userMsg, { isChatLimit: !!isChatLimit });
+  if (!decision.show) return;
+
+  Store.set('counseling_shown_date', today());
+  setTimeout(() => showCounselingA8Card(decision.variant), 2000);
+}
+
+// ── A8カード表示（variantで文言切り替え） ──
+function showCounselingA8Card(variant) {
   const msgs = document.getElementById('chatMsgs');
   if (!msgs || document.getElementById('counselingCardWrap')) return;
 
-  const isL2 = level === 2;
-  const isHistoryBased = isL2 && riskScore >= 3;
+  const VARIANTS = {
+    normal: {
+      icon:  '🌱',
+      title: '話せる場所を増やしてみる 🌱',
+      body:  'AIに話すだけでも少し整理できますが、<br>人に話すことで軽くなることもあります。',
+      btn:   '話を聞いてもらう'
+    },
+    limit: {
+      icon:  '🌱',
+      title: '今日の会話はここまでだけど 🌱',
+      body:  '"誰かに話したい"と思えたのは、<br>ちゃんと自分を守ろうとしているサインかもしれません。<br><br>AIじゃなく、人に話すことで<br>少し気持ちが整理できることもあります。',
+      btn:   '少し話してみる'
+    },
+    history: {
+      icon:  '🤍',
+      title: 'ここ数日、少し揺れているかもしれません 🤍',
+      body:  'ひとりで整えきれない時は、<br>話せる場所をひとつ持っておくだけでも安心です。',
+      btn:   '気持ちを整理する'
+    },
+    night: {
+      icon:  '🌙',
+      title: '夜は、気持ちが大きくなりやすい時間です 🌙',
+      body:  '今すぐ答えを出さなくても大丈夫。<br>誰かに話すだけで、少し呼吸しやすくなることもあります。',
+      btn:   '話を聞いてもらう'
+    }
+  };
 
-  let label, msg;
-  if (isAtLimit) {
-    label = '今日の会話はここまでだけど';
-    msg = '"誰かに話したい"と思えたのは、<br>ちゃんと自分を守ろうとしているサインかもしれません。<br>AIじゃなく、人に話すことで<br>少し整理できることもあります。';
-  } else if (isHistoryBased) {
-    label = 'ここ数日、少し気持ちが揺れているかもしれません';
-    msg = 'AIに話すだけでも整理できますが、<br>人に話すことで軽くなることもあります。<br>必要なら、話せる場所をひとつ持っておいてください。';
-  } else if (isL2) {
-    label = 'ひとりで抱えなくていい';
-    msg = 'ちゃんと抱えながら、ここまで来てるんですね。<br>AIじゃなく、人に話すのも、ひとつの整え方です。';
-  } else {
-    label = '話せる場所を増やしてみる';
-    msg = 'AIじゃなく、人に話すことで<br>気持ちが少し整理できることもあります。';
-  }
-  const icon = isL2 ? '🤍' : '🌱';
+  const v = VARIANTS[variant] || VARIANTS.normal;
 
   const wrap = document.createElement('div');
-  wrap.id = 'counselingCardWrap';
+  wrap.id    = 'counselingCardWrap';
   wrap.className = 'counseling-card';
   wrap.innerHTML =
     '<button class="cc-close" onclick="document.getElementById(\'counselingCardWrap\').remove()" aria-label="閉じる">×</button>' +
-    '<div class="cc-icon">' + icon + '</div>' +
+    '<div class="cc-icon">' + v.icon + '</div>' +
     '<div class="cc-body">' +
-      '<div class="cc-label">' + label + '</div>' +
-      '<div class="cc-msg">' + msg + '</div>' +
-      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+      '<div class="cc-label">' + v.title + '</div>' +
+      '<div class="cc-msg">'  + v.body  + '</div>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">' + v.btn + '</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
-  console.log('[Habio A8 card] 表示 variant=' + (isAtLimit ? 'limit' : isHistoryBased ? 'history' : isL2 ? 'l2' : 'normal'), {
-    label, trackingPixel: 'www18.a8.net',
-    link: 'px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU'
+
+  console.log('[Habio A8 card] 表示', {
+    variant,
+    title: v.title,
+    trackingPixel: 'https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU',
+    link: 'https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&...'
   });
+
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
 }
+
+// ── テスト・リセット関数 ──
+window.resetCounselingA8 = function() {
+  Store.del('counseling_shown_date');
+  console.log('[Habio A8] counseling_shown_date をリセットしました。次の発言でカードが表示されます。');
+};
+window.testA8CounselingCard = function(variant) {
+  showCounselingA8Card(variant || 'normal');
+};
+window.testA8Decision = function(text) {
+  const msg = text || '誰かに話したい';
+  console.log('[Habio A8] testA8Decision:', shouldShowA8CounselingCard(msg, { isChatLimit: false }));
+};
 
 // isImmediate: 方法/他害などの即時エスカレーション
 // !isImmediate: L3単発 or riskScore>=5 による履歴ベース
