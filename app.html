@@ -387,6 +387,8 @@ body.night-bg{background:#C8C3BB;}
 .chip:active{background:var(--g-p);border-color:var(--g);color:var(--t-g);}
 .chip-rec{background:var(--g-p);border-color:var(--g);color:var(--t-g);font-weight:700;}
 .chip-rec:active{background:var(--g);color:#fff;}
+.chip-counsel{background:#fdf0f6;border-color:#e8bdd0;color:#9e6080;font-weight:600;}
+.chip-counsel:active{background:#f5d0e3;border-color:#d49ab8;color:#7a4060;}
 
 .chat-input-area{
   padding:10px 16px 12px;background:var(--card);
@@ -2186,6 +2188,7 @@ body.night-bg{background:#C8C3BB;}
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
     <div class="chips-row">
+      <button class="chip chip-counsel" onclick="openA8ManualCard()">🤍 人に話したい</button>
       <button class="chip chip-rec" onclick="quickProductRec()">🛍 健康グッズ</button>
       <button class="chip" onclick="quickChat('今日は疲れました')">😮‍💨 疲れた</button>
       <button class="chip" onclick="quickChat('食事について相談したい')">🥗 食事の相談</button>
@@ -5425,6 +5428,42 @@ function showCounselingA8Card(variant) {
 
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── 「🤍 人に話したい」チップから手動表示 ──
+// チャット回数消費なし・上限関係なく常に押せる・L3判定不要
+function openA8ManualCard() {
+  console.log('[Habio A8 manual chip] clicked');
+
+  const msgs = document.getElementById('chatMsgs');
+  if (!msgs) return;
+
+  // 既存カードがあれば差し替え
+  const existing = document.getElementById('counselingCardWrap');
+  if (existing) existing.remove();
+
+  const wrap = document.createElement('div');
+  wrap.id        = 'counselingCardWrap';
+  wrap.className = 'counseling-card';
+  wrap.innerHTML =
+    '<button class="cc-close" onclick="document.getElementById(\'counselingCardWrap\').remove()" aria-label="閉じる">×</button>' +
+    '<div class="cc-icon">🤍</div>' +
+    '<div class="cc-body">' +
+      '<div class="cc-label">話せる場所を増やしてみる 🤍</div>' +
+      '<div class="cc-msg">AIに話すだけでも少し整理できますが、<br>人に話すことで軽くなることもあります。<br><br>必要な時に、<br>話せる場所をひとつ持っておいてください。</div>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+      '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
+      '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
+    '</div>';
+
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  console.log('[Habio A8 card] manual displayed', {
+    variant: 'manual',
+    trackingPixel: 'https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU',
+    link: 'https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&...'
+  });
 }
 
 // ── テスト・リセット関数 ──
