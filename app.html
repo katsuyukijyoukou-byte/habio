@@ -9935,6 +9935,12 @@ function closeWelcomePopup() {
   setTimeout(() => overlay.remove(), 220);
 }
 
+/* ── PWA 定数（init()より前に定義が必要） ── */
+let _pwaPrompt = null;
+const _isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || ('standalone' in navigator && navigator.standalone === true);
+const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
 /* ── INIT ── */
 function init(){
   if(!Store.get('start_date')) Store.set('start_date',today());
@@ -10868,11 +10874,6 @@ async function updatePushPrefs() {
 /* ══════════════════════════════════════════════════
    PWA — Service Worker & インストールプロンプト
    ══════════════════════════════════════════════════ */
-
-let _pwaPrompt = null;
-const _isStandalone = window.matchMedia('(display-mode: standalone)').matches
-  || ('standalone' in navigator && navigator.standalone === true);
-const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
 if (_isStandalone) console.log('[Habio PWA] already standalone');
 
