@@ -2844,14 +2844,13 @@ body.night-bg{background:#C8C3BB;}
   <!-- iOS ホーム画面追加 手順モーダル -->
   <div id="pwaIosOverlay" onclick="closePwaIosModal(event)">
     <div class="pwa-ios-sheet">
-      <div class="pwa-ios-title">iPhoneで追加する方法</div>
+      <div class="pwa-ios-title">ホーム画面への追加方法</div>
       <ol class="pwa-ios-steps">
-        <li><div class="pwa-ios-num">1</div><div>SafariでHabioを開く</div></li>
-        <li><div class="pwa-ios-num">2</div><div>画面下部の <b>共有ボタン</b>（<span style="font-size:15px;">⎙</span>）を押す</div></li>
-        <li><div class="pwa-ios-num">3</div><div>「<b>ホーム画面に追加</b>」を選ぶ</div></li>
-        <li><div class="pwa-ios-num">4</div><div>右上の「<b>追加</b>」を押す</div></li>
+        <li><div class="pwa-ios-num">1</div><div>画面下部のメニューバーにある<br><b>「共有」ボタン</b>（↑ のマーク）をタップ</div></li>
+        <li><div class="pwa-ios-num">2</div><div>メニューの中から<br>「<b>ホーム画面に追加</b>」を選ぶ</div></li>
+        <li><div class="pwa-ios-num">3</div><div>右上の「<b>追加</b>」をタップ</div></li>
       </ol>
-      <div class="pwa-ios-note">iPhoneではSafariからのみ追加できます。<br>追加すると、アプリのように毎日戻ってこれます 🌱</div>
+      <div class="pwa-ios-note">Safariから開いている場合のみ追加できます。<br>追加すると、アプリのように毎日戻ってこれます 🌱</div>
       <button class="pwa-ios-done" onclick="closePwaIosModal()">わかりました</button>
     </div>
   </div>
@@ -10917,7 +10916,7 @@ function showPwaHomeCard() {
   if (Store.get('pwa_install_dismissed_date', '') === today()) return;
   if (!_pwaPrompt && !_isIOS) return; // サポート外環境
   const card = document.getElementById('pwaHomeCard');
-  if (card) card.style.display = '';
+  if (card) card.style.display = 'block'; // CSS display:none を上書きするには明示指定が必要
 }
 
 // ── ホームカードを閉じる（当日のみ非表示） ──
