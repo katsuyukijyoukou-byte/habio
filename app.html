@@ -118,6 +118,63 @@ body.night-bg{background:#C8C3BB;}
   padding:6px 14px;border-radius:10px;
 }
 
+/* ── PWA ホームカード（中段埋め込み） ── */
+#pwaHomeCard{
+  margin:0 16px 16px;
+  background:var(--card);
+  border-radius:16px;
+  padding:16px 16px 14px;
+  border:1.5px solid #d0e8d0;
+  display:none;
+}
+#pwaHomeCard .phc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#pwaHomeCard .phc-icon{font-size:18px;}
+#pwaHomeCard .phc-title{font-size:13.5px;font-weight:700;color:var(--t);}
+#pwaHomeCard .phc-msg{font-size:12.5px;color:var(--t-m);line-height:1.8;margin-bottom:12px;}
+#pwaHomeCard .phc-btns{display:flex;align-items:center;gap:10px;}
+#pwaHomeCard .phc-install{
+  background:var(--g);color:#fff;
+  font-size:12.5px;font-weight:600;padding:8px 18px;
+  border-radius:20px;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+#pwaHomeCard .phc-later{
+  font-size:12px;color:var(--t-l);background:none;border:none;cursor:pointer;padding:4px 0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── iOS 手順モーダル ── */
+#pwaIosOverlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.38);
+  z-index:99999;display:none;align-items:flex-end;justify-content:center;
+}
+.pwa-ios-sheet{
+  background:#fff;border-radius:22px 22px 0 0;
+  padding:22px 20px calc(28px + env(safe-area-inset-bottom,0));
+  width:100%;max-width:420px;
+  animation:pwaSheetUp .3s cubic-bezier(.2,.8,.4,1);
+}
+@keyframes pwaSheetUp{from{transform:translateY(100%)}to{transform:none}}
+.pwa-ios-title{font-size:17px;font-weight:700;color:#2d3d2d;margin-bottom:16px;text-align:center;}
+.pwa-ios-steps{list-style:none;padding:0;margin:0 0 18px;}
+.pwa-ios-steps li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:10px 0;border-bottom:1px solid #f0f4f0;
+  font-size:13.5px;color:#4a5a4a;line-height:1.6;
+}
+.pwa-ios-steps li:last-child{border-bottom:none;}
+.pwa-ios-num{
+  background:var(--g);color:#fff;font-size:11px;font-weight:700;
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.pwa-ios-note{font-size:11.5px;color:var(--t-l);text-align:center;margin-bottom:16px;line-height:1.6;}
+.pwa-ios-done{
+  width:100%;background:var(--g);color:#fff;
+  font-size:14px;font-weight:600;padding:13px;
+  border-radius:14px;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
 
 #night-banner{
   display:none;
@@ -2188,6 +2245,24 @@ body.night-bg{background:#C8C3BB;}
       <span class="cs-arr">›</span>
     </div>
 
+    <!-- PWA インストールカード -->
+    <div id="pwaHomeCard">
+      <div class="phc-head">
+        <span class="phc-icon">🌱</span>
+        <span class="phc-title">Habioをホーム画面に追加</span>
+      </div>
+      <div class="phc-msg">
+        ホーム画面に置いておくと、<br>
+        いつでもすぐに戻ってこれます。<br><br>
+        毎日のチェックインや記録が、<br>
+        少しだけ続けやすくなります。
+      </div>
+      <div class="phc-btns">
+        <button class="phc-install" onclick="installPwaFromCard()">ホーム画面に追加する</button>
+        <button class="phc-later" onclick="dismissPwaHomeCard()">あとで</button>
+      </div>
+    </div>
+
     <p class="sec-lbl" id="recLbl" style="display:none;">あなたへのおすすめ（PR）</p>
     <div class="rec-pt-hint" id="recPtHint" style="display:none;">
       <div class="rec-pt-hint-icon">🌱</div>
@@ -2735,9 +2810,9 @@ body.night-bg{background:#C8C3BB;}
         <div class="st-info"><div class="st-name" style="color:#c0392b;">プレミアムを解約する</div><div class="st-note">退会の前にご確認いただけます</div></div>
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
-      <div class="st-row" id="pwaInstallRow" onclick="showPwaBanner(true)" style="display:none;">
+      <div class="st-row" id="pwaInstallRow" onclick="showPwaFromSettings()" style="display:none;">
         <div class="st-em">📲</div>
-        <div class="st-info"><div class="st-name">ホーム画面に追加</div><div class="st-note">アプリのように使えます</div></div>
+        <div class="st-info"><div class="st-name">ホーム画面に追加</div><div class="st-note">毎日開きやすくなります 🌱</div></div>
         <div class="st-r"><span class="st-arr">›</span></div>
       </div>
       <div class="st-row" onclick="clearPwaCache()">
@@ -2765,6 +2840,21 @@ body.night-bg{background:#C8C3BB;}
 
   </div><!-- /screens -->
 
+
+  <!-- iOS ホーム画面追加 手順モーダル -->
+  <div id="pwaIosOverlay" onclick="closePwaIosModal(event)">
+    <div class="pwa-ios-sheet">
+      <div class="pwa-ios-title">iPhoneで追加する方法</div>
+      <ol class="pwa-ios-steps">
+        <li><div class="pwa-ios-num">1</div><div>SafariでHabioを開く</div></li>
+        <li><div class="pwa-ios-num">2</div><div>画面下部の <b>共有ボタン</b>（<span style="font-size:15px;">⎙</span>）を押す</div></li>
+        <li><div class="pwa-ios-num">3</div><div>「<b>ホーム画面に追加</b>」を選ぶ</div></li>
+        <li><div class="pwa-ios-num">4</div><div>右上の「<b>追加</b>」を押す</div></li>
+      </ol>
+      <div class="pwa-ios-note">iPhoneではSafariからのみ追加できます。<br>追加すると、アプリのように毎日戻ってこれます 🌱</div>
+      <button class="pwa-ios-done" onclick="closePwaIosModal()">わかりました</button>
+    </div>
+  </div>
 
   <!-- PWA インストールバナー -->
   <div id="pwaBanner" role="dialog" aria-label="ホーム画面に追加">
@@ -9901,6 +9991,12 @@ function init(){
   if(streak>0) checkStreakBadges(streak);
   checkBirthdayBadge();
 
+  // PWA インストール行の初期化（設定タブ + iOS向けホームカード）
+  initPwaInstallRow();
+  if (_isIOS && !_isStandalone) {
+    setTimeout(() => showPwaHomeCard(), 3000); // iOS: beforeinstallpromptが来ないため直接表示判断
+  }
+
   // Restore active AI session timer if app restarted mid-session
   if(Store.get('ai_session_end_at',0)>Date.now()) startAiSessionTimer();
 
@@ -10779,36 +10875,99 @@ const _isStandalone = window.matchMedia('(display-mode: standalone)').matches
   || ('standalone' in navigator && navigator.standalone === true);
 const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-// beforeinstallprompt (Android/Chrome系) をキャプチャ
+if (_isStandalone) console.log('[Habio PWA] already standalone');
+
+// ── beforeinstallprompt (Android/Chrome系) をキャプチャ ──
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _pwaPrompt = e;
-  // 設定画面の「ホーム画面に追加」行を表示
-  const row = document.getElementById('pwaInstallRow');
-  if (row) row.style.display = '';
-  // 既に dismissed でなければ自動表示を試みる
-  schedulePwaBanner();
+  console.log('[Habio PWA] beforeinstallprompt captured');
+  showPwaHomeCard();      // ホームカードを表示
+  schedulePwaBanner();    // バナーを20秒後に自動表示
 });
 
-// インストール完了イベント
+// ── インストール完了 ──
 window.addEventListener('appinstalled', () => {
   _pwaPrompt = null;
   Store.set('pwa_installed', true);
+  console.log('[Habio PWA] installed');
   dismissPwaBanner(true);
-  showToast('ホーム画面に追加しました 🌱');
+  const card = document.getElementById('pwaHomeCard');
+  if (card) card.style.display = 'none';
   const row = document.getElementById('pwaInstallRow');
   if (row) row.style.display = 'none';
+  showToast('ホーム画面に追加しました 🌱');
 });
 
+// ── 設定タブのインストール行を初期化 ──
+function initPwaInstallRow() {
+  const row = document.getElementById('pwaInstallRow');
+  if (!row) return;
+  if (_isStandalone || Store.get('pwa_installed', false)) {
+    row.style.display = 'none'; // すでにPWA起動中は非表示
+  } else {
+    row.style.display = ''; // Android/iOS 両方で常に表示
+  }
+}
+
+// ── ホームカード表示 ──
+function showPwaHomeCard() {
+  if (_isStandalone) return;
+  if (Store.get('pwa_installed', false)) return;
+  if (Store.get('pwa_install_dismissed_date', '') === today()) return;
+  if (!_pwaPrompt && !_isIOS) return; // サポート外環境
+  const card = document.getElementById('pwaHomeCard');
+  if (card) card.style.display = '';
+}
+
+// ── ホームカードを閉じる（当日のみ非表示） ──
+function dismissPwaHomeCard() {
+  const card = document.getElementById('pwaHomeCard');
+  if (card) card.style.display = 'none';
+  Store.set('pwa_install_dismissed_date', today());
+  dismissPwaBanner(false);
+}
+
+// ── ホームカードのインストールボタン ──
+function installPwaFromCard() {
+  console.log('[Habio PWA] install button clicked');
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(result => {
+      if (result.outcome === 'accepted') {
+        console.log('[Habio PWA] installed');
+        const card = document.getElementById('pwaHomeCard');
+        if (card) card.style.display = 'none';
+        dismissPwaBanner(true);
+      }
+      _pwaPrompt = null;
+    });
+  } else if (_isIOS) {
+    showPwaIosModal();
+  }
+}
+
+// ── 設定から開く ──
+function showPwaFromSettings() {
+  if (_isIOS && !_pwaPrompt) {
+    showPwaIosModal();
+  } else if (_pwaPrompt) {
+    showPwaBanner(true);
+  } else {
+    showToast('ブラウザのメニューからホーム画面に追加できます');
+  }
+}
+
+// ── フローティングバナーのスケジュール（Androidのみ） ──
 function schedulePwaBanner() {
   if (_isStandalone) return;
   if (Store.get('pwa_installed', false)) return;
-  const until = Store.get('pwa_dismissed_until', 0);
-  if (Date.now() < until) return;
+  if (Store.get('pwa_install_dismissed_date', '') === today()) return;
   // ローディング後 20秒 で自動表示
   setTimeout(() => showPwaBanner(false), 20000);
 }
 
+// ── フローティングバナー表示 ──
 function showPwaBanner(force) {
   if (_isStandalone && !force) return;
   const banner = document.getElementById('pwaBanner');
@@ -10816,44 +10975,57 @@ function showPwaBanner(force) {
   const btnEl  = document.getElementById('pwaBannerInstallBtn');
   if (!banner) return;
 
-  if (_isIOS && !_pwaPrompt) {
-    // iOS Safari: 手動追加ガイド
-    if (msgEl) msgEl.innerHTML =
-      'Habioをホームに置くと、スマホの中でそっと声をかけやすくなります ☕<br>' +
-      '<span class="pwa-ios">iPhoneの方は、Safari 下部の <b>共有ボタン</b>（↑）から「ホーム画面に追加」を選んでください。少し手間ですが、これでHabioがアプリみたいに使いやすくなります。</span>';
-    if (btnEl) btnEl.style.display = 'none';
-  } else if (_pwaPrompt) {
-    if (msgEl) msgEl.textContent = 'Habioをホームに置くと、スマホの中でそっと声をかけやすくなります ☕';
-    if (btnEl) btnEl.style.display = '';
+  if (_pwaPrompt) {
+    if (msgEl) msgEl.textContent = 'ホーム画面に置いておくと、少し戻ってきやすくなります 🌱';
+    if (btnEl) { btnEl.style.display = ''; btnEl.textContent = 'ホームに置く'; }
+  } else if (_isIOS) {
+    if (msgEl) msgEl.textContent = 'iPhoneのSafariからホーム画面に追加できます 🌱';
+    if (btnEl) { btnEl.style.display = ''; btnEl.textContent = '手順を見る'; }
   } else {
-    return; // インストール不可環境
+    return;
   }
-
   banner.classList.add('show');
 }
 
+// ── フローティングバナーを閉じる ──
 function dismissPwaBanner(permanent) {
   const banner = document.getElementById('pwaBanner');
   if (banner) banner.classList.remove('show');
   if (permanent) {
     Store.set('pwa_installed', true);
   } else {
-    // 7日間スヌーズ
-    Store.set('pwa_dismissed_until', Date.now() + 7 * 24 * 60 * 60 * 1000);
+    Store.set('pwa_install_dismissed_date', today()); // 当日のみ非表示
   }
 }
 
+// ── フローティングバナーのインストールボタン ──
 function installPwa() {
+  console.log('[Habio PWA] install button clicked');
   if (_pwaPrompt) {
     _pwaPrompt.prompt();
     _pwaPrompt.userChoice.then(result => {
-      if (result.outcome === 'accepted') dismissPwaBanner(true);
+      if (result.outcome === 'accepted') {
+        console.log('[Habio PWA] installed');
+        dismissPwaBanner(true);
+      }
       _pwaPrompt = null;
     });
   } else if (_isIOS) {
-    showToast('Safari の共有ボタン →「ホーム画面に追加」から追加できます 🌱');
+    showPwaIosModal();
     dismissPwaBanner(false);
   }
+}
+
+// ── iOS 手順モーダル ──
+function showPwaIosModal() {
+  console.log('[Habio PWA] iOS guide opened');
+  const overlay = document.getElementById('pwaIosOverlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+function closePwaIosModal(e) {
+  if (e && e.target !== document.getElementById('pwaIosOverlay')) return;
+  const overlay = document.getElementById('pwaIosOverlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 // Service Worker 登録
