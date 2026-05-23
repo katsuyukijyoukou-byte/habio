@@ -513,6 +513,34 @@ body.night-bg{background:#C8C3BB;}
 }
 .cpc-pr{font-size:9.5px;color:var(--t-l);margin-top:8px;line-height:1.5;}
 
+/* ── Googleカレンダー追加ボタン ── */
+.cal-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  background:none;border:1.5px solid #4285f4;
+  color:#4285f4;font-size:11.5px;font-weight:600;
+  padding:6px 13px;border-radius:16px;cursor:pointer;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+}
+.cal-btn:active{background:#e8f0fe;}
+
+/* ── チャット内カレンダー提案カード ── */
+.chat-cal-card{
+  margin:8px 16px 4px;background:var(--card);
+  border-radius:14px;padding:12px 14px;
+  border-left:3px solid #4285f4;box-shadow:var(--sh1);
+}
+.ccc-msg{font-size:12.5px;color:var(--t-m);line-height:1.7;margin-bottom:10px;}
+
+/* ── ミッション達成後カレンダー提案 ── */
+.mission-cal-suggest{
+  margin-top:8px;padding-top:8px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.mission-cal-msg{font-size:11.5px;color:var(--t-l);}
+
+/* ── チェックイン・フォローアップ追加スタイル ── */
+
 /* ── チェックイン後フォローアップ ── */
 .welcome-followup{
   background:#f7fcf7;border-radius:12px;padding:12px 14px;
@@ -2190,6 +2218,7 @@ body.night-bg{background:#C8C3BB;}
           </div>
         </div>
         <button class="daily-mission-btn" id="missionBtn" onclick="completeDailyMission()">ミッション達成！</button>
+        <div id="missionCalSuggest" style="display:none;"></div>
       </div>
     </div>
 
@@ -4543,6 +4572,25 @@ function completeDailyMission(){
   syncPointsToServer(earned,'daily_mission_complete','今日のミッション達成',`daily_mission_${today()}`);
   renderPointsCard();
   showToast(`ミッション達成！ +${pts}pt 🎯`);
+
+  // ミッションカテゴリに応じてカレンダー提案を表示
+  const calSuggest = document.getElementById('missionCalSuggest');
+  if (calSuggest && c.mission) {
+    const CAT_CAL = {
+      exercise: { type:'walk',    msg:'少し歩く時間をカレンダーに置いておく' },
+      stress:   { type:'breathe', msg:'深呼吸の時間をカレンダーに置いておく' },
+      sleep:    { type:'sleep',   msg:'眠る準備の時間をカレンダーに作る' },
+    };
+    const cal = CAT_CAL[c.mission.cat];
+    if (cal) {
+      calSuggest.style.display = '';
+      calSuggest.innerHTML =
+        '<div class="mission-cal-suggest">' +
+          '<span class="mission-cal-msg">' + cal.msg + '</span>' +
+          '<button class="cal-btn" onclick="openCalendar(\'' + cal.type + '\')">📅 追加する</button>' +
+        '</div>';
+    }
+  }
 }
 
 /* ── WEATHER ── */
@@ -5240,6 +5288,7 @@ async function sendMsg(){
   renderChatLimit();
   maybeShowProductRec(text);
   maybeShowCounselingCard(text);
+  maybeShowCalendarCard(text);
 }
 
 async function quickChat(text){
@@ -5478,6 +5527,75 @@ function shouldShowA8CounselingCard(userMsg, context) {
 
   console.log('[Habio A8 counseling decision]', { userMsg: userMsg.slice(0,40), recentTexts: recentTexts.slice(0,40), a8Slot, shownThisSlot, level, riskScore, isChatLimit, show, reason, variant });
   return { show, reason, variant };
+}
+
+// ── Google カレンダー「ワンタップ予定追加」Phase 1 ──
+function buildCalendarLink(type) {
+  const now = new Date();
+  function gcalDt(d) {
+    const p = n => String(n).padStart(2, '0');
+    return '' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) + 'T' + p(d.getHours()) + p(d.getMinutes()) + '00';
+  }
+  const DEFS = {
+    walk:    { text: 'Habio｜15分だけ散歩',  details: '無理せず、外の空気を少し吸う時間です。',
+               start: () => new Date(now.getTime() + 30*60000), dur: 15 },
+    stretch: { text: 'Habio｜5分ストレッチ', details: '体を少しゆるめる時間です。',
+               start: () => { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 21, 30, 0); if (d <= now) d.setDate(d.getDate()+1); return d; }, dur: 5 },
+    breathe: { text: 'Habio｜3分深呼吸',    details: '考えごとを少し置く時間です。',
+               start: () => new Date(now.getTime() + 10*60000), dur: 3 },
+    sleep:   { text: 'Habio｜寝る前の準備', details: 'スマホを少し置いて、眠る準備をする時間です。',
+               start: () => { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 30, 0); if (d <= now) d.setDate(d.getDate()+1); return d; }, dur: 15 },
+  };
+  const def = DEFS[type];
+  if (!def) return null;
+  const s = def.start();
+  const e = new Date(s.getTime() + def.dur * 60000);
+  console.log('[Habio Calendar] create link', { type, start: gcalDt(s), end: gcalDt(e) });
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(def.text) +
+    '&dates=' + gcalDt(s) + '%2F' + gcalDt(e) +
+    '&details=' + encodeURIComponent(def.details);
+}
+
+function openCalendar(type) {
+  const url = buildCalendarLink(type);
+  if (url) window.open(url, '_blank', 'noopener');
+}
+
+const CAL_KW = {
+  walk:    /散歩|歩きたい|外に出たい|ウォーキング|運動したい/,
+  stretch: /ストレッチ|体をほぐ|体を伸ば|ストレッチしたい/,
+  breathe: /深呼吸|呼吸|落ち着きたい|リラックス/,
+  sleep:   /寝る準備|眠る準備|早く寝たい|夜のルーティン/,
+};
+
+const CAL_MSG = {
+  walk:    'お散歩の時間、カレンダーに置いておきますか？',
+  stretch: '体をほぐす時間、カレンダーに置いておきますか？',
+  breathe: '深呼吸の時間、カレンダーに置いておきますか？',
+  sleep:   '眠る準備の時間、カレンダーに置いておきますか？',
+};
+
+function showCalendarCard(type) {
+  const msgs = document.getElementById('chatMsgs');
+  if (!msgs) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-cal-card';
+  wrap.innerHTML =
+    '<div class="ccc-msg">' + (CAL_MSG[type] || '') + '</div>' +
+    '<button class="cal-btn" onclick="openCalendar(\'' + type + '\')">📅 追加する</button>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  console.log('[Habio Calendar] card shown', { type });
+}
+
+function maybeShowCalendarCard(userMsg) {
+  for (const type of ['walk', 'stretch', 'breathe', 'sleep']) {
+    if (CAL_KW[type].test(userMsg)) {
+      setTimeout(() => showCalendarCard(type), 600);
+      console.log('[Habio Calendar] keyword match', { type, userMsg: userMsg.slice(0, 40) });
+      return;
+    }
+  }
 }
 
 // ── エントリーポイント（sendMsgから呼ぶ） ──
@@ -9903,21 +10021,27 @@ function buildWelcomeFollowup(slot, choiceKey) {
 
   if (tiredChoices.includes(choiceKey)) {
     const link = AFFILIATE_LINKS['rooibostea'] || '#';
+    const calType = choiceKey === 'cantSleep' ? 'sleep' : 'stretch';
+    const calLabel = choiceKey === 'cantSleep' ? '📅 寝る準備を追加' : '📅 ストレッチを追加';
     return '<div class="welcome-followup">' +
       '<div class="welcome-followup-msg">疲れている時は、温かいものを一つ置いてあげてもいいかも 🍵<br>あるいは、少し話すだけでも気持ちが整うことがあります。</div>' +
       '<div class="welcome-followup-actions">' +
         '<a class="welcome-followup-btn" href="' + link + '" target="_blank" rel="nofollow">温かいものを見てみる</a>' +
         '<button class="welcome-followup-sub" onclick="closeWelcomePopup();openA8ManualCard()">少し話してみる</button>' +
+        '<button class="cal-btn" onclick="openCalendar(\'' + calType + '\')">' + calLabel + '</button>' +
       '</div>' +
     '</div>';
   }
 
   if (anxiousChoices.includes(choiceKey)) {
     const a8Link = 'https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1';
+    const calType = choiceKey === 'cantSleep' ? 'sleep' : 'breathe';
+    const calLabel = choiceKey === 'cantSleep' ? '📅 寝る準備を追加' : '📅 深呼吸を追加';
     return '<div class="welcome-followup">' +
       '<div class="welcome-followup-msg">夜の不安は、誰かに話すだけで少し軽くなることもあります 🌙<br>必要な時に、逃げ場を持っておいてください。</div>' +
       '<div class="welcome-followup-actions">' +
         '<a class="welcome-followup-btn" href="' + a8Link + '" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+        '<button class="cal-btn" onclick="openCalendar(\'' + calType + '\')">' + calLabel + '</button>' +
       '</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:none;">' +
     '</div>';
