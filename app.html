@@ -5557,11 +5557,11 @@ function calcEmotionalRiskScore() {
   if (h72.filter(e => e.isLong && e.hasCrisis).length >= 3) score += 2;
   // +2: 習慣記録が3日連続止まった
   try {
-    const wins = Store.get('habit_wins', {});
+    const wins = Store.get('wins', []);
     let missed = 0;
     for (let d = 1; d <= 3; d++) {
       const dt = new Date(now - d * 86400000).toISOString().slice(0, 10);
-      if (!wins[dt] || Object.keys(wins[dt]).length === 0) missed++;
+      if (!wins.some(w => w.date === dt)) missed++;
     }
     if (missed >= 3) score += 2;
   } catch (_) { /* safe */ }
@@ -6032,8 +6032,9 @@ function showCounselingA8Card(variant) {
       '<div class="cc-msg">'  + v.body  + '</div>' +
       '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'' + variant + '\',slot:getA8Slot()})">' + v.btn + '</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
-      '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
+  // A8インプレッション：display:noneの影響を受けないよう命令的に発火
+  new Image().src = 'https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU';
   _decorateSuggestCard(wrap, '話せる場所の提案');
 
   console.log('[Habio A8 card] 表示', {
@@ -6056,9 +6057,9 @@ function openA8ManualCard() {
   const msgs = document.getElementById('chatMsgs');
   if (!msgs) return;
 
-  // 既存カードがあれば差し替え
+  // 既存カードがあれば即時削除（dismissSuggestCardの280ms遅延はid重複を招くため使わない）
   const existing = document.getElementById('counselingCardWrap');
-  if (existing) dismissSuggestCard(existing);
+  if (existing) existing.remove();
 
   collapseAllSuggestionCards();
 
@@ -6073,8 +6074,9 @@ function openA8ManualCard() {
       '<div class="cc-msg">AIに話すだけでも少し整理できますが、<br>人に話すことで軽くなることもあります。<br><br>必要な時に、<br>話せる場所をひとつ持っておいてください。</div>' +
       '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'manual\',slot:getA8Slot()})">話を聞いてもらう</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
-      '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
+  // A8インプレッション：display:noneの影響を受けないよう命令的に発火
+  new Image().src = 'https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU';
   _decorateSuggestCard(wrap, '話せる場所の提案');
 
   msgs.appendChild(wrap);
