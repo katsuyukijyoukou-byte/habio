@@ -539,6 +539,51 @@ body.night-bg{background:#C8C3BB;}
 }
 .mission-cal-msg{font-size:11.5px;color:var(--t-l);}
 
+/* ── 提案カード統合UI（折りたたみ・閉じる共通） ── */
+.habio-suggest-card{position:relative;}
+
+/* counseling-card は display:flex → block に上書き（hsc-body 内で flex を継承） */
+.habio-suggest-card.counseling-card{display:block;}
+.habio-suggest-card.counseling-card .hsc-body{display:flex;gap:10px;align-items:flex-start;}
+
+/* 折りたたみバー（collapsed 時のみ表示） */
+.hsc-collapsed-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 2px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.hsc-collapsed-label{
+  font-size:12px;color:var(--t-m);font-weight:600;flex:1;line-height:1.4;
+}
+.hsc-collapsed-close{
+  background:none;border:none;font-size:16px;color:var(--t-l);
+  cursor:pointer;padding:2px 6px;line-height:1;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* 本体 */
+.hsc-body{
+  transition:opacity 0.2s ease;
+  max-height:340px;overflow-y:auto;
+}
+
+/* 本体内 × ボタン */
+.hsc-body-close-btn{
+  position:absolute;top:10px;right:10px;
+  background:none;border:none;
+  font-size:15px;line-height:1;color:var(--t-l);
+  cursor:pointer;padding:3px 6px;border-radius:5px;z-index:10;
+  -webkit-tap-highlight-color:transparent;
+  transition:color 0.15s,background 0.15s;
+}
+.hsc-body-close-btn:active{color:var(--t-m);background:rgba(0,0,0,.06);}
+
+/* フェードアウト削除 */
+.habio-suggest-card.hsc-removing{
+  transition:opacity 0.25s ease;
+  opacity:0;pointer-events:none;
+}
+
 /* ── カレンダータスク確認カード ── */
 .cal-task-confirm{
   margin:0 16px 16px;background:var(--card);border-radius:16px;
@@ -5365,6 +5410,7 @@ async function sendMsg(){
   }
 
   appendBubble(text,true,nowTime());
+  collapseAllSuggestionCards();
   inp.value=''; inp.style.height='';
   document.getElementById('sendBtn').disabled=true;
   const typing=document.getElementById('chatTyping');
@@ -5832,9 +5878,12 @@ function showCalendarCard(type) {
   if (!msgs) return;
   const wrap = document.createElement('div');
   wrap.className = 'chat-cal-card';
+  wrap.dataset.cardType = 'calendar';
   wrap.innerHTML =
     '<div class="ccc-msg">' + (CAL_MSG[type] || '') + '</div>' +
     '<button class="cal-btn" onclick="openCalendar(\'' + type + '\')">📅 追加する</button>';
+  collapseAllSuggestionCards();
+  _decorateSuggestCard(wrap, 'カレンダーに予定を置く');
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
   console.log('[Habio Calendar] card shown', { type });
@@ -5881,6 +5930,61 @@ function maybeShowCounselingCard(userMsg, isChatLimit) {
   setTimeout(() => showCounselingA8Card(decision.variant), 2000);
 }
 
+// ── 提案カード統合管理 ──
+
+function _decorateSuggestCard(el, label) {
+  el.classList.add('habio-suggest-card');
+  const bodyHTML = el.innerHTML;
+  el.innerHTML =
+    // 折りたたみバー（collapsed 時のみ表示）
+    '<div class="hsc-collapsed-bar" style="display:none;" onclick="expandSuggestCard(this.closest(\'.habio-suggest-card\'))" >' +
+      '<span class="hsc-collapsed-label">🌱 ' + label + ' ▼</span>' +
+      '<button class="hsc-collapsed-close" onclick="event.stopPropagation();dismissSuggestCard(this.closest(\'.habio-suggest-card\'))">×</button>' +
+    '</div>' +
+    // 本体 × ボタン（展開時に右上に表示）
+    '<button class="hsc-body-close-btn" onclick="dismissSuggestCard(this.closest(\'.habio-suggest-card\'))">×</button>' +
+    // 本体（既存カードコンテンツ）
+    '<div class="hsc-body">' + bodyHTML + '</div>';
+}
+
+function collapseSuggestCard(el) {
+  if (!el || el.classList.contains('hsc-collapsed')) return;
+  const bar  = el.querySelector('.hsc-collapsed-bar');
+  const body = el.querySelector('.hsc-body');
+  const closeBtn = el.querySelector('.hsc-body-close-btn');
+
+  el.classList.add('hsc-collapsed');
+  if (body)     { body.style.opacity = '0'; setTimeout(() => { body.style.display = 'none'; }, 200); }
+  if (closeBtn) { setTimeout(() => { closeBtn.style.display = 'none'; }, 200); }
+  if (bar)      { setTimeout(() => { bar.style.display = 'flex'; }, 210); }
+  console.log('[Habio Card] collapsed', el.dataset.cardType || el.className);
+}
+
+function expandSuggestCard(el) {
+  if (!el || !el.classList.contains('hsc-collapsed')) return;
+  const bar  = el.querySelector('.hsc-collapsed-bar');
+  const body = el.querySelector('.hsc-body');
+  const closeBtn = el.querySelector('.hsc-body-close-btn');
+
+  el.classList.remove('hsc-collapsed');
+  if (bar)      { bar.style.display = 'none'; }
+  if (body)     { body.style.display = ''; requestAnimationFrame(() => { body.style.opacity = '1'; }); }
+  if (closeBtn) { closeBtn.style.display = ''; }
+  console.log('[Habio Card] expanded', el.dataset.cardType || el.className);
+}
+
+function dismissSuggestCard(el) {
+  if (!el) return;
+  el.classList.add('hsc-removing');
+  setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 280);
+  console.log('[Habio Card] removed', el.dataset.cardType || el.className);
+}
+
+function collapseAllSuggestionCards() {
+  document.querySelectorAll('#chatMsgs .habio-suggest-card:not(.hsc-collapsed):not(.hsc-removing)')
+    .forEach(el => collapseSuggestCard(el));
+}
+
 // ── A8カード表示（variantで文言切り替え） ──
 function showCounselingA8Card(variant) {
   const msgs = document.getElementById('chatMsgs');
@@ -5915,11 +6019,13 @@ function showCounselingA8Card(variant) {
 
   const v = VARIANTS[variant] || VARIANTS.normal;
 
+  collapseAllSuggestionCards();
+
   const wrap = document.createElement('div');
   wrap.id    = 'counselingCardWrap';
   wrap.className = 'counseling-card';
+  wrap.dataset.cardType = 'a8';
   wrap.innerHTML =
-    '<button class="cc-close" onclick="document.getElementById(\'counselingCardWrap\').remove()" aria-label="閉じる">×</button>' +
     '<div class="cc-icon">' + v.icon + '</div>' +
     '<div class="cc-body">' +
       '<div class="cc-label">' + v.title + '</div>' +
@@ -5928,6 +6034,7 @@ function showCounselingA8Card(variant) {
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
+  _decorateSuggestCard(wrap, '話せる場所の提案');
 
   console.log('[Habio A8 card] 表示', {
     variant,
@@ -5951,13 +6058,15 @@ function openA8ManualCard() {
 
   // 既存カードがあれば差し替え
   const existing = document.getElementById('counselingCardWrap');
-  if (existing) existing.remove();
+  if (existing) dismissSuggestCard(existing);
+
+  collapseAllSuggestionCards();
 
   const wrap = document.createElement('div');
   wrap.id        = 'counselingCardWrap';
   wrap.className = 'counseling-card';
+  wrap.dataset.cardType = 'a8_manual';
   wrap.innerHTML =
-    '<button class="cc-close" onclick="document.getElementById(\'counselingCardWrap\').remove()" aria-label="閉じる">×</button>' +
     '<div class="cc-icon">🤍</div>' +
     '<div class="cc-body">' +
       '<div class="cc-label">話せる場所を増やしてみる 🤍</div>' +
@@ -5966,6 +6075,7 @@ function openA8ManualCard() {
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
+  _decorateSuggestCard(wrap, '話せる場所の提案');
 
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
@@ -6033,6 +6143,8 @@ function showProductCard(def, intro, source) {
   const _emotion    = (detectEmotionTags() || []).join(',') || 'none';
   const _isRel      = def.id === 'relation_insight';
   const _clickEvent = _isRel ? 'habio_relation_ai_click' : 'habio_product_click';
+  const _cardLabel  = _isRel ? 'Relation Insight AI' : '商品のご提案';
+  wrap.dataset.cardType = _isRel ? 'relation' : 'product';
   wrap.innerHTML =
     '<div class="cpc-intro">' + intro.replace(/\n/g, '<br>') + '</div>' +
     '<div class="cpc-name">' + def.title + '</div>' +
@@ -6041,6 +6153,8 @@ function showProductCard(def, intro, source) {
       ' onclick="trackHabioEvent(\'' + _clickEvent + '\',{productId:\'' + def.id + '\',emotion:\'' + _emotion + '\',source:\'' + source + '\'})">' +
       def.cta + '</a>' +
     '<div class="cpc-pr">' + prText + '</div>';
+  collapseAllSuggestionCards();
+  _decorateSuggestCard(wrap, _cardLabel);
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
   console.log('[Habio product card]', { emotion: _emotion, product: def.id, source });
