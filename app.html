@@ -11585,16 +11585,6 @@ if (_isIOS && !_isStandalone) {
 registerServiceWorker();
 </script>
 
-<!--
-  ─── Cloudflare Web Analytics ───────────────────────────────────────────
-  token の取得方法:
-    Cloudflare ダッシュボード → Analytics & Logs → Web Analytics
-    → 「Add a site」→ habio.pages.dev → スクリプトタグをコピーし token を置換
-  または:
-    Pages → habio → Settings → General → Web Analytics を有効化
-    （有効化するとこのタグ不要で自動計測される）
-  ─────────────────────────────────────────────────────────────────────── -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
-  data-cf-beacon='{"token":"__YOUR_CF_ANALYTICS_TOKEN__"}'></script>
+<!-- Cloudflare Web Analytics: Pages ダッシュボードで自動注入（手動scriptタグ不要） -->
 </body>
 </html>
