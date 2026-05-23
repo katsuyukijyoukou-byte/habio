@@ -3737,6 +3737,17 @@ const Store = {
   del(k){try{localStorage.removeItem(this._p+k);}catch{}},
 };
 
+/* ── ANALYTICS ── */
+// 拡張ポイント: GA4 / Cloudflare Zaraz / Workers KV に差し替え可能
+function trackHabioEvent(name, props) {
+  props = props || {};
+  console.log('[Habio Analytics]', name, props);
+  // Cloudflare Zaraz（有効化後は自動で拾う）
+  try { if (window.zaraz) window.zaraz.track(name, props); } catch(_) {}
+  // GA4（将来 gtag.js を追加した場合）
+  // try { if (window.gtag) window.gtag('event', name, props); } catch(_) {}
+}
+
 /* ── DATE UTILS ── */
 const pad = n => String(n).padStart(2,'0');
 const toDateStr = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -4103,7 +4114,7 @@ function goTab(name){
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
   if(name==='food'){ renderFoodLog(); renderFoodHistory(); }
-  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); checkDueCalendarTasks(); }
+  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); checkDueCalendarTasks(); trackHabioEvent('habio_home_view'); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
 }
@@ -5371,6 +5382,11 @@ async function sendMsg(){
   maybeShowProductRec(text);
   maybeShowCounselingCard(text);
   maybeShowCalendarCard(text);
+  trackHabioEvent('habio_chat_send', {
+    chatCount: getChatCount(),
+    isPremium: Store.get('is_premium', false),
+    hasEmotionTag: (detectEmotionTags() || []).length > 0,
+  });
 }
 
 async function quickChat(text){
@@ -5647,6 +5663,7 @@ function openCalendar(type) {
   if (!url) return;
   window.open(url, '_blank', 'noopener');
   if (def) saveCalendarTask(type, def);
+  trackHabioEvent('habio_calendar_add', { type });
 }
 
 const CAL_TYPE_LABELS = [
@@ -5793,6 +5810,7 @@ function answerCalTask(id, status) {
 
   Store.set('calendar_tasks', tasks);
   console.log('[Habio Calendar Task] answered', status, task);
+  trackHabioEvent('habio_calendar_task_answer', { type: task.type, answer: status });
 }
 
 const CAL_KW = {
@@ -5906,7 +5924,7 @@ function showCounselingA8Card(variant) {
     '<div class="cc-body">' +
       '<div class="cc-label">' + v.title + '</div>' +
       '<div class="cc-msg">'  + v.body  + '</div>' +
-      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">' + v.btn + '</a>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'' + variant + '\',slot:getA8Slot()})">' + v.btn + '</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
@@ -5917,6 +5935,7 @@ function showCounselingA8Card(variant) {
     trackingPixel: 'https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU',
     link: 'https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&...'
   });
+  trackHabioEvent('habio_a8_card_show', { variant, slot: getA8Slot() });
 
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
@@ -5943,13 +5962,14 @@ function openA8ManualCard() {
     '<div class="cc-body">' +
       '<div class="cc-label">話せる場所を増やしてみる 🤍</div>' +
       '<div class="cc-msg">AIに話すだけでも少し整理できますが、<br>人に話すことで軽くなることもあります。<br><br>必要な時に、<br>話せる場所をひとつ持っておいてください。</div>' +
-      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'manual\',slot:getA8Slot()})">話を聞いてもらう</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:block;">' +
     '</div>';
 
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
+  trackHabioEvent('habio_a8_card_show', { variant: 'manual', slot: getA8Slot() });
 
   console.log('[Habio A8 card] manual displayed', {
     variant: 'manual',
@@ -6010,15 +6030,21 @@ function showProductCard(def, intro, source) {
     : 'PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります。';
   const wrap = document.createElement('div');
   wrap.className = 'chat-product-card';
+  const _emotion    = (detectEmotionTags() || []).join(',') || 'none';
+  const _isRel      = def.id === 'relation_insight';
+  const _clickEvent = _isRel ? 'habio_relation_ai_click' : 'habio_product_click';
   wrap.innerHTML =
     '<div class="cpc-intro">' + intro.replace(/\n/g, '<br>') + '</div>' +
     '<div class="cpc-name">' + def.title + '</div>' +
     '<div class="cpc-desc">' + def.desc + '</div>' +
-    '<a class="cpc-cta" href="' + AFFILIATE_LINKS[def.id] + '" target="_blank" rel="nofollow">' + def.cta + '</a>' +
+    '<a class="cpc-cta" href="' + AFFILIATE_LINKS[def.id] + '" target="_blank" rel="nofollow"' +
+      ' onclick="trackHabioEvent(\'' + _clickEvent + '\',{productId:\'' + def.id + '\',emotion:\'' + _emotion + '\',source:\'' + source + '\'})">' +
+      def.cta + '</a>' +
     '<div class="cpc-pr">' + prText + '</div>';
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
-  console.log('[Habio product card]', { emotion: (detectEmotionTags() || []).join(',') || 'none', product: def.id, source });
+  console.log('[Habio product card]', { emotion: _emotion, product: def.id, source });
+  trackHabioEvent('habio_product_card_show', { productId: def.id, emotion: _emotion, source });
 }
 
 function quickProductRec(){
@@ -6129,7 +6155,8 @@ const blend=(c,t,f)=>Math.round(c+(t-c)*f);
 const rgbToHex=(r,g,b)=>'#'+[r,g,b].map(v=>pad(Math.min(255,Math.max(0,v)).toString(16))).join('');
 
 /* ── UPGRADE MODAL ── */
-function showUpgradeModal(){
+function showUpgradeModal(source){
+  trackHabioEvent('habio_premium_click', { source: source || 'unknown' });
   const root=document.getElementById('upgradeModalRoot');
   const overlay=document.getElementById('upgradeOverlay');
   if(root) root.style.pointerEvents='all';
@@ -10193,6 +10220,8 @@ function handleWelcomeChoice(slot, choiceKey) {
   if (choicesEl) choicesEl.style.display = 'none';
   if (skipEl)    skipEl.style.display    = 'none';
 
+  trackHabioEvent('habio_checkin_answer', { slot, answer: choiceKey });
+
   // 「答えない」：ポイントなし、軽い一言のみ
   if (choiceKey === 'kotaeNai') {
     const skipMsgs = [
@@ -10302,6 +10331,8 @@ const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 /* ── INIT ── */
 function init(){
   if(!Store.get('start_date')) Store.set('start_date',today());
+  trackHabioEvent('habio_app_open');
+  trackHabioEvent('habio_home_view');
 
   // アプリ起動/復帰時に未読バッジをクリア
   const clearBadge = () => { try { if (navigator.clearAppBadge) navigator.clearAppBadge(); } catch(_){} };
@@ -10709,6 +10740,7 @@ function shareOnX() {
     return;
   }
 
+  trackHabioEvent('habio_x_share_click');
   _xShareInProgress = true;
   const btn = document.getElementById('x-tweet-btn');
   if (btn) btn.disabled = true;
@@ -11253,6 +11285,7 @@ window.addEventListener('appinstalled', () => {
   _pwaPrompt = null;
   Store.set('pwa_installed', true);
   console.log('[Habio PWA] installed');
+  trackHabioEvent('habio_pwa_installed');
   dismissPwaBanner(true);
   const card = document.getElementById('pwaHomeCard');
   if (card) card.style.display = 'none';
@@ -11293,6 +11326,7 @@ function dismissPwaHomeCard() {
 // ── ホームカードのインストールボタン ──
 function installPwaFromCard() {
   console.log('[Habio PWA] install button clicked');
+  trackHabioEvent('habio_pwa_install_click', { source: 'home_card' });
   if (_pwaPrompt) {
     _pwaPrompt.prompt();
     _pwaPrompt.userChoice.then(result => {
@@ -11363,6 +11397,7 @@ function dismissPwaBanner(permanent) {
 // ── フローティングバナーのインストールボタン ──
 function installPwa() {
   console.log('[Habio PWA] install button clicked');
+  trackHabioEvent('habio_pwa_install_click', { source: 'banner' });
   if (_pwaPrompt) {
     _pwaPrompt.prompt();
     _pwaPrompt.userChoice.then(result => {
@@ -11435,5 +11470,17 @@ if (_isIOS && !_isStandalone) {
 
 registerServiceWorker();
 </script>
+
+<!--
+  ─── Cloudflare Web Analytics ───────────────────────────────────────────
+  token の取得方法:
+    Cloudflare ダッシュボード → Analytics & Logs → Web Analytics
+    → 「Add a site」→ habio.pages.dev → スクリプトタグをコピーし token を置換
+  または:
+    Pages → habio → Settings → General → Web Analytics を有効化
+    （有効化するとこのタグ不要で自動計測される）
+  ─────────────────────────────────────────────────────────────────────── -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token":"__YOUR_CF_ANALYTICS_TOKEN__"}'></script>
 </body>
 </html>
