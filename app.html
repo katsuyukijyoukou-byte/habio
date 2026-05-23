@@ -539,6 +539,30 @@ body.night-bg{background:#C8C3BB;}
 }
 .mission-cal-msg{font-size:11.5px;color:var(--t-l);}
 
+/* ── カレンダータスク確認カード ── */
+.cal-task-confirm{
+  margin:0 16px 16px;background:var(--card);border-radius:16px;
+  padding:16px 16px 14px;border-left:4px solid #4285f4;
+  box-shadow:var(--sh1);animation:fadeInUp .3s ease;
+}
+.ctc-label{font-size:10.5px;color:#4285f4;font-weight:700;letter-spacing:.05em;margin-bottom:8px;}
+.ctc-msg{font-size:14px;color:var(--t);font-weight:600;line-height:1.6;margin-bottom:5px;}
+.ctc-note{font-size:11px;color:var(--t-l);line-height:1.6;margin-bottom:14px;}
+.ctc-btns{display:flex;flex-wrap:wrap;gap:8px;}
+.ctc-btn-done{
+  background:var(--g);color:#fff;
+  font-size:13px;font-weight:600;padding:9px 18px;
+  border-radius:22px;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.ctc-btn-sub{
+  background:none;border:1.5px solid var(--border);
+  color:var(--t-m);font-size:12.5px;padding:8px 14px;
+  border-radius:20px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.ctc-result{font-size:13.5px;color:var(--t-m);line-height:1.8;padding:2px 0;}
+
 /* ── カレンダー常設カード（ホーム） ── */
 #calHomeCard{
   margin:0 16px 16px;background:var(--card);
@@ -2292,6 +2316,9 @@ body.night-bg{background:#C8C3BB;}
       </div>
       <span class="cs-arr">›</span>
     </div>
+
+    <!-- カレンダータスク確認エリア（動的に挿入） -->
+    <div id="calTaskConfirmArea"></div>
 
     <!-- PWA インストールカード -->
     <div id="pwaHomeCard">
@@ -4076,7 +4103,7 @@ function goTab(name){
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
   if(name==='food'){ renderFoodLog(); renderFoodHistory(); }
-  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); }
+  if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); checkDueCalendarTasks(); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
 }
@@ -5585,35 +5612,41 @@ function shouldShowA8CounselingCard(userMsg, context) {
 }
 
 // ── Google カレンダー「ワンタップ予定追加」Phase 1 ──
-function buildCalendarLink(type) {
+function _getCalDef(type) {
   const now = new Date();
-  function gcalDt(d) {
-    const p = n => String(n).padStart(2, '0');
-    return '' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) + 'T' + p(d.getHours()) + p(d.getMinutes()) + '00';
-  }
-  const DEFS = {
-    walk:    { text: 'Habio｜15分だけ散歩',  details: '無理せず、外の空気を少し吸う時間です。',
-               start: () => new Date(now.getTime() + 30*60000), dur: 15 },
-    stretch: { text: 'Habio｜5分ストレッチ', details: '体を少しゆるめる時間です。',
-               start: () => { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 21, 30, 0); if (d <= now) d.setDate(d.getDate()+1); return d; }, dur: 5 },
-    breathe: { text: 'Habio｜3分深呼吸',    details: '考えごとを少し置く時間です。',
-               start: () => new Date(now.getTime() + 10*60000), dur: 3 },
-    sleep:   { text: 'Habio｜寝る前の準備', details: 'スマホを少し置いて、眠る準備をする時間です。',
-               start: () => { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 30, 0); if (d <= now) d.setDate(d.getDate()+1); return d; }, dur: 15 },
+  const RAW = {
+    walk:    { text:'Habio｜15分だけ散歩',  details:'無理せず、外の空気を少し吸う時間です。',
+               start:()=>new Date(now.getTime()+30*60000), dur:15 },
+    stretch: { text:'Habio｜5分ストレッチ', details:'体を少しゆるめる時間です。',
+               start:()=>{ const d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),21,30,0); if(d<=now)d.setDate(d.getDate()+1); return d; }, dur:5 },
+    breathe: { text:'Habio｜3分深呼吸',    details:'考えごとを少し置く時間です。',
+               start:()=>new Date(now.getTime()+10*60000), dur:3 },
+    sleep:   { text:'Habio｜寝る前の準備', details:'スマホを少し置いて、眠る準備をする時間です。',
+               start:()=>{ const d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),22,30,0); if(d<=now)d.setDate(d.getDate()+1); return d; }, dur:15 },
   };
-  const def = DEFS[type];
+  const r = RAW[type];
+  if (!r) return null;
+  const s = r.start();
+  return { text:r.text, details:r.details, startAt:s.getTime(), endAt:s.getTime()+r.dur*60000 };
+}
+
+function buildCalendarLink(type) {
+  const def = _getCalDef(type);
   if (!def) return null;
-  const s = def.start();
-  const e = new Date(s.getTime() + def.dur * 60000);
-  console.log('[Habio Calendar] create link', { type, start: gcalDt(s), end: gcalDt(e) });
-  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(def.text) +
-    '&dates=' + gcalDt(s) + '%2F' + gcalDt(e) +
-    '&details=' + encodeURIComponent(def.details);
+  const p = n => String(n).padStart(2,'0');
+  const gcalDt = ms => { const d=new Date(ms); return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'T'+p(d.getHours())+p(d.getMinutes())+'00'; };
+  console.log('[Habio Calendar] create link', { type, start:gcalDt(def.startAt), end:gcalDt(def.endAt) });
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(def.text)+
+    '&dates='+gcalDt(def.startAt)+'%2F'+gcalDt(def.endAt)+
+    '&details='+encodeURIComponent(def.details);
 }
 
 function openCalendar(type) {
+  const def = _getCalDef(type);
   const url = buildCalendarLink(type);
-  if (url) window.open(url, '_blank', 'noopener');
+  if (!url) return;
+  window.open(url, '_blank', 'noopener');
+  if (def) saveCalendarTask(type, def);
 }
 
 const CAL_TYPE_LABELS = [
@@ -5646,6 +5679,120 @@ function toggleCalSetting() {
   if (!isOpen && !panel.innerHTML) panel.innerHTML = _calTypeBtnsHTML();
   panel.classList.toggle('open');
   if (btn) btn.textContent = isOpen ? '予定を追加する' : '閉じる';
+}
+
+// ── カレンダータスク管理 ──
+const CAL_CHECK_MSG = {
+  walk:    'さっきの15分散歩、少しできましたか？ 🌱',
+  stretch: '5分ストレッチの時間、体を動かせましたか？ 🧘',
+  breathe: '深呼吸の時間、少しできましたか？ 💨',
+  sleep:   '寝る前の準備、できましたか？ 🌙',
+};
+
+function saveCalendarTask(type, def) {
+  const task = {
+    id: 'cal_' + Date.now(),
+    type,
+    title: def.text,
+    startAt: def.startAt,
+    endAt: def.endAt,
+    status: 'pending',
+    createdAt: Date.now(),
+    source: 'google_calendar_link',
+    calendarEventId: null,
+  };
+  const tasks = Store.get('calendar_tasks', []);
+  tasks.push(task);
+  Store.set('calendar_tasks', tasks);
+  console.log('[Habio Calendar Task] saved', task);
+}
+
+function cleanCalendarTasks() {
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  let tasks = Store.get('calendar_tasks', []);
+  tasks = tasks.filter(t => {
+    if (t.status === 'pending' && t.endAt < cutoff) { t.status = 'expired'; return false; }
+    if (t.status === 'expired') return false;
+    return true;
+  });
+  Store.set('calendar_tasks', tasks);
+}
+
+function checkDueCalendarTasks() {
+  const now = Date.now();
+  const tasks = Store.get('calendar_tasks', []);
+  const due = tasks.find(t => {
+    if (t.status === 'pending' && t.endAt <= now) return true;
+    if (t.status === 'later' && t.laterAt && t.laterAt <= now) return true;
+    return false;
+  });
+  if (due) {
+    console.log('[Habio Calendar Task] check due', due);
+    showCalTaskConfirmCard(due);
+  }
+}
+
+function showCalTaskConfirmCard(task) {
+  const area = document.getElementById('calTaskConfirmArea');
+  if (!area) return;
+  const msg = CAL_CHECK_MSG[task.type] || 'カレンダーの予定、できましたか？ 🌱';
+  area.innerHTML =
+    '<div class="cal-task-confirm">' +
+      '<div class="ctc-label">📅 カレンダー予定の確認</div>' +
+      '<div class="ctc-msg">' + msg + '</div>' +
+      '<div class="ctc-note">予定が変わっていたら、無理に答えなくて大丈夫です。</div>' +
+      '<div class="ctc-btns">' +
+        '<button class="ctc-btn-done" onclick="answerCalTask(\'' + task.id + '\',\'done\')">少しできた</button>' +
+        '<button class="ctc-btn-sub"  onclick="answerCalTask(\'' + task.id + '\',\'not_done\')">できなかった</button>' +
+        '<button class="ctc-btn-sub"  onclick="answerCalTask(\'' + task.id + '\',\'forgot\')">忘れてた</button>' +
+        '<button class="ctc-btn-sub"  onclick="answerCalTask(\'' + task.id + '\',\'later\')">あとで</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function answerCalTask(id, status) {
+  const tasks = Store.get('calendar_tasks', []);
+  const task  = tasks.find(t => t.id === id);
+  if (!task) return;
+  const area = document.getElementById('calTaskConfirmArea');
+
+  if (status === 'done') {
+    task.status = 'done';
+    addPoints(1);
+    logWin('📅', task.title, '予定した時間を少し動かせました');
+    if (area) area.innerHTML =
+      '<div class="cal-task-confirm">' +
+        '<div class="ctc-label">📅 カレンダー予定の確認</div>' +
+        '<div class="ctc-result">少しできた 🌱　ちゃんと積み上がっています。+1pt</div>' +
+      '</div>';
+    setTimeout(() => { if (area) area.innerHTML = ''; }, 4000);
+
+  } else if (status === 'not_done') {
+    task.status = 'not_done';
+    if (area) area.innerHTML =
+      '<div class="cal-task-confirm">' +
+        '<div class="ctc-label">📅 カレンダー予定の確認</div>' +
+        '<div class="ctc-result">大丈夫です。予定を置こうと思えたことも、ちゃんと一歩です。</div>' +
+      '</div>';
+    setTimeout(() => { if (area) area.innerHTML = ''; }, 5000);
+
+  } else if (status === 'forgot') {
+    task.status = 'not_done';
+    if (area) area.innerHTML =
+      '<div class="cal-task-confirm">' +
+        '<div class="ctc-label">📅 カレンダー予定の確認</div>' +
+        '<div class="ctc-result">ありますあります。思い出せたのでOKです。</div>' +
+      '</div>';
+    setTimeout(() => { if (area) area.innerHTML = ''; }, 5000);
+
+  } else if (status === 'later') {
+    task.status = 'later';
+    task.laterAt = Date.now() + 30 * 60 * 1000;
+    if (area) area.innerHTML = '';
+  }
+
+  Store.set('calendar_tasks', tasks);
+  console.log('[Habio Calendar Task] answered', status, task);
 }
 
 const CAL_KW = {
@@ -10206,6 +10353,10 @@ function init(){
   const streak=calcStreak(Store.get('wins',[]));
   if(streak>0) checkStreakBadges(streak);
   checkBirthdayBadge();
+
+  // カレンダータスク: 古いものを削除 → 期限切れを確認
+  cleanCalendarTasks();
+  setTimeout(() => checkDueCalendarTasks(), 1500);
 
   // PWA インストール行の初期化（設定タブ + iOS向けホームカード）
   initPwaInstallRow();
