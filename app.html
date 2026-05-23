@@ -539,6 +539,25 @@ body.night-bg{background:#C8C3BB;}
 }
 .mission-cal-msg{font-size:11.5px;color:var(--t-l);}
 
+/* ── カレンダー常設カード（ホーム） ── */
+#calHomeCard{
+  margin:0 16px 16px;background:var(--card);
+  border-radius:16px;padding:14px 16px;
+  border:1.5px solid #d0ead8;
+}
+#calHomeCard .chc-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+#calHomeCard .chc-icon{font-size:17px;}
+#calHomeCard .chc-title{font-size:13.5px;font-weight:700;color:var(--t);}
+#calHomeCard .chc-desc{font-size:12px;color:var(--t-m);line-height:1.8;margin-bottom:12px;}
+#calHomeCard .chc-open{
+  background:var(--g);color:#fff;
+  font-size:12.5px;font-weight:600;padding:8px 18px;
+  border-radius:20px;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.chc-types{display:none;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.chc-types.open{display:flex;}
+
 /* ── チェックイン・フォローアップ追加スタイル ── */
 
 /* ── チェックイン後フォローアップ ── */
@@ -2292,6 +2311,20 @@ body.night-bg{background:#C8C3BB;}
       </div>
     </div>
 
+    <!-- Googleカレンダー常設カード -->
+    <div id="calHomeCard">
+      <div class="chc-head">
+        <span class="chc-icon">🌱</span>
+        <span class="chc-title">Googleカレンダーに予定を置く</span>
+      </div>
+      <div class="chc-desc">
+        散歩・ストレッチ・深呼吸・睡眠準備など、<br>
+        自分を整える時間をカレンダーに追加できます。
+      </div>
+      <button class="chc-open" onclick="toggleCalHomeCard(this)">予定を追加する</button>
+      <div class="chc-types" id="calHomeTypes"></div>
+    </div>
+
     <p class="sec-lbl" id="recLbl" style="display:none;">あなたへのおすすめ（PR）</p>
     <div class="rec-pt-hint" id="recPtHint" style="display:none;">
       <div class="rec-pt-hint-icon">🌱</div>
@@ -2674,6 +2707,28 @@ body.night-bg{background:#C8C3BB;}
         </div>
         <button id="notif-test-btn" onclick="sendTestNotif()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:12px;background:var(--g);color:white;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity .2s;">テスト通知を送る 🔔</button>
         <div id="notif-test-result" style="display:none;margin-top:8px;font-size:12px;text-align:center;padding:9px 12px;border-radius:9px;line-height:1.55;"></div>
+      </div>
+    </div>
+
+    <!-- Googleカレンダー -->
+    <p class="sec-lbl">📅 カレンダーに予定を置く</p>
+    <div class="st-group">
+      <div class="st-row" style="cursor:default;flex-direction:column;align-items:flex-start;padding-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;margin-bottom:6px;">
+          <div class="st-em">🌱</div>
+          <div class="st-info">
+            <div class="st-name">Googleカレンダーに予定を置く</div>
+            <div class="st-note">自分を整える時間をカレンダーに追加できます</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--t-m);line-height:1.8;margin-bottom:12px;padding-left:44px;">
+          散歩・ストレッチ・深呼吸・睡眠準備など。<br>
+          ボタンひとつでGoogleカレンダーに登録できます。
+        </div>
+        <div id="calSettingTypes" class="chc-types" style="padding-left:44px;margin-bottom:10px;"></div>
+        <div style="padding-left:44px;">
+          <button id="calSettingBtn" onclick="toggleCalSetting()" style="background:var(--g);color:#fff;font-size:12.5px;font-weight:600;padding:8px 18px;border-radius:20px;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;">予定を追加する</button>
+        </div>
       </div>
     </div>
 
@@ -5559,6 +5614,38 @@ function buildCalendarLink(type) {
 function openCalendar(type) {
   const url = buildCalendarLink(type);
   if (url) window.open(url, '_blank', 'noopener');
+}
+
+const CAL_TYPE_LABELS = [
+  { type:'walk',    label:'🚶 15分散歩' },
+  { type:'stretch', label:'🧘 5分ストレッチ' },
+  { type:'breathe', label:'💨 3分深呼吸' },
+  { type:'sleep',   label:'🌙 寝る前の準備' },
+];
+
+function _calTypeBtnsHTML() {
+  return CAL_TYPE_LABELS.map(({ type, label }) =>
+    '<button class="cal-btn" onclick="openCalendar(\'' + type + '\')">' + label + '</button>'
+  ).join('');
+}
+
+function toggleCalHomeCard(btn) {
+  const panel = document.getElementById('calHomeTypes');
+  if (!panel) return;
+  const isOpen = panel.classList.contains('open');
+  if (!isOpen && !panel.innerHTML) panel.innerHTML = _calTypeBtnsHTML();
+  panel.classList.toggle('open');
+  if (btn) btn.textContent = isOpen ? '予定を追加する' : '閉じる';
+}
+
+function toggleCalSetting() {
+  const panel = document.getElementById('calSettingTypes');
+  const btn   = document.getElementById('calSettingBtn');
+  if (!panel) return;
+  const isOpen = panel.classList.contains('open');
+  if (!isOpen && !panel.innerHTML) panel.innerHTML = _calTypeBtnsHTML();
+  panel.classList.toggle('open');
+  if (btn) btn.textContent = isOpen ? '予定を追加する' : '閉じる';
 }
 
 const CAL_KW = {
