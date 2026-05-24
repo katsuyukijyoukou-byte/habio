@@ -61,7 +61,12 @@ input,textarea{font-family:inherit;}
   --border:rgba(0,0,0,.05);
   --pulse-dur:3.5s; --tdot-dur:2.1s; --fade-dur:.6s; --trans-dur:.4s;
 }
-body.night-bg{background:#C8C3BB;}
+/* ── TIME-BASED BODY BACKGROUNDS ── */
+body.dawn-bg     { background: linear-gradient(180deg,#EAD8C8 0%,#E0CFC0 100%); }
+body.morning-bg  { background: #DEDAD4; }
+body.afternoon-bg{ background: linear-gradient(180deg,#D4E2D8 0%,#C8D6CC 100%); }
+body.evening-bg  { background: linear-gradient(180deg,#DFCDB8 0%,#D4C0A8 100%); }
+body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); }
 
 /* ── APP SHELL ── */
 #app{
@@ -218,8 +223,8 @@ body.night-bg{background:#C8C3BB;}
 
 /* ── SHARED ── */
 .sec-lbl{
-  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--t-l);
-  text-transform:uppercase;padding:0 22px;margin-bottom:10px;margin-top:22px;
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--t-l);
+  text-transform:uppercase;padding:0 22px;margin-bottom:10px;margin-top:30px;
 }
 .card{background:var(--card);border-radius:var(--r-l);box-shadow:var(--sh1);}
 .pill{
@@ -233,20 +238,81 @@ body.night-bg{background:#C8C3BB;}
 
 /* ── TRAVEL COPY BANNER ── */
 .travel-copy-banner{
-  padding:20px 22px 16px;
+  padding:24px 24px 20px;
   background:linear-gradient(160deg,var(--bg-w) 0%,var(--g-pp) 100%);
   border-bottom:1px solid var(--border);
-  transition:background var(--trans-dur);
+  transition:background .6s ease,border-color .6s ease;
+  position:relative;overflow:hidden;
 }
-#app.night .travel-copy-banner{background:linear-gradient(160deg,var(--bg-w) 0%,#E8EBE6 100%);}
+/* 光の粒アニメ */
+.travel-copy-banner::before{
+  content:'';
+  position:absolute;top:-60%;left:-30%;
+  width:80%;height:200%;
+  background:radial-gradient(ellipse,rgba(255,255,255,.55) 0%,transparent 65%);
+  animation:ambient-glow 14s ease-in-out infinite alternate;
+  pointer-events:none;z-index:0;
+}
+@keyframes ambient-glow{
+  from{transform:translate(-8%,-6%) scale(1);opacity:.5;}
+  to{transform:translate(14%,8%) scale(1.12);opacity:.95;}
+}
+.travel-copy-main,.travel-copy-sub,.travel-quote{position:relative;z-index:1;}
 .travel-copy-main{
   font-size:17px;font-weight:700;color:var(--t);
-  line-height:2.0;white-space:pre-line;letter-spacing:.01em;
+  line-height:2.0;white-space:pre-line;letter-spacing:.015em;
 }
 .travel-copy-sub{
   font-size:13px;font-weight:400;color:var(--t-m);
   margin-top:8px;line-height:2.0;white-space:pre-line;
 }
+.travel-quote{
+  font-size:11.5px;color:var(--t-l);
+  margin-top:14px;letter-spacing:.04em;
+  padding-top:12px;border-top:1px solid var(--border);
+}
+
+/* ── TIME ATMOSPHERE: DAWN (5-8) ── */
+#app.dawn .travel-copy-banner{
+  background:linear-gradient(160deg,#FFFBF5 0%,#F9F0E4 100%);
+}
+#app.dawn .home-hero{ background:#FFFBF5; }
+#app.dawn .travel-copy-banner::before{
+  background:radial-gradient(ellipse,rgba(255,220,160,.4) 0%,transparent 65%);
+}
+
+/* ── TIME ATMOSPHERE: AFTERNOON (12-17) ── */
+#app.afternoon .travel-copy-banner{
+  background:linear-gradient(160deg,#F6FBFF 0%,#EAF4EE 100%);
+}
+#app.afternoon .home-hero{ background:#F6FBFF; }
+#app.afternoon .travel-copy-banner::before{
+  background:radial-gradient(ellipse,rgba(180,230,255,.45) 0%,transparent 65%);
+}
+
+/* ── TIME ATMOSPHERE: EVENING (17-21) ── */
+#app.evening .travel-copy-banner{
+  background:linear-gradient(160deg,#FFF4E8 0%,#F5E6D4 100%);
+}
+#app.evening .home-hero{ background:#FFF4E8; }
+#app.evening .travel-copy-banner::before{
+  background:radial-gradient(ellipse,rgba(255,195,100,.3) 0%,transparent 65%);
+}
+#app.evening .travel-copy-main{ color:#3A2818; }
+#app.evening .travel-copy-sub{ color:#6A4830; }
+#app.evening .travel-quote{ color:#9A7860;border-top-color:rgba(160,120,80,.2); }
+
+/* ── TIME ATMOSPHERE: NIGHT (21-5) ── */
+#app.night .travel-copy-banner{
+  background:linear-gradient(160deg,#0E1C2E 0%,#1A2A3E 100%);
+  border-bottom-color:rgba(255,255,255,.06);
+}
+#app.night .travel-copy-banner::before{
+  background:radial-gradient(ellipse,rgba(80,150,230,.13) 0%,transparent 65%);
+}
+#app.night .travel-copy-main{ color:rgba(255,255,255,.88); }
+#app.night .travel-copy-sub{ color:rgba(255,255,255,.55); }
+#app.night .travel-quote{ color:rgba(255,255,255,.38);border-top-color:rgba(255,255,255,.08); }
 
 /* ── HOME HERO ── */
 .home-hero{
@@ -300,7 +366,7 @@ body.night-bg{background:#C8C3BB;}
   font-size:20px;flex-shrink:0;
 }
 .habio-from{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.06em;margin-bottom:6px;}
-.habio-msg{font-size:14px;color:var(--t);line-height:1.9;}
+.habio-msg{font-size:14px;color:var(--t);line-height:2.1;}
 
 /* Mood */
 .mood-card{
@@ -2224,6 +2290,7 @@ body.night-bg{background:#C8C3BB;}
     <div class="travel-copy-banner" id="travelCopyBanner">
       <div class="travel-copy-main" id="travelCopyMain"></div>
       <div class="travel-copy-sub" id="travelCopySub"></div>
+      <div class="travel-quote" id="travelQuote"></div>
     </div>
 
     <div class="home-hero">
@@ -2424,11 +2491,11 @@ body.night-bg{background:#C8C3BB;}
       <div class="chc-types" id="calHomeTypes"></div>
     </div>
 
-    <p class="sec-lbl" id="recLbl" style="display:none;">あなたへのおすすめ（PR）</p>
+    <p class="sec-lbl" id="recLbl" style="display:none;">旅を楽しむための準備（PR）</p>
     <div class="rec-pt-hint" id="recPtHint" style="display:none;">
       <div class="rec-pt-hint-icon">🌱</div>
       <div class="rec-pt-hint-body">
-        <div class="rec-pt-hint-main">あなたに合った健康サポートをチェックしてポイント獲得</div>
+        <div class="rec-pt-hint-main">旅体力を整えるサポートアイテムをチェック</div>
         <div class="rec-pt-hint-sub">プレミアム会員はポイントUP ／ Habio内のチェックアクションが対象</div>
       </div>
     </div>
@@ -2658,9 +2725,9 @@ body.night-bg{background:#C8C3BB;}
     <p class="sec-lbl">今日</p>
     <div id="today-wins-list"></div>
     <div class="wins-close">
-      <div class="wins-close-em">🌱</div>
-      <div class="wins-close-t" id="winsCloseT">今日も少し、<br>整いました。</div>
-      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それ自体が答えです。</div>
+      <div class="wins-close-em">🌿</div>
+      <div class="wins-close-t" id="winsCloseT">今日も少し、<br>旅体力が整いました。</div>
+      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それが旅支度です。</div>
     </div>
     <p class="sec-lbl">今週</p>
     <div id="week-wins-list"></div>
@@ -3585,8 +3652,8 @@ body.night-bg{background:#C8C3BB;}
         <div class="rec-modal-notice" id="recModalNotice"></div>
       </div>
       <div class="rec-modal-cta-wrap">
-        <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">おすすめ健康習慣を確認した ✓</button>
-        <div class="rec-modal-action-hint" id="recModalActionHint">確認で1pt獲得（プレミアム会員は2pt）</div>
+        <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">旅支度アイテムを確認した ✓</button>
+        <div class="rec-modal-action-hint" id="recModalActionHint">旅支度バッジとして記録されます</div>
         <div class="rec-modal-redirect">タップすると楽天市場へ移動します</div>
         <a class="rec-modal-cta" id="recModalCta" href="#" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="return onRecModalCta();">楽天市場で見る</a>
         <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
@@ -3831,17 +3898,34 @@ const nowTime = () => { const n=new Date(); return n.getHours()+':'+pad(n.getMin
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/* ── NIGHT MODE ── */
+/* ── TIME ATMOSPHERE ── */
 function isNight(){ const h=new Date().getHours(); return h>=22||h<6; }
-function applyNightMode(){
-  const app=document.getElementById('app');
-  const night=isNight();
-  app.classList.toggle('night',night);
-  document.body.classList.toggle('night-bg',night);
-  document.getElementById('night-banner').classList.toggle('show',night);
+
+const TIME_SLOTS=['dawn','morning','afternoon','evening','night'];
+function getTimeSlot(h){
+  if(h>=5&&h<8)   return 'dawn';
+  if(h>=8&&h<12)  return 'morning';
+  if(h>=12&&h<17) return 'afternoon';
+  if(h>=17&&h<21) return 'evening';
+  return 'night';
 }
-applyNightMode();
-setInterval(applyNightMode,60000);
+
+function setTimeAtmosphere(){
+  const h=new Date().getHours();
+  const slot=getTimeSlot(h);
+  const app=document.getElementById('app');
+  TIME_SLOTS.forEach(s=>app.classList.remove(s));
+  app.classList.add(slot);
+  // body bg
+  const bodyClasses=document.body.className.replace(/\b(dawn|morning|afternoon|evening|night)-bg\b/g,'').trim();
+  document.body.className=bodyClasses;
+  document.body.classList.add(slot+'-bg');
+  // night banner
+  const nb=document.getElementById('night-banner');
+  if(nb) nb.classList.toggle('show',slot==='night');
+}
+setTimeAtmosphere();
+setInterval(setTimeAtmosphere, 60000);
 
 
 /* ── STREAK ── */
@@ -4259,24 +4343,58 @@ const FOOD_TIPS=[
   '揚げ物が続いた日は、翌日の一食を和食にするだけで十分です。',
 ];
 
-/* ── TRAVEL COPY (ランダム・日付シード) ── */
+/* ── TRAVEL COPY (日付シード + 時間帯) ── */
 const TRAVEL_COPIES=[
   {main:'健康になるためじゃない。\nまた、行きたい場所へ行くために。🌱', sub:''},
   {main:'「また行きたい」\nを、ちゃんと叶えられる自分へ。', sub:'健康は、頑張るためじゃなく、\n人生を楽しむためにあると思う。'},
   {main:'朝の景色を見に行ける体力も、\n美味しいものを楽しめる元気も。', sub:'きっと毎日の小さな習慣から。'},
 ];
 
+const TRAVEL_COPIES_BY_SLOT={
+  dawn:     {main:'朝が来ました。\nまた行きたい場所へ、今日も一歩。🌱', sub:''},
+  afternoon:{main:'今日のここまで、\n旅体力が少し積み重なっています。', sub:''},
+  evening:  {main:'今日もお疲れさまでした。\n夕暮れを、少しだけ感じてください。', sub:''},
+  night:    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:''},
+};
+
+const TRAVEL_DAILY_QUOTES=[
+  'また宮島を歩けるように 🌙',
+  '次の旅まで、あと少し。',
+  '深呼吸できた日は、ちょっと良い日。',
+  '今日は、水飲めただけでも十分。',
+  '景色を見に行ける元気を少しずつ。',
+  'また美味しいものを食べに行こう。',
+  'ちゃんと休めた日は、旅上手。',
+  '旅体力って、毎日の小さな習慣から。',
+  '今日も、少し整えられた日。',
+  '次の旅が、少し近づいた気がする。',
+  '朝の光を浴びに行ける体でいたい。',
+  '温泉が恋しい夜は、早めに寝よう。',
+  '夕暮れを見に行くために、今日も歩いた。',
+  '旅の前日みたいに、少しだけ整えよう。',
+  '思い出を増やすための、今日の習慣。',
+];
+
 function initTravelCopy(){
   const dt=new Date();
+  const h=dt.getHours();
+  const slot=getTimeSlot(h);
   const seed=(dt.getFullYear()*10000+dt.getMonth()*100+dt.getDate());
-  const idx=seed % TRAVEL_COPIES.length;
-  const copy=TRAVEL_COPIES[idx];
+
+  // 時間帯別コピー（朝・夕・夜は固定、昼は日付ローテ）
+  const copy=TRAVEL_COPIES_BY_SLOT[slot]||TRAVEL_COPIES[seed%TRAVEL_COPIES.length];
+
   const mainEl=document.getElementById('travelCopyMain');
   const subEl=document.getElementById('travelCopySub');
+  const quoteEl=document.getElementById('travelQuote');
+
   if(mainEl) mainEl.textContent=copy.main;
   if(subEl){
-    subEl.textContent=copy.sub;
+    subEl.textContent=copy.sub||'';
     subEl.style.display=copy.sub?'block':'none';
+  }
+  if(quoteEl){
+    quoteEl.textContent=TRAVEL_DAILY_QUOTES[seed%TRAVEL_DAILY_QUOTES.length];
   }
 }
 
@@ -4759,7 +4877,7 @@ function completeDailyMission(){
   const earned=addPoints(pts,'daily_mission_complete','今日のミッション達成');
   syncPointsToServer(earned,'daily_mission_complete','今日のミッション達成',`daily_mission_${today()}`);
   renderPointsCard();
-  showToast(`ミッション達成！ +${pts}pt 🎯`);
+  showToast('今日の旅支度、ひとつ完了 🌿');
 
   // ミッションカテゴリに応じてカレンダー提案を表示
   const calSuggest = document.getElementById('missionCalSuggest');
@@ -4949,8 +5067,8 @@ function doStep(){
   Store.set('step_done_date',today());
   const name=document.getElementById('stepName')?.textContent||'今日の一歩';
   const em=document.getElementById('stepEm')?.textContent||'✨';
-  logWin(em,name+'ができた','今日の小さな一歩');
-  showToast('✓ 記録しました！');
+  logWin(em,name+'ができた','旅支度ひとつ完了');
+  showToast(em+' 旅支度が一つ進みました 🌿');
   addPoints(1);
 }
 function restoreStep(){
@@ -4980,7 +5098,7 @@ function renderHomeWins(){
   if(!listEl) return;
   const wins=Store.get('wins',[]).filter(w=>w.date===today());
   if(!wins.length){
-    listEl.innerHTML='<div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>何か一つ試してみましょう 🌿</div>';
+    listEl.innerHTML='<div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ旅の記録がありません。<br>まず一つだけ、整えてみましょう 🌿</div>';
     return;
   }
   listEl.innerHTML=wins.slice(0,4).map(w=>`
@@ -4995,12 +5113,12 @@ function renderWins(){
   const todayW=wins.filter(w=>w.date===today());
   const weekW=wins.filter(w=>w.date!==today()&&(Date.now()-new Date(w.ts))<7*864e5);
   const todayEl=document.getElementById('today-wins-list');
-  if(todayEl) todayEl.innerHTML=todayW.length?todayW.map(winCardHTML).join(''):'<div class="wins-empty">今日はまだ記録がありません。<br>何か一つ、試してみませんか 🌱</div>';
+  if(todayEl) todayEl.innerHTML=todayW.length?todayW.map(winCardHTML).join(''):'<div class="wins-empty">今日の旅の記録はまだありません。<br>まず一つ、整えてみましょう 🌱</div>';
   const weekEl=document.getElementById('week-wins-list');
-  if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の記録はまだありません。<br>今日が最初の一歩になります 🌿</div>';
+  if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の旅の記録はまだありません。<br>小さな一歩が旅体力になります 🌿</div>';
   const ctx=buildAIContext();
   const closeT=document.getElementById('winsCloseT');
-  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>少し整いました。';
+  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>旅体力が積み重なっています。';
   const habioMsg=document.getElementById('winsHabioMsg');
   if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
   // Update wins page badge/pts counters
@@ -5117,8 +5235,7 @@ function toggleHabit(el){
       done.push(id);
       Store.set(dedupKey,done);
       syncPointsToServer(earned,'habit_task_complete','習慣タスク達成ポイント',`habit_${id}_${today()}`);
-      const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
-      showToast(`${def.em} ${def.name}を記録 ／ ${ptMsg}`);
+      showToast(`${def.em} ${def.name}を記録。旅体力が少し整いました 🌱`);
       checkNightOwlBadge();
       checkEarlyBirdBadge();
       checkQuietStrengthBadge();
@@ -5218,8 +5335,7 @@ function logFoodItem(id,em,name){
     const mDesc=descMap[meal]||'食事記録ポイント';
     const earned=addPoints(1,mType,mDesc);
     syncPointsToServer(earned,mType,mDesc,`${mType}_${today()}`);
-    const ptMsg=earned>=2?`プレミアム特典で +${earned}pt 獲得！`:`+${earned}pt 獲得！`;
-    showToast(em+' 記録しました！ ／ '+ptMsg);
+    showToast(em+' 食事を記録。旅体力が少し整いました 🌱');
   } else {
     showToast(em+' 記録しました！');
   }
@@ -8279,10 +8395,10 @@ function showRecModal(id,def){
       actionBtn.disabled=true;
       if(actionHint) actionHint.textContent='また明日チャレンジしよう';
     } else {
-      actionBtn.textContent='おすすめ健康習慣を確認した ✓';
+      actionBtn.textContent='旅支度アイテムを確認した ✓';
       actionBtn.classList.remove('claimed');
       actionBtn.disabled=false;
-      if(actionHint) actionHint.textContent='確認で1pt獲得（プレミアム会員は2pt）';
+      if(actionHint) actionHint.textContent='旅支度バッジとして記録されます';
     }
   }
 
@@ -8333,7 +8449,7 @@ async function claimPrAction(){
     btn.textContent=`✓ 今日のアクション達成！ +${pts}pt`;
     btn.classList.add('claimed');
     if(hint) hint.textContent=`合計 ${getTotalPts()}pt`;
-    showToast(`健康習慣アクション完了！ +${pts}pt 獲得！`);
+    showToast('旅支度バッジをチェック 🧳 旅体力が整いました');
     console.log('[claimPrAction] local-only (no email)',{pts,total:getTotalPts()});
     return;
   }
@@ -8351,8 +8467,7 @@ async function claimPrAction(){
       btn.textContent=`✓ 今日のアクション達成！ +${data.points}pt`;
       btn.classList.add('claimed');
       if(hint) hint.textContent=`合計 ${data.total_points.toLocaleString()}pt`;
-      const ptMsg=data.points>=2?`プレミアム特典で +${data.points}pt 獲得！`:`+${data.points}pt 獲得！`;
-      showToast(`健康習慣アクション完了！ ${ptMsg}`);
+      showToast('旅支度バッジをチェック 🧳 旅体力が整いました');
       // ローカル記録（同日再呼び出し防止）
       claimedMap[_recModalCurrentId]=jstToday;
       Store.set('pr_actions_today',claimedMap);
@@ -8912,9 +9027,9 @@ function checkStreakBadges(streak){
 function showBadgeEarnToast(text){
   const el=document.getElementById('badgeEarnToast');
   if(!el) return;
-  el.textContent='🎖️ バッジ獲得！「'+text+'」';
+  el.textContent='🧳 旅バッジ解放「'+text+'」';
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),3000);
+  setTimeout(()=>el.classList.remove('show'),3200);
 }
 
 function renderPointsCard(){
