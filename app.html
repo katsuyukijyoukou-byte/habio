@@ -1648,6 +1648,7 @@ body.night-bg{background:#C8C3BB;}
   box-shadow:0 8px 24px rgba(114,185,148,.32);
   transition:transform var(--trans-dur),opacity var(--trans-dur);
   -webkit-tap-highlight-color:transparent;cursor:pointer;
+  text-decoration:none;border:none;
 }
 .rec-modal-cta:active{transform:scale(.97);}
 .rec-modal-foot{
@@ -3563,7 +3564,7 @@ body.night-bg{background:#C8C3BB;}
         <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">おすすめ健康習慣を確認した ✓</button>
         <div class="rec-modal-action-hint" id="recModalActionHint">確認で1pt獲得（プレミアム会員は2pt）</div>
         <div class="rec-modal-redirect">タップすると楽天市場へ移動します</div>
-        <button class="rec-modal-cta" id="recModalCta" onclick="onRecModalCta()">楽天市場で見る</button>
+        <a class="rec-modal-cta" id="recModalCta" href="#" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="return onRecModalCta();">楽天市場で見る</a>
         <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
       </div>
     </div>
@@ -6037,7 +6038,7 @@ function showCounselingA8Card(variant) {
     '<div class="cc-body">' +
       '<div class="cc-label">' + v.title + '</div>' +
       '<div class="cc-msg">'  + v.body  + '</div>' +
-      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'' + variant + '\',slot:getA8Slot()})">' + v.btn + '</a>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'' + variant + '\',slot:getA8Slot()})">' + v.btn + '</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
     '</div>';
   // A8インプレッション：display:noneの影響を受けないよう命令的に発火
@@ -6079,7 +6080,7 @@ function openA8ManualCard() {
     '<div class="cc-body">' +
       '<div class="cc-label">話せる場所を増やしてみる 🤍</div>' +
       '<div class="cc-msg">AIに話すだけでも少し整理できますが、<br>人に話すことで軽くなることもあります。<br><br>必要な時に、<br>話せる場所をひとつ持っておいてください。</div>' +
-      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'manual\',slot:getA8Slot()})">話を聞いてもらう</a>' +
+      '<a class="cc-btn" href="https://px.a8.net/svt/ejp?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU&a8ejpredirect=https%3A%2F%2Fcoconala.com%2Fcategories%2F2%3Fref_c%3D1" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="trackHabioEvent(\'habio_a8_click\',{variant:\'manual\',slot:getA8Slot()})">話を聞いてもらう</a>' +
       '<div class="cc-pr">PR・広告 ／ 必要と感じたときだけ。効果には個人差があります。</div>' +
     '</div>';
   // A8インプレッション：display:noneの影響を受けないよう命令的に発火
@@ -6158,7 +6159,7 @@ function showProductCard(def, intro, source) {
     '<div class="cpc-intro">' + intro.replace(/\n/g, '<br>') + '</div>' +
     '<div class="cpc-name">' + def.title + '</div>' +
     '<div class="cpc-desc">' + def.desc + '</div>' +
-    '<a class="cpc-cta" href="' + AFFILIATE_LINKS[def.id] + '" target="_blank" rel="nofollow"' +
+    '<a class="cpc-cta" href="' + AFFILIATE_LINKS[def.id] + '" target="_blank" rel="nofollow sponsored noopener noreferrer"' +
       ' onclick="trackHabioEvent(\'' + _clickEvent + '\',{productId:\'' + def.id + '\',emotion:\'' + _emotion + '\',source:\'' + source + '\'})">' +
       def.cta + '</a>' +
     '<div class="cpc-pr">' + prText + '</div>';
@@ -8170,6 +8171,10 @@ function showRecModal(id,def){
   const setHTML=(elId,val)=>{const e=document.getElementById(elId);if(e)e.innerHTML=val||'';};
   const show=(elId,vis)=>{const e=document.getElementById(elId);if(e)e.style.display=vis?'':'none';};
 
+  // CTA <a> の href を AFFILIATE_LINKS に設定（クリック先を必ずアフィリエイトURLにする）
+  const ctaAnchor=document.getElementById('recModalCta');
+  if(ctaAnchor) ctaAnchor.href=AFFILIATE_LINKS[id]||'#';
+
   // 商品画像
   const imgUrl=(PRODUCT_IMAGES[id]||'');
   const imgWrap=document.getElementById('recModalImgWrap');
@@ -8241,12 +8246,12 @@ function showRecModal(id,def){
 }
 
 function onRecModalCta(){
-  if(!_recModalCurrentId) return;
+  if(!_recModalCurrentId) return false;
   const link=AFFILIATE_LINKS[_recModalCurrentId];
   logRecEvent('rec_card_cta_'+_recModalCurrentId);
   closeRecModal();
-  if(link){ setTimeout(()=>window.open(link,'_blank','noopener,noreferrer'),120); }
-  else     { showToast('準備中です。もう少しお待ちください 🌿'); }
+  if(!link){ showToast('準備中です。もう少しお待ちください 🌿'); return false; }
+  return true; // <a> タグが href 先（AFFILIATE_LINKS）を開く
 }
 
 async function claimPrAction(){
@@ -8612,7 +8617,7 @@ function openCancelPremiumModal(){
 
   const list=e('cancelRecList');
   if(list) list.innerHTML=picks.map(p=>`
-    <a class="cancel-rec-card" href="${AFFILIATE_LINKS[p.id]||'#'}" target="_blank" rel="nofollow sponsored noopener" onclick="logRecEvent('cancel_rec_${p.id}')">
+    <a class="cancel-rec-card" href="${AFFILIATE_LINKS[p.id]||'#'}" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="logRecEvent('cancel_rec_${p.id}')">
       <div class="cancel-rec-em">${p.em}</div>
       <div class="cancel-rec-body">
         <div class="cancel-rec-tag">${p.tag}</div>
@@ -10394,7 +10399,7 @@ function buildWelcomeFollowup(slot, choiceKey) {
     return '<div class="welcome-followup">' +
       '<div class="welcome-followup-msg">疲れている時は、温かいものを一つ置いてあげてもいいかも 🍵<br>あるいは、少し話すだけでも気持ちが整うことがあります。</div>' +
       '<div class="welcome-followup-actions">' +
-        '<a class="welcome-followup-btn" href="' + link + '" target="_blank" rel="nofollow">温かいものを見てみる</a>' +
+        '<a class="welcome-followup-btn" href="' + link + '" target="_blank" rel="nofollow sponsored noopener noreferrer">温かいものを見てみる</a>' +
         '<button class="welcome-followup-sub" onclick="closeWelcomePopup();openA8ManualCard()">少し話してみる</button>' +
         '<button class="cal-btn" onclick="openCalendar(\'' + calType + '\')">' + calLabel + '</button>' +
       '</div>' +
@@ -10408,7 +10413,7 @@ function buildWelcomeFollowup(slot, choiceKey) {
     return '<div class="welcome-followup">' +
       '<div class="welcome-followup-msg">夜の不安は、誰かに話すだけで少し軽くなることもあります 🌙<br>必要な時に、逃げ場を持っておいてください。</div>' +
       '<div class="welcome-followup-actions">' +
-        '<a class="welcome-followup-btn" href="' + a8Link + '" target="_blank" rel="nofollow">話を聞いてもらう</a>' +
+        '<a class="welcome-followup-btn" href="' + a8Link + '" target="_blank" rel="nofollow sponsored noopener noreferrer">話を聞いてもらう</a>' +
         '<button class="cal-btn" onclick="openCalendar(\'' + calType + '\')">' + calLabel + '</button>' +
       '</div>' +
       '<img border="0" width="1" height="1" src="https://www18.a8.net/0.gif?a8mat=4B3PIW+B5VOFE+2PEO+HUKPU" alt="" style="display:none;">' +
