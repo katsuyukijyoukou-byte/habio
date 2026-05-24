@@ -1655,11 +1655,13 @@ body.night-bg{background:#C8C3BB;}
   text-align:center;margin-top:12px;padding:0 22px;line-height:1.9;
 }
 .rec-modal-img-wrap{
-  margin:0 auto 14px;width:120px;height:120px;border-radius:var(--r-m);
+  margin:0 auto 16px;
+  width:min(200px,72vw);height:min(200px,72vw);
+  border-radius:var(--r-m);
   overflow:hidden;background:var(--bg-w);display:none;
   box-shadow:0 4px 16px rgba(0,0,0,.08);
 }
-.rec-modal-img{width:100%;height:100%;object-fit:cover;}
+.rec-modal-img{width:100%;height:100%;object-fit:contain;display:block;}
 .rec-modal-habit{
   background:linear-gradient(135deg,var(--g-pp),var(--blue-p));
   border-radius:var(--r-m);padding:14px 16px;margin-bottom:14px;
@@ -3539,7 +3541,7 @@ body.night-bg{background:#C8C3BB;}
       <div class="rec-modal-handle"></div>
       <button class="rec-modal-close" onclick="closeRecModal()">×</button>
       <div class="rec-modal-hero">
-        <div class="rec-modal-img-wrap" id="recModalImgWrap"><img class="rec-modal-img" id="recModalImg" src="" alt=""></div>
+        <div class="rec-modal-img-wrap" id="recModalImgWrap"><img class="rec-modal-img" id="recModalImg" src="" alt="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" onerror="this.parentElement.style.display='none'"></div>
         <div class="rec-modal-em" id="recModalEm">🔥</div>
         <div class="rec-modal-product" id="recModalProduct">代謝サポート</div>
         <div class="rec-modal-title" id="recModalTitle"></div>
@@ -7555,88 +7557,70 @@ const AFFILIATE_LINKS = {
   relation_insight:"https://relation-insight-ai.vercel.app",
 };
 
-// 商品画像URL（URLが空の場合は画像非表示）
+// 商品画像URL — 楽天CDN直接参照（再アップロード・ローカル保存禁止）
+// ベースURL: https://thumbnail.image.rakuten.co.jp/
+const _R = 'https://thumbnail.image.rakuten.co.jp/';
 const PRODUCT_IMAGES = {
-  slimmanage:    '',
-  metabolism:    '',
-  exercise:      '',
-  diet:          '',
-  killerburner:  '',
-  saunabelt:     '',
-  citrulline:    '',
-  emsbelt:       '',
-  konnyaku:      '',
-  slimorecoffee: '',
-  protein:       '',
-  okara:         '',
-  smoothie:      '',
-  proteinshake:  '',
-  vibration:     '',
-  neckrelax:     '',
-  frozenbox:     '',
-  yogamat:       '',
-  massageroller: '',
-  balanceball:   '',
-  foamroller:    '',
-  nerukara:      '',
-  shizumin:      '',
-  goodneru:      '',
-  pillowmist:    '',
-  hugmochi:      '',
-  eyemask:       '',
-  lacto:         '',
-  rakusankin:    '',
-  forskohlii:    '',
-  cocolact:      '',
-  supponcmachi:  '',
-  hyalo:         '',
-  vitaminc:      '',
-  kouso:         '',
-  moringa:       '',
-  bloodsugar:    '',
-  cholesterol:   '',
-  puerhtea:      '',
-  vitaminb:      '',
-  aminoacid:     '',
-  hihatsu:       '',
-  mukumix:       '',
-  haramaki:      '',
-  ginger:        '',
-  bathsalt:      '',
-  hottab:        '',
-  walkshoe:      '',
-  smartwatch:    '',
-  sportsdrink:   '',
-  ashwaganda:    '',
-  rooibostea:    '',
-  lowcalbento:   '',
-  zakkokumai:    '',
-  mytrexneck:    '',
-  collagenpowder:'',
-  pelvischair:   '',
-  rakumolumbar:  '',
-  armshaer:      '',
-  donutcushion:  '',
-  legfit:        '',
-  neckpillow:    '',
-  fitnessbike:   '',
-  stepper:       '',
-  balanceboard:  '',
-  balancedisc:   '',
-  trainingsandal:'',
-  healthzosui:   '',
-  lowcalretort:  '',
-  tomatosoup:    '',
-  proterisotto:  '',
-  imuse:         '',
-  calorilimit:   '',
-  imubalance:    '',
-  blackgarlic:   '',
-  nanateatox:    '',
-  nanamitea:     '',
-  bananatea:     '',
-  traintube:     '',
-  rumay3d:       '',
+  // ── index.html LP_PRODUCTS と URL照合で設定済み ──
+  killerburner:  _R+'@0_mall/trustline/cabinet/08921800/12491208/bnr_20251227_02.jpg',
+  exercise:      _R+'@0_mall/excitech/cabinet/relx/massage-gun/gun-mini-th-01.jpg',
+  citrulline:    _R+'@0_mall/excitech/cabinet/supplement/exboost/imgrc0106428594.jpg',
+  diet:          _R+'@0_mall/mejshop/cabinet/11037026/11037027/imgrc0336033151.jpg',
+  saunabelt:     _R+'@0_mall/stan-shop/cabinet/sin/sauna-suite/saunabelt/saunabelt-samune-c.jpg',
+  metabolism:    _R+'@0_mall/nayamikaiketsulab/cabinet/item/calorine/imgrc0110454977.jpg',
+  emsbelt:       _R+'@0_mall/excitech/cabinet/relx/emsbelt/emsbelt_1.jpg',
+  konnyaku:      _R+'@0_mall/k222/cabinet/01687546/diet/food2/221000new-samune06.jpg',
+  slimorecoffee: _R+'@0_mall/shinnihonseiyaku/cabinet/item/slimorecoffee/ice/thumb_rank.jpg',
+  protein:       _R+'@0_mall/womenjapan/cabinet/images4/mpd_1_01.jpg',
+  okara:         _R+'@0_mall/shinrindo/cabinet/10228353/okaraba50-line200-.jpg',
+  smoothie:      _R+'@0_mall/bambi-water/cabinet/page/bambissmoothie/bss_th00_241107.jpg',
+  proteinshake:  _R+'@0_mall/bambi-water/cabinet/page/bps/bps_th00_2412.jpg',
+  vibration:     _R+'@0_mall/w-k-j/cabinet/10651312/11.jpg',
+  neckrelax:     _R+'@0_mall/nissoplus/cabinet/item/neck_relax/main/250417_nr01.jpg',
+  frozenbox:     _R+'@0_mall/slc-123/cabinet/cal_kari/imgrc0123592032.jpg',
+  yogamat:       _R+'@0_mall/dabada/cabinet/04904787/10mm/yoga-mat10_tmb1.jpg',
+  massageroller: _R+'@0_mall/dots-yamanakain/cabinet/10167916/imgrc0117871264.jpg',
+  balanceball:   _R+'@0_mall/kodawari-ichiban/cabinet/ex2/11315852/yogaball_1.jpg',
+  foamroller:    _R+'@0_mall/auc-risecreation/cabinet/product/top/y0355_01_a.jpg',
+  nerukara:      _R+'@0_mall/healthyplus/cabinet/biiino/item/10906954/nerukara_800-800.jpg',
+  shizumin:      _R+'@0_mall/yakusho/cabinet/shizumin/sizumin_1set.jpg',
+  goodneru:      _R+'@0_gold/aequalis/thum/goodneru_thum_r.jpg',
+  pillowmist:    _R+'@0_mall/mariko-s/cabinet/12427273/12427294/1.jpg',
+  hugmochi:      _R+'@0_mall/luckyspread/cabinet/07240546/10248259/imgrc0078419063.jpg',
+  eyemask:       _R+'@0_mall/hibiwa/cabinet/10549764/10659795/12608328/suyamee_251220.jpg',
+  lacto:         _R+'@0_mall/kyunan/cabinet/bikonaya/chogurt/cho-glt.jpg',
+  rakusankin:    _R+'@0_mall/oga/cabinet/item_img/241226_rak_1000_03.jpg',
+  forskohlii:    _R+'@0_mall/oga/cabinet/item_img/shohin/241128_fr_2_01.jpg',
+  cocolact:      _R+'@0_mall/wellsuppli/cabinet/itemimage/cocolact/cocolact_30_new.jpg',
+  supponcmachi:  _R+'@0_mall/teinei-tsuhan/cabinet/product/komachi/introduction_image/imgrc0124429512.jpg',
+  hyalo:         _R+'@0_mall/kewpie-blueflag/cabinet/13131066/14_main_new01.jpg',
+  vitaminc:      _R+'@0_mall/bosii/cabinet/elliss/10692140/imgrc0176490346.jpg',
+  kouso:         _R+'@0_mall/kyunan/cabinet/bikonaya/mirainokoso/thum_mk_01.jpg',
+  moringa:       _R+'@0_mall/nachurin/cabinet/moringa/tablet/tablet-002-01.jpg',
+  bloodsugar:    _R+'@0_mall/itsumococo/cabinet/10604426/10604698/imgrc0116875193.jpg',
+  cholesterol:   _R+'@0_mall/taisho-directshop/cabinet/tmb/koresute.jpg',
+  puerhtea:      _R+'@0_mall/arahata/cabinet/product/11991580/puerh-thumb-2x30.jpg',
+  vitaminb:      _R+'@0_mall/fancl-shop/cabinet/item-img/5500-5999/5526.jpg',
+  aminoacid:     _R+'@0_mall/oga/cabinet/item_img/carousel/am/210716c_am_lp07.jpg',
+  hihatsu:       _R+'@0_mall/tsuhanhonpo-corp/cabinet/06617381/hht_emb.jpg',
+  mukumix:       _R+'@0_mall/oga/cabinet/abtest/241202_mx_4_03.jpg',
+  haramaki:      _R+'@0_mall/fukuske/cabinet/250910/57-37-4012f.jpg',
+  ginger:        _R+'@0_mall/saintlabo/cabinet/08197333/13169962/samune8.jpg',
+  bathsalt:      _R+'@0_mall/bathlier/cabinet/2000-01/2000-090302-r101.jpg',
+  hottab:        _R+'@0_mall/hottabstore/cabinet/wellness/lp/09831043/wellness_samune.jpg',
+  walkshoe:      _R+'@0_mall/topgift/cabinet/g24444.jpg',
+  smartwatch:    _R+'@0_mall/huawei-official/cabinet/12229881/fit4pro-id-scale3blt.jpg',
+  sportsdrink:   _R+'@0_mall/tarza/cabinet/top/03_sei.jpg',
+  ashwaganda:    _R+'@0_mall/shanthilanka/cabinet/oil/ashwagandaoil_main.jpg',
+  // ── LP_PRODUCTS に画像なし（空のまま） ──
+  slimmanage: '', rooibostea: '', lowcalbento: '', zakkokumai: '',
+  mytrexneck: '', collagenpowder: '', pelvischair: '', rakumolumbar: '',
+  armshaer: '', donutcushion: '', legfit: '', neckpillow: '',
+  fitnessbike: '', stepper: '', balanceboard: '', balancedisc: '',
+  trainingsandal: '', healthzosui: '', lowcalretort: '', tomatosoup: '',
+  proterisotto: '', imuse: '', calorilimit: '', imubalance: '',
+  blackgarlic: '', nanateatox: '', nanamitea: '', bananatea: '',
+  traintube: '', rumay3d: '',
 };
 
 const REC_DEFS = [
