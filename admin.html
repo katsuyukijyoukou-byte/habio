@@ -126,6 +126,14 @@ textarea{resize:vertical;min-height:72px;}
   <div id="ab-stats" style="margin-top:12px;"></div>
 </div>
 
+<!-- 商品推薦 CTR ログ -->
+<div class="card">
+  <h2>商品推薦ログ（rec_logs）</h2>
+  <p style="font-size:11px;color:#888;margin-bottom:10px;">このページを開いているブラウザの localStorage に保存された推薦ログを集計します（habio.pages.dev と同じ端末で開いてください）。</p>
+  <button class="btn btn-primary" onclick="loadRecLogs()">ログを読み込む</button>
+  <div id="rec-log-result" style="margin-top:12px;"></div>
+</div>
+
 <!-- デバッグパネル -->
 <div class="card">
   <h2>デバッグログ</h2>
@@ -137,6 +145,68 @@ textarea{resize:vertical;min-height:72px;}
 <script>
 const PUSH_WORKER = 'https://habio-push.katsuyuki-jyoukou.workers.dev';
 let adminSecret = '';
+
+// ── rec_logs CTR 集計 ─────────────────────────────────────────
+function loadRecLogs() {
+  const out = document.getElementById('rec-log-result');
+  const raw = localStorage.getItem('habio_rec_logs');
+  if (!raw) {
+    out.innerHTML = '<p style="font-size:12px;color:#888;">rec_logs が見つかりません。habio.pages.dev/app で商品カードを操作した端末・ブラウザで開いてください。</p>';
+    return;
+  }
+  let logs;
+  try { logs = JSON.parse(raw); } catch { out.innerHTML = '<p style="color:red;font-size:12px;">ログのパースに失敗しました。</p>'; return; }
+  if (!logs.length) { out.innerHTML = '<p style="font-size:12px;color:#888;">ログが空です。</p>'; return; }
+
+  // イベント種別ごとに集計
+  const counts = {};
+  logs.forEach(l => {
+    const e = l.event || 'unknown';
+    counts[e] = (counts[e] || 0) + 1;
+  });
+
+  // 商品クリックを product ID でまとめる
+  const clicks = {};
+  Object.entries(counts).forEach(([e, n]) => {
+    if (e.startsWith('rec_card_click_')) {
+      const id = e.replace('rec_card_click_', '');
+      clicks[id] = n;
+    }
+  });
+
+  // 表示
+  const total = logs.length;
+  const clickTotal = Object.values(clicks).reduce((a, b) => a + b, 0);
+  let html = `<div class="stat-row">
+    <div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">総イベント数</div></div>
+    <div class="stat"><div class="stat-val">${clickTotal}</div><div class="stat-lbl">商品クリック数</div></div>
+    <div class="stat"><div class="stat-val">${logs.length > 0 ? new Date(logs[logs.length-1].ts).toLocaleDateString('ja-JP') : '-'}</div><div class="stat-lbl">最古ログ</div></div>
+  </div>`;
+
+  if (Object.keys(clicks).length > 0) {
+    const sorted = Object.entries(clicks).sort((a, b) => b[1] - a[1]);
+    html += '<div style="margin-top:14px;font-size:12px;font-weight:700;color:#4A7A4A;margin-bottom:6px;">商品別クリック数</div>';
+    html += '<table style="width:100%;font-size:12px;border-collapse:collapse;">';
+    html += '<tr style="color:#888;border-bottom:1px solid #E8EDE8;"><th style="text-align:left;padding:4px 0;">商品ID</th><th style="text-align:right;padding:4px 0;">クリック数</th></tr>';
+    sorted.forEach(([id, n]) => {
+      html += `<tr style="border-bottom:1px solid #F0F4F0;"><td style="padding:5px 0;">${id}</td><td style="text-align:right;">${n}</td></tr>`;
+    });
+    html += '</table>';
+  }
+
+  // その他イベント（クリック以外）
+  const otherEvents = Object.entries(counts).filter(([e]) => !e.startsWith('rec_card_click_'));
+  if (otherEvents.length > 0) {
+    html += '<div style="margin-top:14px;font-size:12px;font-weight:700;color:#4A7A4A;margin-bottom:6px;">その他イベント</div>';
+    html += '<table style="width:100%;font-size:12px;border-collapse:collapse;">';
+    otherEvents.forEach(([e, n]) => {
+      html += `<tr style="border-bottom:1px solid #F0F4F0;"><td style="padding:5px 0;">${e}</td><td style="text-align:right;">${n}</td></tr>`;
+    });
+    html += '</table>';
+  }
+
+  out.innerHTML = html;
+}
 
 // ── 認証 ──────────────────────────────────────────────────────
 function authLogin() {

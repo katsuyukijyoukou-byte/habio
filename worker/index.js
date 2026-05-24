@@ -146,7 +146,7 @@ function corsHeaders(origin) {
 const PRODUCT_BLOCK_MARKER = '\n\nひとつ選択肢としてご紹介します';
 
 function buildSystemPrompt(ctx) {
-  const { streak = 0, hour = 12, todayMood = null, yesterdayMood = null, mealsCount = 0, talkStyle = 'gentle', goal = '', todayMission = null, recentWins = [], sessionTheme = null, sessionInstruction = null, noAffiliate = false, suggestRelation = false } = ctx;
+  const { streak = 0, hour = 12, todayMood = null, yesterdayMood = null, mealsCount = 0, talkStyle = 'gentle', goal = '', todayMission = null, recentWins = [], sessionTheme = null, sessionInstruction = null, noAffiliate = false, suggestRelation = false, emotionTags = [] } = ctx;
   const timeDesc = hour < 6 ? '深夜' : hour < 12 ? '午前' : hour < 18 ? '午後' : '夜';
   let contextDesc = `時間帯：${timeDesc}`;
   if (streak > 0) contextDesc += `、${streak}日連続継続中`;
@@ -155,6 +155,7 @@ function buildSystemPrompt(ctx) {
   if (mealsCount > 0) contextDesc += `、食事ログ：${mealsCount}件`;
   if (goal) contextDesc += `、ユーザーの目標：「${goal}」`;
   if (todayMission) contextDesc += `、今日のミッション：「${todayMission}」`;
+  if (emotionTags.length > 0) contextDesc += `、感情タグ：${emotionTags.join('・')}`;
   if (recentWins.length > 0) contextDesc += `、最近の記録：「${recentWins.join('」「')}」`;
 
   // ── SESSION MODE ──────────────────────────────────────────
@@ -416,8 +417,12 @@ export default {
       let text = data.choices?.[0]?.message?.content?.trim()
         || 'うまく返信できませんでした。もう一度話しかけてみてください 🌿';
 
-      // Append product recommendation block if product was detected (skip during noAffiliate session)
-      if (product && !context.noAffiliate) {
+      // 感情的苦痛状態（孤独・不安・疲れ・思考停止）のときは商品提案を抑制
+      // 明示的な商品リクエスト（欲しい・教えて等）がある場合は抑制しない
+      const DISTRESS_TAGS = ['不安', '孤独', '疲れた', '頭が止まらない'];
+      const isDistress = (context.emotionTags || []).some(t => DISTRESS_TAGS.includes(t));
+      const hasExplicitIntent = SEARCH_TRIGGER.test(message);
+      if (product && !context.noAffiliate && (!isDistress || hasExplicitIntent)) {
         text += `${PRODUCT_BLOCK_MARKER} 🌿\n▶ ${product.name}\n${product.url}\n（PR・広告：楽天市場 ／ 医薬品ではありません。効果には個人差があります）`;
       }
 
