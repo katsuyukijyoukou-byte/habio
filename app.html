@@ -1290,6 +1290,10 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
 .wins-close-em{font-size:38px;margin-bottom:14px;}
 .wins-close-t{font-size:19px;font-weight:700;color:var(--t);line-height:1.55;}
 .wins-close-s{font-size:14px;color:var(--t-m);margin-top:10px;line-height:1.9;}
+.home-ambient-close{
+  text-align:center;font-size:13px;color:var(--t-l);
+  padding:20px 28px 8px;line-height:1.9;letter-spacing:.04em;
+}
 .habio-win{
   margin:0 22px 20px;background:var(--card);border-radius:var(--r-l);
   padding:20px;box-shadow:var(--sh1);display:flex;gap:12px;align-items:flex-start;
@@ -2440,10 +2444,10 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <button class="step-btn" id="stepBtn" onclick="doStep()">できた</button>
     </div>
 
-    <p class="sec-lbl">今日のできた</p>
+    <p class="sec-lbl">今日、ちゃんとできたこと</p>
     <div class="win-preview mb14">
       <div class="win-preview-hd">
-        <span class="win-preview-title">今日の記録</span>
+        <span class="win-preview-title">今日のできたこと</span>
         <span class="win-preview-link" onclick="goTab('wins')">すべて見る →</span>
       </div>
       <div id="homeWinList"><div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>小さなひとつから、始めましょう。 🌿</div></div>
@@ -2507,6 +2511,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       ※ 広告・アフィリエイトリンクを含む場合があります
     </p>
 
+    <div id="homeAmbientClose" class="home-ambient-close"></div>
     <div style="height:16px;"></div>
   </div>
 
@@ -4332,9 +4337,12 @@ const DAY_MSGS=[
   '週末ですね。好きな場所へ行ける体でいるために、少しだけ動いてみませんか。',
 ];
 const NIGHT_MSGS=[
-  'もう休む時間ですね。今日、少し整えようとしたこと、覚えておいてください。',
-  'ゆっくり深呼吸して、今日を手放してください。また明日。',
-  '今夜はスマホを早めに置いて、体を休めてください 🌙 休むのも習慣です。',
+  '今日はよく頑張りました。もう手放して、ゆっくり休んでください。',
+  '疲れていいんです。休むのも、ちゃんとした習慣です 🌙',
+  '今夜は自分を責めないでください。今日ここに来ただけで、十分です。',
+  'ゆっくり深呼吸を。今日の自分に、お疲れさまを言ってあげてください。',
+  '眠れなくても、横になるだけでいい。体を休めてあげてください 🌙',
+  '明日のことは、明日の自分に任せて。今夜は、ただ休みましょう。',
 ];
 const FOOD_TIPS=[
   '野菜を1品増やすだけで、体の調子が変わります。コンビニのサラダでもOKですよ。',
@@ -4354,10 +4362,18 @@ const TRAVEL_COPIES=[
 ];
 
 const TRAVEL_COPIES_BY_SLOT={
-  dawn:     {main:'朝が来ました。\nまた行きたい場所へ、今日も一歩。🌱', sub:'水飲めたら、えらいです。'},
+  dawn:[
+    {main:'静かな朝。\nここに来てくれてありがとう。🌱', sub:'水飲めたら、えらいです。'},
+    {main:'今日の朝が始まりました。\n焦らなくていい、ゆっくり起きていこう。', sub:'また行きたい場所へ、今日も一歩。'},
+    {main:'朝の空気、吸えましたか。\nそれだけで、今日はもう十分です 🌿', sub:'小さな朝が、積み重なっていきます。'},
+  ],
   afternoon:{main:'今日のここまで、\n少しずつ整ってきています。', sub:'好きな場所へ、また行ける自分でいるために。'},
   evening:  {main:'今日もお疲れさまでした。\n夕暮れを、少しだけ感じてください。', sub:'無理しすぎない今日が、いちばんです。'},
-  night:    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:'ちゃんと休むのも、習慣です。'},
+  night:[
+    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:'ちゃんと休むのも、習慣です。'},
+    {main:'今夜は、自分をゆるしてください。\n疲れた日も、ここにいてくれた。', sub:'深呼吸できたなら、それで十分。'},
+    {main:'夜が来ました。\nもう今日はおしまいでいい。🌙', sub:'明日の朝、また会いましょう。'},
+  ],
 };
 
 const TRAVEL_DAILY_QUOTES=[
@@ -4378,6 +4394,45 @@ const TRAVEL_DAILY_QUOTES=[
   '思い出を増やすための、今日の習慣。',
 ];
 
+function getSeason(){
+  const m=new Date().getMonth()+1;
+  if(m>=3&&m<=5) return 'spring';
+  if(m>=6&&m<=8) return 'summer';
+  if(m>=9&&m<=11) return 'autumn';
+  return 'winter';
+}
+
+const SEASONAL_QUOTES={
+  spring:[
+    '桜が咲いたら、また歩きに行こう 🌸',
+    'やわらかい季節に、また行きたい場所が増えていく。',
+    '春の光の中で、少し整えていきます。',
+  ],
+  summer:[
+    '夏の朝が、気持ちいい季節です ☀️',
+    '暑い日こそ、水を飲んで。体は正直です。',
+    '夏の終わりに、好きな場所へまた行こう。',
+  ],
+  autumn:[
+    '秋は、整えるのにちょうどいい季節です 🍂',
+    '涼しい空気の中に、また行きたい場所の記憶。',
+    '秋の夕暮れが、きれいな場所へまた行けたら。',
+  ],
+  winter:[
+    '寒い朝に、温かいものを一杯 ☕',
+    '冬の景色を見に行ける体でいたい。',
+    '年の終わりに、少し整った自分でいる。',
+  ],
+};
+
+const CLOSING_THOUGHTS={
+  dawn:     '今日も、ここから始まります。',
+  morning:  '今日という日を、少しずつ。',
+  afternoon:'ここまで来た。それで十分です。',
+  evening:  '今日もお疲れさまでした。',
+  night:    '今日も、ありがとう。🌙',
+};
+
 const QUIET_TOASTS=[
   '少し整いました 🌱',
   '今日の自分に、ありがとう',
@@ -4397,8 +4452,10 @@ function initTravelCopy(){
   const slot=getTimeSlot(h);
   const seed=(dt.getFullYear()*10000+dt.getMonth()*100+dt.getDate());
 
-  // 時間帯別コピー（朝・夕・夜は固定、昼は日付ローテ）
-  const copy=TRAVEL_COPIES_BY_SLOT[slot]||TRAVEL_COPIES[seed%TRAVEL_COPIES.length];
+  const slotVal=TRAVEL_COPIES_BY_SLOT[slot];
+  const copy=Array.isArray(slotVal)
+    ?slotVal[seed%slotVal.length]
+    :(slotVal||TRAVEL_COPIES[seed%TRAVEL_COPIES.length]);
 
   const mainEl=document.getElementById('travelCopyMain');
   const subEl=document.getElementById('travelCopySub');
@@ -4410,7 +4467,8 @@ function initTravelCopy(){
     subEl.style.display=copy.sub?'block':'none';
   }
   if(quoteEl){
-    quoteEl.textContent=TRAVEL_DAILY_QUOTES[seed%TRAVEL_DAILY_QUOTES.length];
+    const sq=SEASONAL_QUOTES[getSeason()];
+    quoteEl.textContent=sq[seed%sq.length];
   }
 }
 
@@ -4420,6 +4478,9 @@ function initHome(){
   const night=isNight();
 
   initTravelCopy();
+  const slot=getTimeSlot(h);
+  const closingEl=document.getElementById('homeAmbientClose');
+  if(closingEl) closingEl.textContent=CLOSING_THOUGHTS[slot]||'今日も、ありがとう。';
   document.getElementById('homeDate').textContent=jpDateFmt(now);
   document.getElementById('habitsDate').textContent=jpDateFmt(now);
   document.getElementById('winsDate').textContent=jpDateFmt(now);
