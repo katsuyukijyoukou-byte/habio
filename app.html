@@ -2399,10 +2399,10 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
           <div style="flex:1;">
             <div class="daily-mission-lbl">今日の小さなミッション</div>
             <div class="daily-mission-text" id="missionText">読み込み中...</div>
-            <div class="daily-mission-pt" id="missionPt">達成で +1pt</div>
+            <div class="daily-mission-pt" id="missionPt">できたら +1pt</div>
           </div>
         </div>
-        <button class="daily-mission-btn" id="missionBtn" onclick="completeDailyMission()">ミッション達成！</button>
+        <button class="daily-mission-btn" id="missionBtn" onclick="completeDailyMission()">できた ✓</button>
         <div id="missionCalSuggest" style="display:none;"></div>
       </div>
     </div>
@@ -2412,7 +2412,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="habio-av">🌱</div>
       <div>
         <div class="habio-from">今日のひとこと</div>
-        <div class="habio-msg" id="habitoMsg">水分を少し意識してみましょう。旅先でも、体は正直です。</div>
+        <div class="habio-msg" id="habitoMsg">水分を少し意識してみましょう。体は、正直です。</div>
       </div>
     </div>
 
@@ -2453,7 +2453,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="chat-shortcut mb28" onclick="goTab('chat')">
       <div class="cs-av">🌱</div>
       <div>
-        <div class="cs-main">旅のこと、健康のこと、何でも</div>
+        <div class="cs-main">体のこと、気分のこと、何でも</div>
         <div class="cs-sub">疲れた日も、行きたい場所のことも</div>
       </div>
       <span class="cs-arr">›</span>
@@ -2498,8 +2498,8 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="rec-pt-hint" id="recPtHint" style="display:none;">
       <div class="rec-pt-hint-icon">🌱</div>
       <div class="rec-pt-hint-body">
-        <div class="rec-pt-hint-main">暮らしを整えるサポートアイテムをチェック</div>
-        <div class="rec-pt-hint-sub">プレミアム会員はポイントUP ／ Habio内のチェックアクションが対象</div>
+        <div class="rec-pt-hint-main">今の自分に合いそうなものを、そっと見てみてください</div>
+        <div class="rec-pt-hint-sub">少し気になったら、確認するだけで大丈夫です</div>
       </div>
     </div>
     <div id="recCards" class="rec-section" style="display:none;"></div>
@@ -2730,7 +2730,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="wins-close">
       <div class="wins-close-em">🌿</div>
       <div class="wins-close-t" id="winsCloseT">今日も少し、<br>整えられました。</div>
-      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それで十分です。</div>
+      <div class="wins-close-s">完璧じゃなくていい。<br>また行きたい場所へ、少しずつ近づいています。</div>
     </div>
     <p class="sec-lbl">今週</p>
     <div id="week-wins-list"></div>
@@ -3226,7 +3226,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         <div class="onb-inner">
           <div class="onb-em">📋</div>
           <div class="onb-title">今の生活で<br>気になっていることは？</div>
-          <div class="onb-sub">あてはまるものを選んでください</div>
+          <div class="onb-sub">正直なところを、選んでみてください。</div>
           <div class="onb-options">
             <div class="onb-option" onclick="selectOnbOpt(this,'q_current','exercise')"><span class="onb-option-em">🪑</span>運動不足・体が重い</div>
             <div class="onb-option" onclick="selectOnbOpt(this,'q_current','food')"><span class="onb-option-em">🍔</span>食事が乱れがち</div>
@@ -3245,8 +3245,8 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="onb-screen" id="onb-s2">
         <div class="onb-inner">
           <div class="onb-em">🌟</div>
-          <div class="onb-title">理想の自分に<br>近いものはどれですか？</div>
-          <div class="onb-sub">一番めざしたいものを選んでください</div>
+          <div class="onb-title">どんな自分で<br>いたいですか？</div>
+          <div class="onb-sub">また行きたい場所へ行ける自分に。<br>一番近いものを選んでください。</div>
           <div class="onb-options">
             <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','exercise')"><span class="onb-option-em">🏃</span>体を動かす習慣をつくりたい</div>
             <div class="onb-option" onclick="selectOnbOpt(this,'q_ideal','food')"><span class="onb-option-em">🥗</span>食事のバランスを整えたい</div>
@@ -3306,7 +3306,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
             <div id="onbGoalText" style="font-size:16px;font-weight:700;color:var(--t);line-height:1.65;"></div>
             <div id="onbSleepGoalText" style="font-size:12px;color:var(--t-m);margin-top:8px;"></div>
           </div>
-          <div class="onb-sub" id="onbCompleteMsg" style="margin-bottom:0;">一緒に、少しずつ整えていきましょう。<br>完璧じゃなくていいんです。</div>
+          <div class="onb-sub" id="onbCompleteMsg" style="margin-bottom:0;">また行きたい場所へ、今日からそっと始めましょう。<br>完璧じゃなくていいんです。</div>
           <div class="onb-spacer"></div>
           <button class="onb-btn" onclick="onbFinish()" style="max-width:280px;">Habio を使い始める →</button>
         </div>
@@ -4324,12 +4324,12 @@ function updateHabitProgress(){
 /* ── HOME GREETING ── */
 const DAY_MSGS=[
   '水分を少し意識してみましょう。体は、正直です。',
-  '新しい週の始まりです。ゆっくり整えていきましょう。',
+  '新しい週の始まりです。また行きたい場所へ行けるように、ゆっくり整えていきましょう。',
   '昨日より少し、体が軽くなってきているかもしれません。',
   '一緒に、少しずつ整えていきましょう。',
   '焦らなくていいです。自分のペースで、十分です。',
-  '今週もよく来ました。体を休めることも、習慣のひとつです。',
-  '週末ですね。少し体を動かしてみると、来週が少しだけ違います。',
+  '今週もよく来ました。体を休めることも、大切な習慣です。',
+  '週末ですね。好きな場所へ行ける体でいるために、少しだけ動いてみませんか。',
 ];
 const NIGHT_MSGS=[
   'もう休む時間ですね。今日、少し整えようとしたこと、覚えておいてください。',
@@ -4350,12 +4350,12 @@ const FOOD_TIPS=[
 const TRAVEL_COPIES=[
   {main:'健康になるためじゃない。\nまた、行きたい場所へ行くために。🌱', sub:''},
   {main:'「また行きたい」\nを、ちゃんと叶えられる自分へ。', sub:'健康は、頑張るためじゃなく、\n人生を楽しむためにあると思う。'},
-  {main:'朝の景色を見に行ける体力も、\n美味しいものを楽しめる元気も。', sub:'きっと毎日の小さな習慣から。'},
+  {main:'朝の景色を見に行ける体力も、\n美味しいものを楽しめる元気も。', sub:'きっと、毎日の小さな積み重ねから。'},
 ];
 
 const TRAVEL_COPIES_BY_SLOT={
   dawn:     {main:'朝が来ました。\nまた行きたい場所へ、今日も一歩。🌱', sub:'水飲めたら、えらいです。'},
-  afternoon:{main:'今日のここまで、\n少しずつ整ってきています。', sub:''},
+  afternoon:{main:'今日のここまで、\n少しずつ整ってきています。', sub:'好きな場所へ、また行ける自分でいるために。'},
   evening:  {main:'今日もお疲れさまでした。\n夕暮れを、少しだけ感じてください。', sub:'無理しすぎない今日が、いちばんです。'},
   night:    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:'ちゃんと休むのも、習慣です。'},
 };
@@ -4370,7 +4370,7 @@ const TRAVEL_DAILY_QUOTES=[
   'ちゃんと休めた日は、良い日。',
   '毎日の小さな習慣が、積み重なっている。',
   '今日も、少し整えられた日。',
-  'また行きたい場所が、少し近づいた気がする。',
+  'また行きたい場所へ、少し近づいた気がする。',
   '朝の光を浴びに行ける体でいたい。',
   '温泉が恋しい夜は、早めに寝よう。',
   '夕暮れを見に行くために、今日も整えた。',
@@ -4431,8 +4431,8 @@ function initHome(){
     greet='おはようございます';
     if(ctx.yesterdayMood?.mood==='つかれた') sub='昨日はお疲れでしたね。今日はゆっくりのペースで。';
     else if(ctx.streak>=7) sub=ctx.streak+'日続いています。少しずつ整ってきてますよ 🌿';
-    else if(ctx.streak>=3) sub=ctx.streak+'日続いています。また行きたい場所へ、近づいてます 🌿';
-    else sub='少しずつ整えていきましょう。今日も一緒に。';
+    else if(ctx.streak>=3) sub=ctx.streak+'日続いています。また行きたい場所へ 🌿';
+    else sub='また行きたい場所へ。今日も一緒に 🌱';
   } else if(h>=12&&h<18){ greet='こんにちは'; sub='ここまで来ました。体の調子、どうですか？'; }
   else { greet='こんばんは'; sub='今日もお疲れさまでした。少し整えられたら、十分です。'; }
 
@@ -4534,11 +4534,11 @@ const MSG_POOL_STREAK=[
   {key:'s03',text:'続くって、それだけでもすごいことです。'},
   {key:'s04',text:'毎日じゃなくても、来てるだけで十分です。'},
   {key:'s05',text:'やめなかった日が、ここにあります。'},
-  {key:'s06',text:'また行きたい場所へ、少し近くなってるかもしれません。'},
+  {key:'s06',text:'また行きたい場所へ、確かに近づいています。'},
   {key:'s07',text:'小さく続けることが、一番長持ちします。'},
   {key:'s08',text:'今日も来た、それだけで一歩です。'},
   {key:'s09',text:'積み重なってるの、自分では気づきにくいかもしれないけど、ちゃんとあります。'},
-  {key:'s10',text:'また行きたい場所に、一歩ずつ近づいてます。'},
+  {key:'s10',text:'また行きたい場所に、一歩ずつ近づいています。'},
   {key:'s11',text:'来るたびに、少しだけ整えてる。'},
 ];
 const MSG_POOL_FOOD=[
@@ -4886,7 +4886,7 @@ function completeDailyMission(){
   Store.set('daily_content',c);
 
   const btn=document.getElementById('missionBtn');
-  if(btn){btn.textContent='達成済み ✓';btn.classList.add('done');}
+  if(btn){btn.textContent='できました ✓';btn.classList.add('done');}
 
   const isPrem=Store.get('is_premium',false);
   const pts=isPrem?2:1;
@@ -5134,7 +5134,7 @@ function renderWins(){
   if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の記録はまだありません。<br>小さなひとつが、積み重なっていきます 🌿</div>';
   const ctx=buildAIContext();
   const closeT=document.getElementById('winsCloseT');
-  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>少しずつ整えています。';
+  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で。<br>また行きたい場所へ、近づいています 🌿';
   const habioMsg=document.getElementById('winsHabioMsg');
   if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
   // Update wins page badge/pts counters
@@ -7061,7 +7061,7 @@ function buildOnbComplete(){
   if(t) t.textContent='あなたの目標が決まりました';
   if(g) g.textContent=goalText;
   if(sl) sl.textContent='目標睡眠時間 '+sg+'時間 / 夜';
-  if(s) s.innerHTML='一緒に、少しずつ整えていきましょう。<br>完璧じゃなくていいんです。';
+  if(s) s.innerHTML='また行きたい場所へ、今日からそっと始めましょう。<br>完璧じゃなくていいんです。';
 }
 
 function generateGoalText(cur,ideal,sleepHr){
@@ -8845,26 +8845,26 @@ async function confirmCancelPremium(){
 
 /* ── POINTS & BADGES SYSTEM ── */
 const POINT_BADGES=[
-  {id:'first_step',    em:'🌱', name:'はじめの一歩',        pts:10},
-  {id:'hydration',     em:'💧', name:'水を持って歩こう',     pts:20},
-  {id:'deep_breath',   em:'🌬️',name:'深呼吸できた',         pts:30},
-  {id:'gentle_meal',   em:'🥗', name:'丁寧な食事',          pts:40},
-  {id:'totonou',       em:'🌿', name:'少し整ってきた',       pts:50},
-  {id:'daily_step',    em:'🚶', name:'また歩けそう',         pts:60},
-  {id:'night_rhythm',  em:'🌙', name:'ちゃんと眠れた',       pts:70},
-  {id:'morning_light', em:'☀️',name:'朝日を見に行ける',     pts:80},
-  {id:'mind_ease',     em:'🌊', name:'気持ちに余白ができた', pts:90},
-  {id:'totonoisha',    em:'🌸', name:'整った日々',           pts:100},
+  {id:'first_step',    em:'🌱', name:'はじめの、ひとつ',      pts:10},
+  {id:'hydration',     em:'💧', name:'水を持って歩こう',       pts:20},
+  {id:'deep_breath',   em:'🌬️',name:'深呼吸できた',           pts:30},
+  {id:'gentle_meal',   em:'🥗', name:'丁寧な食事',            pts:40},
+  {id:'totonou',       em:'🌿', name:'少しほどけてきた',       pts:50},
+  {id:'daily_step',    em:'🚶', name:'また歩けそう',           pts:60},
+  {id:'night_rhythm',  em:'🌙', name:'ちゃんと眠れた',         pts:70},
+  {id:'morning_light', em:'☀️',name:'朝日を見に行ける',       pts:80},
+  {id:'mind_ease',     em:'🌊', name:'気持ちに余白ができた',   pts:90},
+  {id:'totonoisha',    em:'🌸', name:'また行ける、そんな日々', pts:100},
 ];
 const STREAK_BADGES=[
-  {id:'s3',  em:'🌱',name:'3日続いた',              days:3},
-  {id:'s7',  em:'🌸',name:'一週間の道のり',          days:7},
-  {id:'s30', em:'🏔️',name:'ひと月の積み重ね',        days:30},
-  {id:'s50', em:'🌅',name:'50日の朝を越えた',        days:50},
-  {id:'s75', em:'🌊',name:'75日、波に乗ってる',      days:75},
-  {id:'s100',em:'🗻',name:'100日間の遠い道',         days:100},
-  {id:'s125',em:'🌙',name:'125夜を越えた',           days:125},
-  {id:'s150',em:'✨', name:'150日、少し整った',      days:150},
+  {id:'s3',  em:'🌱',name:'3日、ここにいた',          days:3},
+  {id:'s7',  em:'🌸',name:'7日間の朝を越えた',        days:7},
+  {id:'s30', em:'🏔️',name:'ひと月の、それぞれの日',   days:30},
+  {id:'s50', em:'🌅',name:'50日の朝を越えた',         days:50},
+  {id:'s75', em:'🌊',name:'75日、波に乗ってる',       days:75},
+  {id:'s100',em:'🗻',name:'100日間の遠い道',          days:100},
+  {id:'s125',em:'🌙',name:'125夜を越えた',            days:125},
+  {id:'s150',em:'✨', name:'150日、また行ける体へ',   days:150},
 ];
 const HIDDEN_BADGES=[
   {id:'night_owl',      em:'🌙', name:'夜のフェリーで',       desc:'夜23時以降に習慣を記録した'},
