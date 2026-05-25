@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Habio — また行きたい場所へ</title>
-  <meta name="description" content="旅体力を続けるための、小さな習慣。次の旅を楽しむための、無理しない健康習慣サポート。">
+  <meta name="description" content="人生を楽しめる自分を、少しずつ整える場所。無理しない、管理しない、静かな健康習慣サポート。">
   <meta name="theme-color" content="#72B994">
   <!-- OGP -->
   <meta property="og:type" content="website">
@@ -582,17 +582,20 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
 /* ── チャット内商品カード ── */
 .chat-product-card{
   margin:8px 16px 4px;background:var(--card);
-  border-radius:14px;padding:14px 16px;
-  box-shadow:var(--sh1);border-left:3px solid var(--g-l);
+  border-radius:18px;padding:18px 20px;
+  box-shadow:0 2px 16px rgba(0,0,0,.05);
+  border-top:1px solid var(--border);
 }
-.cpc-intro{font-size:12.5px;color:var(--t-m);line-height:1.75;margin-bottom:10px;}
-.cpc-name{font-size:13px;font-weight:700;color:var(--t);margin-bottom:4px;}
-.cpc-desc{font-size:12px;color:var(--t-m);line-height:1.7;margin-bottom:10px;}
+.cpc-intro{font-size:13px;color:var(--t-m);line-height:1.85;margin-bottom:12px;}
+.cpc-name{font-size:13.5px;font-weight:700;color:var(--t);margin-bottom:4px;}
+.cpc-desc{font-size:12px;color:var(--t-m);line-height:1.75;margin-bottom:14px;}
 .cpc-cta{
-  display:inline-block;background:var(--g);color:#fff;
-  font-size:12.5px;font-weight:600;padding:8px 18px;
-  border-radius:20px;text-decoration:none;
+  display:inline-block;color:var(--t-g);
+  font-size:12px;font-weight:600;
+  padding:0;border-bottom:1.5px solid var(--g-l);
+  text-decoration:none;
   -webkit-tap-highlight-color:transparent;
+  letter-spacing:.03em;
 }
 .cpc-pr{font-size:9.5px;color:var(--t-l);margin-top:8px;line-height:1.5;}
 
@@ -2299,7 +2302,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
           <div class="home-date" id="homeDate"></div>
           <div class="home-greet" id="homeGreet">
             おはようございます
-            <small id="homeGreetSub">次の旅のために、今日も一緒に。</small>
+            <small id="homeGreetSub">今日も、一緒に。</small>
           </div>
         </div>
         <div class="progress-ring-wrap">
@@ -2321,7 +2324,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div id="homeTitleBadge" style="display:none;margin:0 16px 10px;padding:9px 14px;background:linear-gradient(135deg,rgba(113,180,148,.13),rgba(113,180,148,.04));border-radius:var(--r-m);border:1px solid rgba(113,180,148,.25);align-items:center;gap:10px;">
       <span id="homeTitleEm" style="font-size:18px;"></span>
       <div style="flex:1;">
-        <div style="font-size:9px;font-weight:700;color:var(--g);letter-spacing:.08em;">旅の称号</div>
+        <div style="font-size:9px;font-weight:700;color:var(--g);letter-spacing:.08em;">習慣の称号</div>
         <div style="font-size:13px;font-weight:700;color:var(--t);" id="homeTitleName"></div>
       </div>
     </div>
@@ -2339,17 +2342,17 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="points-card" onclick="openRewardsModal()">
       <div class="points-item">
         <div class="points-num" id="pointsToday">+0</div>
-        <div class="points-lbl">今日の旅支度Pt</div>
+        <div class="points-lbl">今日のPt</div>
       </div>
       <div class="points-divider"></div>
       <div class="points-item">
         <div class="points-num" id="pointsTotal">0</div>
-        <div class="points-lbl">旅体力Pt</div>
+        <div class="points-lbl">累計Pt</div>
       </div>
       <div class="points-divider"></div>
       <div class="points-item">
         <div class="points-num" id="pointsStreak">0日</div>
-        <div class="points-lbl">連続の旅路</div>
+        <div class="points-lbl">連続日数</div>
       </div>
       <div class="points-divider"></div>
       <div class="points-item">
@@ -2359,7 +2362,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     </div>
 
     <!-- ── DAILY CONTENT ── -->
-    <p class="sec-lbl">今日の旅支度</p>
+    <p class="sec-lbl">今日のHabio</p>
     <div class="daily-section">
       <!-- 天気 + LUCKY HABIT 統合カード -->
       <div id="weatherCard" class="daily-weather-card" style="display:none;">
@@ -2394,7 +2397,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         <div class="daily-mission-top">
           <div class="daily-mission-em" id="missionEm">🎯</div>
           <div style="flex:1;">
-            <div class="daily-mission-lbl">今日の旅支度ミッション</div>
+            <div class="daily-mission-lbl">今日の小さなミッション</div>
             <div class="daily-mission-text" id="missionText">読み込み中...</div>
             <div class="daily-mission-pt" id="missionPt">達成で +1pt</div>
           </div>
@@ -2430,20 +2433,20 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="step-card mb14" id="stepCard">
       <div class="step-em" id="stepEm">💧</div>
       <div class="step-body">
-        <div class="step-tag">次の旅への準備</div>
+        <div class="step-tag">今日の一歩</div>
         <div class="step-name" id="stepName">水を1杯飲む</div>
         <div class="step-note">これだけでOKです</div>
       </div>
       <button class="step-btn" id="stepBtn" onclick="doStep()">できた</button>
     </div>
 
-    <p class="sec-lbl">今日の旅の記録</p>
+    <p class="sec-lbl">今日のできた</p>
     <div class="win-preview mb14">
       <div class="win-preview-hd">
-        <span class="win-preview-title">旅支度メモ</span>
+        <span class="win-preview-title">今日の記録</span>
         <span class="win-preview-link" onclick="goTab('wins')">すべて見る →</span>
       </div>
-      <div id="homeWinList"><div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>旅の前に、まず一つ。 🌿</div></div>
+      <div id="homeWinList"><div class="wins-empty" style="padding:12px 0;font-size:13px;">まだ記録がありません。<br>小さなひとつから、始めましょう。 🌿</div></div>
     </div>
 
     <p class="sec-lbl">Habioに話しかける</p>
@@ -2491,11 +2494,11 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="chc-types" id="calHomeTypes"></div>
     </div>
 
-    <p class="sec-lbl" id="recLbl" style="display:none;">旅を楽しむための準備（PR）</p>
+    <p class="sec-lbl" id="recLbl" style="display:none;">暮らしを少し整えるもの（PR）</p>
     <div class="rec-pt-hint" id="recPtHint" style="display:none;">
       <div class="rec-pt-hint-icon">🌱</div>
       <div class="rec-pt-hint-body">
-        <div class="rec-pt-hint-main">旅体力を整えるサポートアイテムをチェック</div>
+        <div class="rec-pt-hint-main">暮らしを整えるサポートアイテムをチェック</div>
         <div class="rec-pt-hint-sub">プレミアム会員はポイントUP ／ Habio内のチェックアクションが対象</div>
       </div>
     </div>
@@ -2726,8 +2729,8 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div id="today-wins-list"></div>
     <div class="wins-close">
       <div class="wins-close-em">🌿</div>
-      <div class="wins-close-t" id="winsCloseT">今日も少し、<br>旅体力が整いました。</div>
-      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それが旅支度です。</div>
+      <div class="wins-close-t" id="winsCloseT">今日も少し、<br>整えられました。</div>
+      <div class="wins-close-s">完璧じゃなくていい。<br>続けようとしたこと、それで十分です。</div>
     </div>
     <p class="sec-lbl">今週</p>
     <div id="week-wins-list"></div>
@@ -3303,7 +3306,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
             <div id="onbGoalText" style="font-size:16px;font-weight:700;color:var(--t);line-height:1.65;"></div>
             <div id="onbSleepGoalText" style="font-size:12px;color:var(--t-m);margin-top:8px;"></div>
           </div>
-          <div class="onb-sub" id="onbCompleteMsg" style="margin-bottom:0;">一緒に、次の旅を楽しむための小さな習慣を始めましょう。<br>完璧じゃなくていいんです。</div>
+          <div class="onb-sub" id="onbCompleteMsg" style="margin-bottom:0;">一緒に、少しずつ整えていきましょう。<br>完璧じゃなくていいんです。</div>
           <div class="onb-spacer"></div>
           <button class="onb-btn" onclick="onbFinish()" style="max-width:280px;">Habio を使い始める →</button>
         </div>
@@ -3316,9 +3319,9 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
   <div class="streak-modal-overlay" id="streakModalOverlay">
     <div class="streak-modal" id="streakModal">
       <div class="streak-modal-num" id="streakDays">7</div>
-      <div class="streak-modal-unit">日間の旅路</div>
+      <div class="streak-modal-unit">日間、続きました</div>
       <div class="streak-modal-title" id="streakModalTitle">1週間！すごいです。</div>
-      <div class="streak-modal-msg" id="streakModalMsg">毎日の小さな積み重ねが、旅体力になっています。</div>
+      <div class="streak-modal-msg" id="streakModalMsg">毎日の小さな積み重ねが、確かに続いています。</div>
       <button class="streak-modal-btn" onclick="closeStreakModal()">ありがとう 🌱</button>
     </div>
   </div>
@@ -3327,11 +3330,11 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
   <div class="rewards-overlay" id="rewardsOverlay" onclick="onRewardsOverlayClick(event)">
     <div class="rewards-sheet" id="rewardsSheet">
       <div class="rewards-handle"></div>
-      <div class="rewards-title">🧳 旅バッジ & 旅体力ポイント</div>
+      <div class="rewards-title">バッジ & 整いポイント</div>
       <div class="rewards-pts-banner">
         <div>
           <div class="rwpb-total" id="rwTotalPts">0 pt</div>
-          <div class="rwpb-lbl">累計 旅体力ポイント</div>
+          <div class="rwpb-lbl">累計 整いポイント</div>
         </div>
         <div style="display:flex;gap:20px;margin-left:auto;">
           <div style="text-align:center;">
@@ -3351,17 +3354,17 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <!-- AI emotional comment -->
       <div class="emotional-comment" id="rwEmotionalComment"></div>
       <!-- Progress hints -->
-      <div class="rewards-sec-lbl" id="rwProgressHintsLbl">🗺️ 次の旅バッジまで</div>
+      <div class="rewards-sec-lbl" id="rwProgressHintsLbl">🌿 次のバッジまで</div>
       <div class="progress-hints" id="rewardsProgressHints" style="display:none;"></div>
-      <div class="rewards-sec-lbl">🌿 旅体力バッジ — 習慣で獲得</div>
+      <div class="rewards-sec-lbl">🌿 習慣バッジ — 習慣で獲得</div>
       <div class="badges-grid" id="pointBadgesGrid"></div>
-      <div class="rewards-sec-lbl">🗺️ 旅路バッジ — 継続で獲得</div>
+      <div class="rewards-sec-lbl">🗺️ 継続バッジ — 継続で獲得</div>
       <div class="badges-grid" id="streakBadgesGrid"></div>
       <div class="rewards-sec-lbl">🎂 記念バッジ — 誕生日</div>
       <div class="badges-grid" id="anniversaryBadgesGrid"></div>
-      <div class="rewards-sec-lbl">🌙 かくれた旅バッジ — 隠し実績</div>
+      <div class="rewards-sec-lbl">🌙 隠しバッジ — 隠し実績</div>
       <div class="badges-grid" id="hiddenBadgesGrid"></div>
-      <div class="rewards-sec-lbl">🧳 旅支度バッジ — 旅好きの探索</div>
+      <div class="rewards-sec-lbl">🌿 チェックバッジ — 確認で獲得</div>
       <div class="badges-grid" id="prBadgesGrid"></div>
       <div class="rewards-sec-lbl">🎁 バッジ交換</div>
       <div style="padding:0 16px 8px;font-size:11px;color:var(--t-m);">所有バッジを消費してリワードと交換できます</div>
@@ -3604,8 +3607,8 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     <div class="tendency-sheet" id="badgesListSheet">
       <div class="rewards-handle"></div>
       <div style="padding:20px 20px 4px;">
-        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🧳 YOUR TRAVEL BADGES</div>
-        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="badgesListTitle">旅バッジ</div>
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.08em;">🌿 YOUR BADGES</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t);margin-top:6px;" id="badgesListTitle">習慣バッジ</div>
       </div>
       <div id="badgesListContent" style="padding:0 16px 8px;"></div>
       <div style="padding:0 16px 32px;">
@@ -3652,8 +3655,8 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         <div class="rec-modal-notice" id="recModalNotice"></div>
       </div>
       <div class="rec-modal-cta-wrap">
-        <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">旅支度アイテムを確認した ✓</button>
-        <div class="rec-modal-action-hint" id="recModalActionHint">旅支度バッジとして記録されます</div>
+        <button class="rec-modal-action-btn" id="recModalActionBtn" onclick="claimPrAction()">この習慣サポートを確認した ✓</button>
+        <div class="rec-modal-action-hint" id="recModalActionHint">習慣の記録として残ります</div>
         <div class="rec-modal-redirect">タップすると楽天市場へ移動します</div>
         <a class="rec-modal-cta" id="recModalCta" href="#" target="_blank" rel="nofollow sponsored noopener noreferrer" onclick="return onRecModalCta();">楽天市場で見る</a>
         <div class="rec-modal-foot">【PR・広告】楽天アフィリエイトを利用しています<br>※ 本ページのリンクは楽天市場へ移動します<br>効果には個人差があります</div>
@@ -4320,18 +4323,18 @@ function updateHabitProgress(){
 
 /* ── HOME GREETING ── */
 const DAY_MSGS=[
-  '水分を少し意識してみましょう。旅先でも、体は正直です。',
-  '新しい週の始まりです。次の旅のために、ゆっくり整えていきましょう。',
+  '水分を少し意識してみましょう。体は、正直です。',
+  '新しい週の始まりです。ゆっくり整えていきましょう。',
   '昨日より少し、体が軽くなってきているかもしれません。',
-  '一緒に、小さな旅支度をしましょう。',
-  '焦らなくていいです。次の旅まで、自分のペースで準備できれば十分です。',
-  '今週もよく来ました。体を休めることも、旅体力のひとつです。',
+  '一緒に、少しずつ整えていきましょう。',
+  '焦らなくていいです。自分のペースで、十分です。',
+  '今週もよく来ました。体を休めることも、習慣のひとつです。',
   '週末ですね。少し体を動かしてみると、来週が少しだけ違います。',
 ];
 const NIGHT_MSGS=[
   'もう休む時間ですね。今日、少し整えようとしたこと、覚えておいてください。',
-  'ゆっくり深呼吸して、今日を手放してください。旅は明日も続きます。',
-  '今夜はスマホを早めに置いて、体を休めてください 🌙 旅体力は眠りから。',
+  'ゆっくり深呼吸して、今日を手放してください。また明日。',
+  '今夜はスマホを早めに置いて、体を休めてください 🌙 休むのも習慣です。',
 ];
 const FOOD_TIPS=[
   '野菜を1品増やすだけで、体の調子が変わります。コンビニのサラダでもOKですよ。',
@@ -4351,28 +4354,41 @@ const TRAVEL_COPIES=[
 ];
 
 const TRAVEL_COPIES_BY_SLOT={
-  dawn:     {main:'朝が来ました。\nまた行きたい場所へ、今日も一歩。🌱', sub:''},
-  afternoon:{main:'今日のここまで、\n旅体力が少し積み重なっています。', sub:''},
-  evening:  {main:'今日もお疲れさまでした。\n夕暮れを、少しだけ感じてください。', sub:''},
-  night:    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:''},
+  dawn:     {main:'朝が来ました。\nまた行きたい場所へ、今日も一歩。🌱', sub:'水飲めたら、えらいです。'},
+  afternoon:{main:'今日のここまで、\n少しずつ整ってきています。', sub:''},
+  evening:  {main:'今日もお疲れさまでした。\n夕暮れを、少しだけ感じてください。', sub:'無理しすぎない今日が、いちばんです。'},
+  night:    {main:'静かな夜に、\nここにいてくれてありがとう。🌙', sub:'ちゃんと休むのも、習慣です。'},
 };
 
 const TRAVEL_DAILY_QUOTES=[
-  'また宮島を歩けるように 🌙',
-  '次の旅まで、あと少し。',
+  'また歩けるように 🌙',
+  'また行きたい場所へ、あと少し。',
   '深呼吸できた日は、ちょっと良い日。',
   '今日は、水飲めただけでも十分。',
   '景色を見に行ける元気を少しずつ。',
   'また美味しいものを食べに行こう。',
-  'ちゃんと休めた日は、旅上手。',
-  '旅体力って、毎日の小さな習慣から。',
+  'ちゃんと休めた日は、良い日。',
+  '毎日の小さな習慣が、積み重なっている。',
   '今日も、少し整えられた日。',
-  '次の旅が、少し近づいた気がする。',
+  'また行きたい場所が、少し近づいた気がする。',
   '朝の光を浴びに行ける体でいたい。',
   '温泉が恋しい夜は、早めに寝よう。',
-  '夕暮れを見に行くために、今日も歩いた。',
-  '旅の前日みたいに、少しだけ整えよう。',
+  '夕暮れを見に行くために、今日も整えた。',
+  '好きな場所へ行ける自分でいるために、少しだけ。',
   '思い出を増やすための、今日の習慣。',
+];
+
+const QUIET_TOASTS=[
+  '少し整いました 🌱',
+  '今日の自分に、ありがとう',
+  '休めた日は、良い日です',
+  '無理しないのも習慣',
+  'ちゃんと続いています 🌿',
+  'こういう日の積み重ねが大事',
+  '体が少し喜んでいます',
+  '今日も来てくれた 🌱',
+  'ゆっくりでいいんです',
+  '小さく続いてます',
 ];
 
 function initTravelCopy(){
@@ -4410,13 +4426,13 @@ function initHome(){
   document.getElementById('foodDate').textContent=jpDateFmt(now);
 
   let greet,sub;
-  if(night){ greet='おやすみなさい'; sub='今日もお疲れさまでした。ゆっくり休んで、また明日の旅へ。'; }
+  if(night){ greet='おやすみなさい'; sub='今日もお疲れさまでした。ゆっくり休んでください。'; }
   else if(h>=5&&h<12){
     greet='おはようございます';
     if(ctx.yesterdayMood?.mood==='つかれた') sub='昨日はお疲れでしたね。今日はゆっくりのペースで。';
-    else if(ctx.streak>=7) sub=ctx.streak+'日続いています。旅体力、ついてきてますよ 🌿';
-    else if(ctx.streak>=3) sub=ctx.streak+'日続いています。次の旅が近づいてる 🌿';
-    else sub='次の旅を楽しむために、今日も一緒に小さな一歩を。';
+    else if(ctx.streak>=7) sub=ctx.streak+'日続いています。少しずつ整ってきてますよ 🌿';
+    else if(ctx.streak>=3) sub=ctx.streak+'日続いています。また行きたい場所へ、近づいてます 🌿';
+    else sub='少しずつ整えていきましょう。今日も一緒に。';
   } else if(h>=12&&h<18){ greet='こんにちは'; sub='ここまで来ました。体の調子、どうですか？'; }
   else { greet='こんばんは'; sub='今日もお疲れさまでした。少し整えられたら、十分です。'; }
 
@@ -4424,8 +4440,8 @@ function initHome(){
   const todayMood=Store.get('mood_history',[]).find(m=>m.date===today());
   const refMood=todayMood||ctx.yesterdayMood;
   if(refMood&&!night){
-    if(refMood.mood==='つかれた') sub='まずは、ゆっくり。次の旅はその先にあります。';
-    else if(refMood.mood==='とても良い') sub='好調ですね。この調子で次の旅へ ✨';
+    if(refMood.mood==='つかれた') sub='まずは、ゆっくり。無理しないのも習慣です。';
+    else if(refMood.mood==='とても良い') sub='好調ですね。この調子で ✨';
     else if(refMood.mood==='いい感じ'&&ctx.streak>0) sub='いい感じですね。'+ctx.streak+'日、積み重なってる 🌿';
   }
 
@@ -4514,13 +4530,13 @@ const MSG_POOL_LONELY=[
 ];
 const MSG_POOL_STREAK=[
   {key:'s01',text:'続けようとしてるの、ちゃんと積み重なってます。'},
-  {key:'s02',text:'少しずつ、旅体力がついてきてる気がします。'},
+  {key:'s02',text:'少しずつ、整ってきてる気がします。'},
   {key:'s03',text:'続くって、それだけでもすごいことです。'},
   {key:'s04',text:'毎日じゃなくても、来てるだけで十分です。'},
   {key:'s05',text:'やめなかった日が、ここにあります。'},
-  {key:'s06',text:'次の旅が、少し近くなってるかもしれません。'},
+  {key:'s06',text:'また行きたい場所へ、少し近くなってるかもしれません。'},
   {key:'s07',text:'小さく続けることが、一番長持ちします。'},
-  {key:'s08',text:'今日も来た、それがすでに旅支度のひとつです。'},
+  {key:'s08',text:'今日も来た、それだけで一歩です。'},
   {key:'s09',text:'積み重なってるの、自分では気づきにくいかもしれないけど、ちゃんとあります。'},
   {key:'s10',text:'また行きたい場所に、一歩ずつ近づいてます。'},
   {key:'s11',text:'来るたびに、少しだけ整えてる。'},
@@ -4551,11 +4567,11 @@ const MSG_POOL_DEEP_NIGHT=[
   {key:'dn11',text:'夜の静かな時間に来てくれました。ゆっくりしていてください。'},
 ];
 const MSG_POOL_MORNING=[
-  {key:'m01',text:'朝から来てくれました。今日も一緒に旅支度をしましょう。'},
+  {key:'m01',text:'朝から来てくれました。今日も一緒に始めましょう。'},
   {key:'m02',text:'朝がしんどい日は、動きはじめるまでが一番大変です。'},
   {key:'m03',text:'今日は「ちょっとだけ」でいい日かもしれません。'},
   {key:'m04',text:'朝の重さって、午後になると少し軽くなることが多いです。'},
-  {key:'m05',text:'朝しんどくても、来てくれた。旅の前の朝みたいに。'},
+  {key:'m05',text:'朝しんどくても、来てくれた。それだけで十分です。'},
   {key:'m06',text:'今日を始めたこと、それだけで大丈夫です。'},
   {key:'m07',text:'朝が苦手でも、Habioは24時間いますよ。'},
   {key:'m08',text:'今日は"ゆっくり起動"でいい日かもしれません。'},
@@ -4877,7 +4893,7 @@ function completeDailyMission(){
   const earned=addPoints(pts,'daily_mission_complete','今日のミッション達成');
   syncPointsToServer(earned,'daily_mission_complete','今日のミッション達成',`daily_mission_${today()}`);
   renderPointsCard();
-  showToast('今日の旅支度、ひとつ完了 🌿');
+  showToast('ひとつ、できました 🌿');
 
   // ミッションカテゴリに応じてカレンダー提案を表示
   const calSuggest = document.getElementById('missionCalSuggest');
@@ -5067,8 +5083,8 @@ function doStep(){
   Store.set('step_done_date',today());
   const name=document.getElementById('stepName')?.textContent||'今日の一歩';
   const em=document.getElementById('stepEm')?.textContent||'✨';
-  logWin(em,name+'ができた','旅支度ひとつ完了');
-  showToast(em+' 旅支度が一つ進みました 🌿');
+  logWin(em,name+'ができた','ひとつ整えました');
+  showToast(em+' 一つ整えました 🌿');
   addPoints(1);
 }
 function restoreStep(){
@@ -5115,10 +5131,10 @@ function renderWins(){
   const todayEl=document.getElementById('today-wins-list');
   if(todayEl) todayEl.innerHTML=todayW.length?todayW.map(winCardHTML).join(''):'<div class="wins-empty">今日の旅の記録はまだありません。<br>まず一つ、整えてみましょう 🌱</div>';
   const weekEl=document.getElementById('week-wins-list');
-  if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の旅の記録はまだありません。<br>小さな一歩が旅体力になります 🌿</div>';
+  if(weekEl) weekEl.innerHTML=weekW.length?weekW.slice(0,8).map(winCardHTML).join(''):'<div class="wins-empty">今週の記録はまだありません。<br>小さなひとつが、積み重なっていきます 🌿</div>';
   const ctx=buildAIContext();
   const closeT=document.getElementById('winsCloseT');
-  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>旅体力が積み重なっています。';
+  if(ctx.streak>=3&&closeT) closeT.innerHTML=ctx.streak+'日連続で<br>少しずつ整えています。';
   const habioMsg=document.getElementById('winsHabioMsg');
   if(ctx.yesterdayMood?.mood==='つかれた'&&habioMsg) habioMsg.textContent='昨日は疲れていたようですね。今日は少し楽になりましたか？少しずつ、一緒に進みましょう 🍃';
   // Update wins page badge/pts counters
@@ -5235,7 +5251,7 @@ function toggleHabit(el){
       done.push(id);
       Store.set(dedupKey,done);
       syncPointsToServer(earned,'habit_task_complete','習慣タスク達成ポイント',`habit_${id}_${today()}`);
-      showToast(`${def.em} ${def.name}を記録。旅体力が少し整いました 🌱`);
+      showToast(`${def.em} ${def.name}を記録。少し整いました 🌱`);
       checkNightOwlBadge();
       checkEarlyBirdBadge();
       checkQuietStrengthBadge();
@@ -5335,7 +5351,7 @@ function logFoodItem(id,em,name){
     const mDesc=descMap[meal]||'食事記録ポイント';
     const earned=addPoints(1,mType,mDesc);
     syncPointsToServer(earned,mType,mDesc,`${mType}_${today()}`);
-    showToast(em+' 食事を記録。旅体力が少し整いました 🌱');
+    showToast(em+' 食事を記録。少し整いました 🌱');
   } else {
     showToast(em+' 記録しました！');
   }
@@ -7045,7 +7061,7 @@ function buildOnbComplete(){
   if(t) t.textContent='あなたの目標が決まりました';
   if(g) g.textContent=goalText;
   if(sl) sl.textContent='目標睡眠時間 '+sg+'時間 / 夜';
-  if(s) s.innerHTML='一緒に、次の旅を楽しむための小さな習慣を始めましょう。<br>完璧じゃなくていいんです。';
+  if(s) s.innerHTML='一緒に、少しずつ整えていきましょう。<br>完璧じゃなくていいんです。';
 }
 
 function generateGoalText(cur,ideal,sleepHr){
@@ -7305,10 +7321,10 @@ function selectStyle(style,premOnly){
 
 /* ── STREAK MODAL ── */
 const STREAK_MILESTONES=[
-  {days:3, title:'3日間の旅路。',              msg:'小さな旅支度が、確かに始まっています。続けようとしたこと、それが全てです 🌿'},
-  {days:7, title:'1週間！この調子です。',       msg:'7日間、旅体力が積み重なっています。また行きたい場所が、少し近づきました ✨'},
-  {days:14,title:'2週間の旅人。',              msg:'習慣の芽が出てきています。焦らず、このままのペースで大丈夫です 🌱'},
-  {days:30,title:'ひと月の旅路。本物です。',   msg:'30日間、本当によく続きました。次の旅が、もっと楽しめる体になってきています 🌿'},
+  {days:3, title:'3日間、続きましたね。',        msg:'小さな積み重ねが、確かに始まっています。続けようとしたこと、それが全てです 🌿'},
+  {days:7, title:'1週間！この調子です。',        msg:'7日間、少しずつ整ってきています。また行きたい場所が、少し近づきました ✨'},
+  {days:14,title:'2週間、続いています。',        msg:'習慣の芽が出てきています。焦らず、このままのペースで大丈夫です 🌱'},
+  {days:30,title:'ひと月の積み重ね。本物です。', msg:'30日間、本当によく続きました。また行きたい場所へ、もっと近づいてきています 🌿'},
 ];
 
 function checkStreakMilestone(streak){
@@ -8395,10 +8411,10 @@ function showRecModal(id,def){
       actionBtn.disabled=true;
       if(actionHint) actionHint.textContent='また明日チャレンジしよう';
     } else {
-      actionBtn.textContent='旅支度アイテムを確認した ✓';
+      actionBtn.textContent='この習慣サポートを確認した ✓';
       actionBtn.classList.remove('claimed');
       actionBtn.disabled=false;
-      if(actionHint) actionHint.textContent='旅支度バッジとして記録されます';
+      if(actionHint) actionHint.textContent='習慣の記録として残ります';
     }
   }
 
@@ -8449,7 +8465,7 @@ async function claimPrAction(){
     btn.textContent=`✓ 今日のアクション達成！ +${pts}pt`;
     btn.classList.add('claimed');
     if(hint) hint.textContent=`合計 ${getTotalPts()}pt`;
-    showToast('旅支度バッジをチェック 🧳 旅体力が整いました');
+    showToast('少し整いました 🌿');
     console.log('[claimPrAction] local-only (no email)',{pts,total:getTotalPts()});
     return;
   }
@@ -8467,7 +8483,7 @@ async function claimPrAction(){
       btn.textContent=`✓ 今日のアクション達成！ +${data.points}pt`;
       btn.classList.add('claimed');
       if(hint) hint.textContent=`合計 ${data.total_points.toLocaleString()}pt`;
-      showToast('旅支度バッジをチェック 🧳 旅体力が整いました');
+      showToast('少し整いました 🌿');
       // ローカル記録（同日再呼び出し防止）
       claimedMap[_recModalCurrentId]=jstToday;
       Store.set('pr_actions_today',claimedMap);
@@ -8829,26 +8845,26 @@ async function confirmCancelPremium(){
 
 /* ── POINTS & BADGES SYSTEM ── */
 const POINT_BADGES=[
-  {id:'first_step',    em:'🌱', name:'はじめの旅支度',    pts:10},
-  {id:'hydration',     em:'💧', name:'水を持って歩こう',   pts:20},
-  {id:'deep_breath',   em:'🌬️',name:'深呼吸できた',       pts:30},
-  {id:'gentle_meal',   em:'🥗', name:'旅先でも丁寧に',    pts:40},
-  {id:'totonou',       em:'🗺️', name:'旅体力ついてきた',  pts:50},
-  {id:'daily_step',    em:'🚶', name:'また歩けそう',       pts:60},
-  {id:'night_rhythm',  em:'🌙', name:'旅先でも寝れた',    pts:70},
-  {id:'morning_light', em:'☀️',name:'朝日を見に行ける',   pts:80},
+  {id:'first_step',    em:'🌱', name:'はじめの一歩',        pts:10},
+  {id:'hydration',     em:'💧', name:'水を持って歩こう',     pts:20},
+  {id:'deep_breath',   em:'🌬️',name:'深呼吸できた',         pts:30},
+  {id:'gentle_meal',   em:'🥗', name:'丁寧な食事',          pts:40},
+  {id:'totonou',       em:'🌿', name:'少し整ってきた',       pts:50},
+  {id:'daily_step',    em:'🚶', name:'また歩けそう',         pts:60},
+  {id:'night_rhythm',  em:'🌙', name:'ちゃんと眠れた',       pts:70},
+  {id:'morning_light', em:'☀️',name:'朝日を見に行ける',     pts:80},
   {id:'mind_ease',     em:'🌊', name:'気持ちに余白ができた', pts:90},
-  {id:'totonoisha',    em:'🧳', name:'旅を楽しめる体',    pts:100},
+  {id:'totonoisha',    em:'🌸', name:'整った日々',           pts:100},
 ];
 const STREAK_BADGES=[
-  {id:'s3',  em:'🗺️',name:'旅支度はじまった',      days:3},
-  {id:'s7',  em:'🌸',name:'一週間の旅路',           days:7},
-  {id:'s30', em:'🏔️',name:'ひと月のひとり旅',       days:30},
-  {id:'s50', em:'🌅',name:'50日の朝を越えた',       days:50},
-  {id:'s75', em:'🌊',name:'75日、波に乗ってる',     days:75},
-  {id:'s100',em:'🗻',name:'100日間の遠い道',        days:100},
-  {id:'s125',em:'🌙',name:'125夜の旅人',            days:125},
-  {id:'s150',em:'🧳',name:'150日、旅体力できた',    days:150},
+  {id:'s3',  em:'🌱',name:'3日続いた',              days:3},
+  {id:'s7',  em:'🌸',name:'一週間の道のり',          days:7},
+  {id:'s30', em:'🏔️',name:'ひと月の積み重ね',        days:30},
+  {id:'s50', em:'🌅',name:'50日の朝を越えた',        days:50},
+  {id:'s75', em:'🌊',name:'75日、波に乗ってる',      days:75},
+  {id:'s100',em:'🗻',name:'100日間の遠い道',         days:100},
+  {id:'s125',em:'🌙',name:'125夜を越えた',           days:125},
+  {id:'s150',em:'✨', name:'150日、少し整った',      days:150},
 ];
 const HIDDEN_BADGES=[
   {id:'night_owl',      em:'🌙', name:'夜のフェリーで',       desc:'夜23時以降に習慣を記録した'},
@@ -8858,9 +8874,9 @@ const HIDDEN_BADGES=[
   {id:'rainy_day',      em:'🌧️', name:'雨の旅も悪くない',   desc:'雨の日に習慣を記録（準備中）'},
 ];
 const PR_BADGES=[
-  {id:'pr_lv1',em:'🌿',name:'旅体力探索者',  count:10,level:1},
-  {id:'pr_lv2',em:'🧳',name:'旅支度マスター',count:20,level:2},
-  {id:'pr_lv3',em:'🌏',name:'旅人の称号',   count:30,level:3},
+  {id:'pr_lv1',em:'🌿',name:'習慣探索者',    count:10,level:1},
+  {id:'pr_lv2',em:'✨', name:'習慣マスター', count:20,level:2},
+  {id:'pr_lv3',em:'🌸',name:'整いの人',     count:30,level:3},
 ];
 const REWARD_ITEMS=[
   {id:'ai_session',em:'🌿',name:'AIとの特別セッション',       cost:10,desc:'10分集中。テーマを選んで、Habioと深く話す'},
@@ -9027,7 +9043,7 @@ function checkStreakBadges(streak){
 function showBadgeEarnToast(text){
   const el=document.getElementById('badgeEarnToast');
   if(!el) return;
-  el.textContent='🧳 旅バッジ解放「'+text+'」';
+  el.textContent='バッジ解放 🌿「'+text+'」';
   el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'),3200);
 }
@@ -9636,7 +9652,7 @@ function openBadgesListModal(){
   anE.forEach(()=>{ html+=row('🎂','バースデーバッジ','お誕生日おめでとう'); });
 
   if(!html){
-    html='<div style="padding:32px 0;text-align:center;font-size:13px;color:var(--t-m);">まだ旅バッジがありません。<br>習慣を続けると旅バッジが解放されます 🌿</div>';
+    html='<div style="padding:32px 0;text-align:center;font-size:13px;color:var(--t-m);">まだバッジがありません。<br>習慣を続けるとバッジが解放されます 🌿</div>';
   } else {
     const unearned=POINT_BADGES.filter(b=>!ptE.includes(b.id)).slice(0,3);
     unearned.forEach(b=>{ html+=row('🔒',b.name,`${b.pts}pt で解放`,true); });
