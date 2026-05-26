@@ -2912,7 +2912,7 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="upgrade-banner-top">
         <div class="upgrade-em">💎</div>
         <div>
-          <div class="upgrade-title">もっと深く、自分のリズムを知りたい方へ。</div>
+          <div class="upgrade-title">好きな場所へ行ける自分へ、もっと深く整える。</div>
           <div class="upgrade-sub">整いポイント2倍・バッジ複数獲得・7日間無料</div>
         </div>
       </div>
@@ -4175,6 +4175,11 @@ function buildSessionInstruction(){
   }
   if(theme.id==='continue'||theme.id==='myself'){
     inst+='\n・自己批判を止め、肯定から入る。次の小さな一歩を一緒に考える。';
+  }
+  if(theme.id==='lifestyle'){
+    inst+='\n・「また行きたい場所へ行ける自分」という動機を大切にする。体力・疲れにくさ・軽やかさをキーワードに。';
+    inst+='\n・スポーツや激しい運動ではなく、「続けられる小さな積み重ね」を提案する。';
+    inst+='\n・整えることへの動機を肯定し、具体的で小さな今日の一歩を提案する。';
   }
   return inst;
 }
