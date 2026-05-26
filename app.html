@@ -4502,8 +4502,8 @@ function initHome(){
   const refMood=todayMood||ctx.yesterdayMood;
   if(refMood&&!night){
     if(refMood.mood==='つかれた') sub='まずは、ゆっくり。無理しないのも習慣です。';
-    else if(refMood.mood==='とても良い') sub='好調ですね。この調子で ✨';
-    else if(refMood.mood==='いい感じ'&&ctx.streak>0) sub='いい感じですね。'+ctx.streak+'日、積み重なってる 🌿';
+    else if(refMood.mood==='とても良い') sub='その調子で、少しずつ。好きな景色へ近づいています。';
+    else if(refMood.mood==='いい感じ'&&ctx.streak>0) sub='いい感じですね。'+ctx.streak+'日、確かに積み重なってる 🌿';
   }
 
   const uname=Store.get('user_name','');
@@ -9004,7 +9004,9 @@ function renderHomeTitle(){
 }
 
 const AI_SESSION_THEMES=[
-  {id:'health',   em:'🌿',name:'健康について話したい',
+  {id:'lifestyle', em:'🌿',name:'また軽やかに出かけたい',
+    subs:['歩き続けられる体でいたい','好きな場所へ行ける自分でいたい','少し体力をつけたい','外に出やすい自分になりたい','食事をもっと楽しみたい','疲れにくい体になりたい']},
+  {id:'health',   em:'🍃',name:'健康について話したい',
     subs:['睡眠を整えたい','疲れを減らしたい','食生活を見直したい','運動不足を改善したい','ストレスを減らしたい']},
   {id:'diet',     em:'🥗',name:'楽して痩せたい',
     subs:['お金をかけずに痩せたい','お金をかけても最短で','運動せずに体を整えたい','食事を少し変えたい','忙しくてもできる方法','続けられる方法が知りたい'],
