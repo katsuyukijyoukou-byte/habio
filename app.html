@@ -2373,6 +2373,126 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
 }
 .daily-mission-btn:active{transform:scale(.97);opacity:.9;}
 .daily-mission-btn.done{background:var(--t-l);pointer-events:none;}
+
+/* ── 旅目標カード */
+.travel-goal-card{
+  margin:0 16px 14px;
+  background:linear-gradient(135deg,#EAF4FF,#E0EEFF);
+  border-radius:var(--r-l);padding:16px 18px;
+  box-shadow:var(--sh1);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.tg-label{font-size:9px;font-weight:700;color:#4070C0;letter-spacing:.1em;margin-bottom:6px;}
+.tg-destination{font-size:18px;font-weight:700;color:var(--t);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.tg-progress-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.tg-bar-bg{flex:1;height:7px;background:rgba(0,0,0,.08);border-radius:9999px;overflow:hidden;}
+.tg-bar-fg{height:100%;border-radius:9999px;background:linear-gradient(90deg,#6AB4F0,#4080D0);transition:width .8s cubic-bezier(.34,1.2,.64,1);}
+.tg-pct{font-size:12px;font-weight:700;color:#4070C0;flex-shrink:0;}
+.tg-days-left{font-size:11px;color:var(--t-m);margin-top:6px;}
+.tg-set-hint{font-size:13px;color:#4070C0;text-align:center;padding:4px 0;}
+
+/* 旅目標設定モーダル */
+.travel-goal-modal-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:700;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .28s;
+}
+.travel-goal-modal-overlay.show{opacity:1;pointer-events:all;}
+.travel-goal-modal{
+  background:var(--card);border-radius:28px 28px 0 0;
+  padding:24px 22px 36px;width:100%;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.2,.64,1);
+}
+.travel-goal-modal-overlay.show .travel-goal-modal{transform:translateY(0);}
+.tgm-title{font-size:18px;font-weight:700;color:var(--t);text-align:center;margin-bottom:6px;}
+.tgm-sub{font-size:13px;color:var(--t-m);text-align:center;margin-bottom:20px;line-height:1.7;}
+.tgm-input{
+  width:100%;padding:14px 16px;border-radius:12px;
+  border:1.5px solid var(--border);font-size:16px;
+  font-family:inherit;color:var(--t);background:var(--bg);
+  outline:none;box-sizing:border-box;margin-bottom:12px;
+  transition:border-color var(--trans-dur);
+}
+.tgm-input:focus{border-color:var(--g);}
+.tgm-presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.tgm-preset{
+  background:var(--g-p);color:var(--t-g);
+  border:none;border-radius:var(--r-f);
+  padding:7px 14px;font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.tgm-preset:active{opacity:.75;}
+.tgm-save{
+  width:100%;padding:16px;border-radius:var(--r-f);
+  background:linear-gradient(135deg,var(--g),var(--g-d));color:#fff;
+  font-size:16px;font-weight:700;font-family:inherit;border:none;cursor:pointer;
+  box-shadow:0 6px 20px rgba(114,185,148,.35);
+}
+
+/* ── 今日の整い度カード */
+.totonoi-card{
+  margin:0 16px 14px;background:var(--card);
+  border-radius:var(--r-l);padding:16px 18px;box-shadow:var(--sh1);
+}
+.totonoi-label{font-size:9px;font-weight:700;color:var(--t-g);letter-spacing:.1em;margin-bottom:10px;}
+.totonoi-score-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.totonoi-score-num{font-size:40px;font-weight:700;color:var(--g);line-height:1;}
+.totonoi-score-max{font-size:14px;color:var(--t-l);align-self:flex-end;margin-bottom:4px;}
+.totonoi-score-msg{font-size:13px;color:var(--t-m);line-height:1.7;flex:1;}
+.totonoi-items{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.totonoi-item{text-align:center;}
+.totonoi-item-em{font-size:20px;}
+.totonoi-item-label{font-size:9px;color:var(--t-l);margin-top:2px;}
+.totonoi-item-val{font-size:11px;font-weight:700;margin-top:1px;}
+.totonoi-item-val.done{color:var(--t-g);}
+.totonoi-item-val.partial{color:#C08000;}
+.totonoi-item-val.none{color:var(--t-l);}
+
+/* ── 睡眠記録カード */
+.sleep-record-card{
+  margin:0 16px 14px;background:linear-gradient(135deg,#F0EAF8,#EAE0F5);
+  border-radius:var(--r-l);padding:16px 18px;box-shadow:var(--sh1);
+}
+.slr-label{font-size:9px;font-weight:700;color:#7060A0;letter-spacing:.1em;margin-bottom:8px;}
+.slr-input-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.slr-time-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.slr-time-lbl{font-size:10px;color:#7060A0;font-weight:600;}
+.slr-time-input{
+  width:100%;padding:8px 6px;border:1.5px solid rgba(112,96,160,.25);
+  border-radius:10px;font-size:17px;font-weight:700;
+  font-family:inherit;color:var(--t);background:rgba(255,255,255,.7);
+  text-align:center;outline:none;
+}
+.slr-arrow{font-size:18px;color:#7060A0;flex-shrink:0;}
+.slr-result{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.6);border-radius:10px;padding:10px 12px;
+}
+.slr-hours{font-size:22px;font-weight:700;color:#5040A0;}
+.slr-vs-goal{font-size:12px;color:var(--t-m);line-height:1.6;}
+.slr-save-btn{
+  width:100%;margin-top:10px;padding:10px;
+  background:linear-gradient(135deg,#7060A0,#5040A0);color:#fff;
+  border:none;border-radius:var(--r-f);font-size:14px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+}
+.slr-week-row{display:flex;gap:4px;margin-top:10px;}
+.slr-day-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.slr-dot-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .4s ease;}
+.slr-dot-lbl{font-size:8px;color:var(--t-l);}
+
+/* ── 気分インサイト */
+.mood-insight-card{
+  margin:0 16px 14px;background:var(--card);
+  border-radius:var(--r-l);padding:16px 18px;box-shadow:var(--sh1);
+}
+.mood-insight-label{font-size:9px;font-weight:700;color:var(--t-g);letter-spacing:.1em;margin-bottom:8px;}
+.mood-week-row{display:flex;gap:5px;margin-bottom:10px;}
+.mood-day-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.mood-day-em{font-size:16px;line-height:1;}
+.mood-day-lbl{font-size:8px;color:var(--t-l);}
+.mood-insight-msg{font-size:13px;color:var(--t-m);line-height:1.8;border-left:3px solid var(--g-l);padding-left:10px;}
   </style>
 </head>
 <body>
@@ -2513,6 +2633,17 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       </div>
     </div>
 
+    <!-- 旅目標カード -->
+    <div id="travelGoalCard"></div>
+
+    <!-- 今日の整い度サマリー -->
+    <p class="sec-lbl">今日の整い度</p>
+    <div id="totonometerCard"></div>
+
+    <!-- 睡眠記録カード -->
+    <p class="sec-lbl">昨夜の睡眠</p>
+    <div id="sleepRecordCard"></div>
+
     <p class="sec-lbl">Habioから</p>
     <div class="habio-card mb14">
       <div class="habio-av">🌱</div>
@@ -2521,6 +2652,9 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         <div class="habio-msg" id="habitoMsg">水分を少し意識してみましょう。体は、正直です。</div>
       </div>
     </div>
+
+    <!-- 気分インサイト（7日分の記録後に表示） -->
+    <div id="moodInsightCard"></div>
 
     <p class="sec-lbl">体の声を聞いてみよう</p>
     <div class="mood-card mb14">
@@ -3814,6 +3948,25 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     </div>
   </div>
 
+  <!-- TRAVEL GOAL MODAL -->
+  <div class="travel-goal-modal-overlay" id="travelGoalModalOverlay" onclick="onTravelGoalOverlayClick(event)">
+    <div class="travel-goal-modal">
+      <div style="width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 18px;"></div>
+      <div class="tgm-title">✈️ 行きたい場所を教えてください</div>
+      <div class="tgm-sub">目標の旅先を設定すると、<br>毎日のモチベーションになります。</div>
+      <input type="text" class="tgm-input" id="travelGoalInput" placeholder="例：京都、沖縄、ヨーロッパ…" maxlength="20">
+      <div class="tgm-presets">
+        <button class="tgm-preset" onclick="setTravelPreset('京都')">🏯 京都</button>
+        <button class="tgm-preset" onclick="setTravelPreset('沖縄')">🌺 沖縄</button>
+        <button class="tgm-preset" onclick="setTravelPreset('北海道')">❄️ 北海道</button>
+        <button class="tgm-preset" onclick="setTravelPreset('ヨーロッパ')">🗼 ヨーロッパ</button>
+        <button class="tgm-preset" onclick="setTravelPreset('台湾')">🧋 台湾</button>
+        <button class="tgm-preset" onclick="setTravelPreset('屋久島')">🌲 屋久島</button>
+      </div>
+      <button class="tgm-save" onclick="saveTravelGoal()">この場所を目標にする ✈️</button>
+    </div>
+  </div>
+
   <!-- NOTIF EXPLAIN MODAL -->
   <div id="notifExplainOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:800;display:none;align-items:flex-end;justify-content:center;">
     <div id="notifExplainSheet" style="background:var(--card);border-radius:28px 28px 0 0;padding:28px 24px 36px;width:100%;max-width:390px;box-shadow:0 -8px 40px rgba(0,0,0,.15);">
@@ -4789,6 +4942,12 @@ function initHome(){
   const diff=Math.round((new Date()-new Date(start))/(1000*60*60*24))+1;
   const pmEl=document.getElementById('profileMeta');
   if(pmEl) pmEl.textContent='Habio を使いはじめて '+diff+'日目';
+
+  // 新機能カードを描画
+  renderTravelGoalCard();
+  renderTotonometerCard();
+  renderSleepRecordCard();
+  renderMoodInsight();
 }
 
 /* ── PERSONALIZED MESSAGE (今日のひとこと) ── */
@@ -5377,6 +5536,8 @@ function selectMood(btn){
   const replyEl=document.getElementById('moodReply');
   if(replyEl){replyEl.textContent=MOOD_REPLIES[mood]||'';replyEl.classList.add('show');}
   if(mood==='つかれた') checkQuietStrengthBadge();
+  renderTotonometerCard();
+  renderMoodInsight();
 }
 function restoreMood(){
   const hist=Store.get('mood_history',[]);
@@ -5417,6 +5578,8 @@ function logWin(em,title,note=''){
   renderWins();
   updateProgressRing();
   updateHabitProgress();
+  renderTotonometerCard();
+  renderTravelGoalCard();
   const currentStreak=calcStreak(wins);
   checkStreakMilestone(currentStreak);
   checkStreakBadges(currentStreak);
@@ -5988,6 +6151,277 @@ function enrichWeeklyWithPremium(){
     const el=document.getElementById('wkAdviceText');
     if(el) el.textContent=advice;
   }
+}
+
+/* ══════════════════════════════════════════
+   旅目標機能
+   ══════════════════════════════════════════ */
+function openTravelGoalModal(){
+  const overlay=document.getElementById('travelGoalModalOverlay');
+  if(!overlay) return;
+  const current=Store.get('travel_destination','');
+  const inp=document.getElementById('travelGoalInput');
+  if(inp) inp.value=current;
+  overlay.classList.add('show');
+}
+function onTravelGoalOverlayClick(e){
+  if(e.target===document.getElementById('travelGoalModalOverlay')) closeTravelGoalModal();
+}
+function closeTravelGoalModal(){
+  document.getElementById('travelGoalModalOverlay')?.classList.remove('show');
+}
+function setTravelPreset(v){
+  const inp=document.getElementById('travelGoalInput');
+  if(inp){ inp.value=v; inp.focus(); }
+}
+function saveTravelGoal(){
+  const val=(document.getElementById('travelGoalInput')?.value||'').trim();
+  if(!val){ showToast('行きたい場所を入力してください'); return; }
+  if(!Store.get('travel_start_date')) Store.set('travel_start_date',today());
+  Store.set('travel_destination',val);
+  closeTravelGoalModal();
+  renderTravelGoalCard();
+  showToast('旅の目標を設定しました ✈️ 一緒に整えていきましょう！');
+}
+
+function renderTravelGoalCard(){
+  const wrap=document.getElementById('travelGoalCard');
+  if(!wrap) return;
+  const dest=Store.get('travel_destination','');
+  if(!dest){
+    wrap.innerHTML=`<div class="travel-goal-card" onclick="openTravelGoalModal()" style="text-align:center;">
+      <div style="font-size:28px;margin-bottom:8px;">✈️</div>
+      <div class="tg-set-hint">行きたい場所を設定しよう</div>
+      <div style="font-size:11px;color:var(--t-l);margin-top:3px;">目標の旅先が毎日のモチベーションになります</div>
+    </div>`;
+    return;
+  }
+  const startDate=Store.get('travel_start_date',today());
+  const wins=Store.get('wins',[]);
+  const daysSinceStart=Math.max(1,Math.round((new Date(today())-new Date(startDate))/864e5));
+  const recentWins=wins.filter(w=>w.date>=startDate).length;
+  const habitScore=Math.min(100,Math.round(recentWins/Math.max(daysSinceStart*3,1)*100));
+  const DAY_LABELS=['日','月','火','水','木','金','土'];
+  const daysLeft=Math.max(0,90-daysSinceStart);
+
+  wrap.innerHTML=`<div class="travel-goal-card" onclick="openTravelGoalModal()">
+    <div class="tg-label">✈️ 旅の目標</div>
+    <div class="tg-destination">
+      <span>${dest}</span>
+      <span style="font-size:11px;font-weight:500;color:#6090D0;background:rgba(64,112,208,.1);padding:3px 8px;border-radius:8px;">編集 ›</span>
+    </div>
+    <div class="tg-progress-row">
+      <div class="tg-bar-bg"><div class="tg-bar-fg" id="tgBarFg" style="width:0%"></div></div>
+      <div class="tg-pct">${habitScore}%</div>
+    </div>
+    <div class="tg-days-left">目標開始から ${daysSinceStart}日目 · ${daysLeft>0?`あと${daysLeft}日で旅体力チェック`:'旅体力チェックの日です！'}</div>
+  </div>`;
+  setTimeout(()=>{
+    const bar=document.getElementById('tgBarFg');
+    if(bar) bar.style.width=habitScore+'%';
+  },80);
+}
+
+/* ══════════════════════════════════════════
+   今日の整い度サマリー
+   ══════════════════════════════════════════ */
+function calcTotonometerScore(){
+  const wins=Store.get('wins',[]);
+  const todayWins=wins.filter(w=>w.date===today());
+  const habitDefs=Store.get('habit_defs_cache',[]);
+  const totalHabits=Math.max(habitDefs.length||6,1);
+  const habitDone=Math.min(todayWins.length,totalHabits);
+  const habitPct=Math.round(habitDone/totalHabits*100);
+
+  const foodLogs=Store.get('food_log_'+today(),[]);
+  const meals=[...new Set(foodLogs.map(l=>l.mealTime))];
+  const foodScore=Math.round(meals.length/3*100);
+
+  const sleepLog=Store.get('sleep_log',{});
+  const todaySleep=sleepLog[today()];
+  const sleepGoal=Store.get('sleep_goal',7);
+  const sleepScore=todaySleep?Math.min(100,Math.round(todaySleep/sleepGoal*100)):0;
+
+  const moodHist=Store.get('mood_history',[]);
+  const todayMood=moodHist.find(m=>m.date===today());
+  const MOOD_SCORE={'つかれた':20,'まあまあ':50,'ふつう':70,'いい感じ':90,'とても良い':100};
+  const moodScore=todayMood?MOOD_SCORE[todayMood.mood]||60:0;
+
+  const total=Math.round((habitPct*0.4)+(foodScore*0.25)+(sleepScore*0.2)+(moodScore*0.15));
+  return {total,habit:{done:habitDone,total:totalHabits,pct:habitPct},food:{meals:meals.length,pct:foodScore},sleep:{hours:todaySleep,pct:sleepScore},mood:{val:todayMood?.mood||null,pct:moodScore}};
+}
+
+function renderTotonometerCard(){
+  const wrap=document.getElementById('totonometerCard');
+  if(!wrap) return;
+  const sc=calcTotonometerScore();
+  const MOOD_EM={'つかれた':'😴','まあまあ':'😐','ふつう':'🙂','いい感じ':'😊','とても良い':'✨'};
+  const msgs=[
+    {min:80,msg:'とても整っています。この調子で今日を仕上げましょう ✨'},
+    {min:60,msg:'いい感じに整えられています。もう少しで完成です 🌱'},
+    {min:40,msg:'少しずつ整えていきましょう。できることから1つ。'},
+    {min:0,msg:'今日も始められました。小さな一歩が積み重なります。'},
+  ];
+  const msgObj=msgs.find(m=>sc.total>=m.min)||msgs[msgs.length-1];
+
+  function item(em,label,val,cls){
+    return `<div class="totonoi-item">
+      <div class="totonoi-item-em">${em}</div>
+      <div class="totonoi-item-label">${label}</div>
+      <div class="totonoi-item-val ${cls}">${val}</div>
+    </div>`;
+  }
+  const habitCls=sc.habit.pct>=80?'done':sc.habit.pct>=40?'partial':'none';
+  const foodCls=sc.food.meals>=2?'done':sc.food.meals>=1?'partial':'none';
+  const sleepCls=sc.sleep.hours?sc.sleep.pct>=90?'done':sc.sleep.pct>=70?'partial':'none':'none';
+  const moodCls=sc.mood.val?sc.mood.pct>=70?'done':sc.mood.pct>=40?'partial':'none':'none';
+
+  wrap.innerHTML=`<div class="totonoi-card">
+    <div class="totonoi-label">TODAY'S TOTONOI SCORE</div>
+    <div class="totonoi-score-row">
+      <div class="totonoi-score-num">${sc.total}</div>
+      <div class="totonoi-score-max">/ 100</div>
+      <div class="totonoi-score-msg">${msgObj.msg}</div>
+    </div>
+    <div class="totonoi-items">
+      ${item('✅','習慣',sc.habit.done+'/'+sc.habit.total,habitCls)}
+      ${item('🥗','食事',sc.food.meals+'/3食',foodCls)}
+      ${item('🌙','睡眠',sc.sleep.hours?sc.sleep.hours+'h':'未記録',sleepCls)}
+      ${item(sc.mood.val?MOOD_EM[sc.mood.val]||'😐':'—','気分',sc.mood.val||'未記録',moodCls)}
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   睡眠記録機能
+   ══════════════════════════════════════════ */
+function saveSleepRecord(){
+  const bedtime=document.getElementById('slrBedtime')?.value;
+  const wakeup=document.getElementById('slrWakeup')?.value;
+  if(!bedtime||!wakeup){ showToast('就寝・起床時間を入力してください'); return; }
+  const [bh,bm]=bedtime.split(':').map(Number);
+  const [wh,wm]=wakeup.split(':').map(Number);
+  let mins=(wh*60+wm)-(bh*60+bm);
+  if(mins<0) mins+=1440;
+  const hours=Math.round(mins/60*10)/10;
+  const log=Store.get('sleep_log',{});
+  log[today()]={bedtime,wakeup,hours};
+  Store.set('sleep_log',log);
+  const earned=addPoints(1,'sleep_record','睡眠記録ポイント');
+  syncPointsToServer(earned,'sleep_record','睡眠記録ポイント','sleep_record_'+today());
+  showToast(`睡眠 ${hours}時間 を記録しました 🌙 +${earned}pt`);
+  renderSleepRecordCard();
+  renderTotonometerCard();
+}
+
+function renderSleepRecordCard(){
+  const wrap=document.getElementById('sleepRecordCard');
+  if(!wrap) return;
+  const log=Store.get('sleep_log',{});
+  const todayEntry=log[today()]||null;
+  const sleepGoal=Store.get('sleep_goal',7);
+  const DAY_LABELS=['日','月','火','水','木','金','土'];
+
+  // 直近7日バー
+  const bars=[];
+  for(let i=6;i>=0;i--){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    const v=log[d];
+    const h=v?Math.round(v.hours/10*48+4):4;
+    const dow=new Date(d+'T00:00:00').getDay();
+    const isToday=d===today();
+    const color=v?(v.hours>=sleepGoal?'#7060A0':'#B090D0'):'rgba(0,0,0,.08)';
+    bars.push(`<div class="slr-day-dot">
+      <div class="slr-dot-bar" style="height:${h}px;background:${color};${isToday?'border:2px solid #5040A0;':''}"></div>
+      <div class="slr-dot-lbl">${DAY_LABELS[dow]}</div>
+    </div>`);
+  }
+
+  let resultHtml='';
+  if(todayEntry){
+    const diff=Math.round((todayEntry.hours-sleepGoal)*10)/10;
+    const diffStr=diff>0?`+${diff}h 目標達成 ✓`:diff<0?`${diff}h 少し足りなかった`:'ぴったり達成 ✓';
+    const diffColor=diff>=0?'#5040A0':'#C07070';
+    resultHtml=`<div class="slr-result">
+      <div class="slr-hours">${todayEntry.hours}h</div>
+      <div class="slr-vs-goal">目標 ${sleepGoal}h に対して<br><strong style="color:${diffColor}">${diffStr}</strong></div>
+    </div>`;
+  }
+
+  const now=new Date();
+  const defaultBed=pad(22)+':'+pad(0);
+  const defaultWake=pad(7)+':'+pad(0);
+
+  wrap.innerHTML=`<div class="sleep-record-card">
+    <div class="slr-label">🌙 睡眠の記録</div>
+    <div class="slr-input-row">
+      <div class="slr-time-wrap">
+        <div class="slr-time-lbl">就寝</div>
+        <input type="time" class="slr-time-input" id="slrBedtime" value="${todayEntry?.bedtime||defaultBed}">
+      </div>
+      <div class="slr-arrow">→</div>
+      <div class="slr-time-wrap">
+        <div class="slr-time-lbl">起床</div>
+        <input type="time" class="slr-time-input" id="slrWakeup" value="${todayEntry?.wakeup||defaultWake}">
+      </div>
+    </div>
+    ${resultHtml}
+    <button class="slr-save-btn" onclick="saveSleepRecord()">${todayEntry?'記録を更新する':'睡眠を記録する (+1pt)'}</button>
+    <div class="slr-week-row">${bars.join('')}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   気分インサイト（7日分の記録後に表示）
+   ══════════════════════════════════════════ */
+function renderMoodInsight(){
+  const wrap=document.getElementById('moodInsightCard');
+  if(!wrap) return;
+  const hist=Store.get('mood_history',[]);
+  if(hist.length<5){ wrap.innerHTML=''; return; }
+
+  const MOOD_EM={'つかれた':'😴','まあまあ':'😐','ふつう':'🙂','いい感じ':'😊','とても良い':'✨'};
+  const MOOD_SCORE={'つかれた':1,'まあまあ':2,'ふつう':3,'いい感じ':4,'とても良い':5};
+  const DAY_LABELS=['日','月','火','水','木','金','土'];
+
+  // 直近7日の気分
+  const week=[];
+  for(let i=6;i>=0;i--){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    const entry=hist.find(m=>m.date===d);
+    const dow=new Date(d+'T00:00:00').getDay();
+    week.push({d,entry,dow});
+  }
+  const dots=week.map(({d,entry,dow})=>`<div class="mood-day-item">
+    <div class="mood-day-em">${entry?MOOD_EM[entry.mood]||'😐':'—'}</div>
+    <div class="mood-day-lbl">${DAY_LABELS[dow]}</div>
+  </div>`).join('');
+
+  // インサイト生成
+  const scored=hist.slice(-14).map(m=>({...m,score:MOOD_SCORE[m.mood]||3,dow:new Date(m.date+'T00:00:00').getDay()}));
+  const dowAvg=Array.from({length:7},(_,i)=>{
+    const vs=scored.filter(m=>m.dow===i).map(m=>m.score);
+    return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+  });
+  const recent5=hist.slice(-5).map(m=>MOOD_SCORE[m.mood]||3);
+  const avgRecent=recent5.reduce((a,b)=>a+b,0)/recent5.length;
+  const bestDow=dowAvg.findIndex(v=>v===Math.max(...dowAvg.filter(Boolean)));
+  const worstDow=dowAvg.findIndex(v=>v===Math.min(...dowAvg.filter(Boolean)));
+
+  let insight='';
+  if(avgRecent>=4) insight=`最近5日間、体の調子がとても良いですね 🌿 この調子が続いています。`;
+  else if(avgRecent<=2) insight=`最近少し疲れ気味かもしれません。睡眠と水分を特に意識してみましょう。`;
+  else if(bestDow>=0&&worstDow>=0&&bestDow!==worstDow){
+    insight=`${DAY_LABELS[bestDow]}曜日に調子が良くなりやすいパターンがあります。${DAY_LABELS[worstDow]}曜は少し休み多めにしてみると良いかも。`;
+  } else {
+    insight=`気分の記録が続いています。続けると、あなたのパターンが見えてきます。`;
+  }
+
+  wrap.innerHTML=`<div class="mood-insight-card">
+    <div class="mood-insight-label">気分のパターン（直近7日）</div>
+    <div class="mood-week-row">${dots}</div>
+    <div class="mood-insight-msg">${insight}</div>
+  </div>`;
 }
 
 /* ── CHAT ── */
