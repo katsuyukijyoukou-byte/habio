@@ -11826,6 +11826,19 @@ if (_isIOS && !_isStandalone) {
 registerServiceWorker();
 </script>
 
+<!-- Google翻訳ウィジェット -->
+<div id="google_translate_element" style="position:fixed;bottom:72px;right:16px;z-index:9999;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:4px 8px;"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'ja',
+    includedLanguages: 'en,zh-CN,ko,th',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+  }, 'google_translate_element');
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <!-- Cloudflare Web Analytics: Pages ダッシュボードで自動注入（手動scriptタグ不要） -->
 </body>
 </html>
