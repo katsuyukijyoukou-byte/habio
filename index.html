@@ -560,6 +560,50 @@ header{
 .wins-msg-s{font-size:14px;color:var(--t-m);margin-top:10px;}
 
 /* ================================================================
+   STATS
+   ================================================================ */
+.stats-sec{background:var(--beige);}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin:40px 0 32px;
+}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr;gap:12px;}}
+.stat-c{
+  background:var(--card);border-radius:var(--r-m);
+  padding:24px 16px;box-shadow:var(--sh-soft);text-align:center;
+}
+.stat-num{
+  font-size:42px;font-weight:700;color:var(--g);line-height:1.1;
+  margin-bottom:8px;
+}
+.stat-unit{font-size:20px;}
+.stat-label{font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px;}
+.stat-sub{font-size:12px;color:var(--t-m);line-height:1.7;}
+.stats-mock{max-width:420px;margin:0 auto;}
+.stats-mock-card{
+  background:var(--card);border-radius:var(--r-l);
+  padding:20px 22px;box-shadow:var(--sh-mid);
+}
+.stats-mock-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.stats-mock-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--g-p);display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0;
+}
+.stats-mock-name{font-size:13px;font-weight:700;color:var(--t);}
+.stats-mock-date{font-size:11px;color:var(--t-l);}
+.stats-mock-msg{
+  font-size:14px;color:var(--t-m);line-height:1.9;
+  border-left:3px solid var(--g-l);padding-left:12px;margin-bottom:14px;
+}
+.stats-mock-badges{display:flex;flex-wrap:wrap;gap:8px;}
+.stats-mock-badge{
+  background:var(--g-p);color:var(--t-g);
+  font-size:12px;font-weight:600;
+  padding:5px 12px;border-radius:var(--r-f);
+}
+
+/* ================================================================
    FEATURES
    ================================================================ */
 .feats{background:var(--beige);}
@@ -1621,6 +1665,55 @@ footer{
 
 
 <!-- ============================================================
+  STATS（数字で見る変化）
+  ============================================================ -->
+<section class="sec stats-sec ct">
+  <div class="ww">
+    <div class="ct rv">
+      <div class="tag">続けた人の変化</div>
+      <h2 class="stitle">数字が、続けた事実を<br>教えてくれます。</h2>
+      <p class="ssub">ユーザーの平均的な記録から。小さな習慣が積み上がっています。</p>
+    </div>
+    <div class="stats-grid rv">
+      <div class="stat-c">
+        <div class="stat-num">21<span class="stat-unit">日</span></div>
+        <div class="stat-label">平均継続日数</div>
+        <div class="stat-sub">3日坊主だった方が<br>3週間続いた平均</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-num">87<span class="stat-unit">%</span></div>
+        <div class="stat-label">習慣達成率</div>
+        <div class="stat-sub">「今日1つだけ」から<br>始めた方の達成率</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-num">100<span class="stat-unit">pt</span></div>
+        <div class="stat-label">初月で貯まるポイント</div>
+        <div class="stat-sub">毎日ログインだけでも<br>1ヶ月で達成可能</div>
+      </div>
+    </div>
+    <div class="stats-mock rv">
+      <div class="stats-mock-card">
+        <div class="stats-mock-top">
+          <div class="stats-mock-avatar">🌱</div>
+          <div>
+            <div class="stats-mock-name">Habio より</div>
+            <div class="stats-mock-date">21日目のおめでとう</div>
+          </div>
+        </div>
+        <div class="stats-mock-msg">「21日間、続きましたね。毎日少しずつ整えてきた証拠です。<br>あなたのペースで、ここまで来ました。」</div>
+        <div class="stats-mock-badges">
+          <span class="stats-mock-badge">🌱 はじめの一歩</span>
+          <span class="stats-mock-badge">🚶 毎日の一歩</span>
+          <span class="stats-mock-badge">🔥 21日連続</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--t-l);text-align:center;margin-top:8px;">※ 表示はイメージです。個人差があります。</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
   FEATURES
   ============================================================ -->
 <section class="sec feats ct" id="features">
@@ -2263,6 +2356,42 @@ function googleTranslateElementInit() {
 }
 </script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- EXIT INTENT MODAL -->
+<div id="exitModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:24px;padding:32px 28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center;position:relative;">
+    <button onclick="closeExitModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;line-height:1;">×</button>
+    <div style="font-size:40px;margin-bottom:14px;">🌱</div>
+    <div style="font-size:20px;font-weight:700;color:#3A3A3A;line-height:1.5;margin-bottom:10px;">まず1日だけ、<br>試してみませんか？</div>
+    <div style="font-size:14px;color:#686868;line-height:1.9;margin-bottom:24px;">クレジットカード不要・無料ではじめられます。<br>「また行きたい場所」に向けて、今日から。</div>
+    <a href="app.html" style="display:block;padding:16px;border-radius:999px;background:linear-gradient(135deg,#72B994,#5AA47E);color:#fff;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(114,185,148,.4);margin-bottom:12px;">無料ではじめる →</a>
+    <div onclick="closeExitModal()" style="font-size:13px;color:#aaa;cursor:pointer;padding:6px 0;">閉じる</div>
+  </div>
+</div>
+<script>
+(function(){
+  let shown = false;
+  function closeExitModal(){ document.getElementById('exitModal').style.display='none'; }
+  window.closeExitModal = closeExitModal;
+  // PC: マウスが画面上部を離れたとき
+  document.addEventListener('mouseleave', function(e){
+    if(shown) return;
+    if(e.clientY <= 10){
+      shown = true;
+      document.getElementById('exitModal').style.display='flex';
+    }
+  });
+  // スマホ: スクロールが途中で止まった場合（30秒後に1回だけ）
+  setTimeout(function(){
+    if(shown) return;
+    const visited = sessionStorage.getItem('habio_exit_shown');
+    if(visited) return;
+    sessionStorage.setItem('habio_exit_shown','1');
+    shown = true;
+    document.getElementById('exitModal').style.display='flex';
+  }, 30000);
+})();
+</script>
 
 <!-- Cloudflare Web Analytics: Pages ダッシュボードで自動注入（手動scriptタグ不要） -->
 </body>

@@ -2604,6 +2604,17 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="habit-enc-t" id="habitEncT">いい調子です。</div>
       <div class="habit-enc-s" id="habitEncS">続けようとしていること、それ自体が前進です。</div>
     </div>
+    <!-- プレミアム訴求バナー（非プレミアムのみ表示） -->
+    <div id="habitsPremBanner" style="display:none;margin:0 16px 4px;background:linear-gradient(135deg,#FFF8EC,#FEF3DB);border:1.5px solid #F0D080;border-radius:16px;padding:14px 16px;cursor:pointer;" onclick="showUpgradeModal()">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">💎</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:#8A6000;margin-bottom:2px;">プレミアムにアップグレード</div>
+          <div style="font-size:11.5px;color:#A07820;line-height:1.6;">習慣タスクのポイントが <strong>2倍</strong> に。今なら7日間無料。</div>
+        </div>
+        <div style="font-size:13px;color:#A07820;font-weight:700;">›</div>
+      </div>
+    </div>
     <div style="height:24px;"></div>
   </div>
 
@@ -3215,6 +3226,30 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
           <div class="onb-em">🌱</div>
           <div class="onb-title">Habio へようこそ</div>
           <div class="onb-sub">「頑張るためのアプリ」ではありません。<br>あなたの隣で、ただそっと寄り添います。</div>
+          <!-- 機能紹介3枚カード -->
+          <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-bottom:18px;">
+            <div style="background:var(--g-p);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+              <div style="font-size:28px;flex-shrink:0;">🤖</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:3px;">AIが毎日そっと声かけ</div>
+                <div style="font-size:12px;color:var(--t-m);line-height:1.6;">責めない・急かさない。あなたのペースに合わせたアドバイス。</div>
+              </div>
+            </div>
+            <div style="background:var(--blue-p);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+              <div style="font-size:28px;flex-shrink:0;">🏅</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:3px;">続けるとポイント＆バッジ</div>
+                <div style="font-size:12px;color:var(--t-m);line-height:1.6;">小さな習慣を記録するたびに整いポイントが貯まります。</div>
+              </div>
+            </div>
+            <div style="background:var(--beige-l);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+              <div style="font-size:28px;flex-shrink:0;">✈️</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:3px;">旅体力をつくる</div>
+                <div style="font-size:12px;color:var(--t-m);line-height:1.6;">「また行きたい場所へ行ける体」を目標に、無理しない習慣を。</div>
+              </div>
+            </div>
+          </div>
           <div class="onb-name-wrap">
             <input type="text" class="onb-name-input" id="onbNameInput"
               placeholder="お名前（任意・後で変更できます）"
@@ -3629,6 +3664,35 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="comeback-title" id="comebackTitle">おかえりなさい。<br>また一緒に始めましょう。</div>
       <div class="comeback-msg" id="comebackMsg">少し間が空いても大丈夫。<br>また今日から、少しずつ整えていきましょう。</div>
       <button class="comeback-btn" onclick="closeComebackModal()">ありがとう、始めます 🌱</button>
+    </div>
+  </div>
+
+  <!-- NOTIF EXPLAIN MODAL -->
+  <div id="notifExplainOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:800;display:none;align-items:flex-end;justify-content:center;">
+    <div id="notifExplainSheet" style="background:var(--card);border-radius:28px 28px 0 0;padding:28px 24px 36px;width:100%;max-width:390px;box-shadow:0 -8px 40px rgba(0,0,0,.15);">
+      <div style="width:36px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 20px;"></div>
+      <div style="font-size:32px;text-align:center;margin-bottom:12px;">🔔</div>
+      <div style="font-size:18px;font-weight:700;color:var(--t);text-align:center;margin-bottom:10px;">通知を許可してください</div>
+      <div style="font-size:13.5px;color:var(--t-m);line-height:1.9;text-align:center;margin-bottom:20px;">
+        Habio は朝・昼・夜に<strong style="color:var(--t);">そっと声をかけます</strong>。<br>
+        通知を許可すると、習慣を忘れにくくなり<br>継続率がぐっと上がります。
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:12px;background:var(--g-p);border-radius:12px;padding:12px 14px;">
+          <span style="font-size:20px;">🌅</span>
+          <div style="font-size:12.5px;color:var(--t-m);">朝8時 — 今日の習慣の準備</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--blue-p);border-radius:12px;padding:12px 14px;">
+          <span style="font-size:20px;">☀️</span>
+          <div style="font-size:12.5px;color:var(--t-m);">昼12時 — 今日の進み具合チェック</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--beige-l);border-radius:12px;padding:12px 14px;">
+          <span style="font-size:20px;">🌙</span>
+          <div style="font-size:12.5px;color:var(--t-m);">夜20時 — 今日の振り返り</div>
+        </div>
+      </div>
+      <button id="notifExplainOkBtn" style="width:100%;padding:16px;border-radius:999px;background:linear-gradient(135deg,var(--g),var(--g-d));color:#fff;font-size:16px;font-weight:700;border:none;font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(114,185,148,.35);">通知を許可する</button>
+      <div onclick="closeNotifExplainModal(false)" style="text-align:center;font-size:13px;color:var(--t-l);padding:14px 0 0;cursor:pointer;">今はしない</div>
     </div>
   </div>
 
@@ -6665,6 +6729,9 @@ function renderPremiumState(){
   if(bdayEl && !bdayEl.value) bdayEl.value = Store.get('user_birth_date','');
   refreshPeriodUI();
   renderAdminPanel('adminPanelSettings');
+  // 習慣タブのプレミアム訴求バナー
+  const habitsPremBanner = document.getElementById('habitsPremBanner');
+  if (habitsPremBanner) habitsPremBanner.style.display = isPrem ? 'none' : 'block';
 }
 
 /* ── PREMIUM FEATURE MODAL ── */
@@ -9111,9 +9178,15 @@ function checkStreakBadges(streak){
 function showBadgeEarnToast(text){
   const el=document.getElementById('badgeEarnToast');
   if(!el) return;
-  el.textContent='バッジ解放 🌿「'+text+'」';
+  el.innerHTML='バッジ解放 🌿「'+text+'」 <span onclick="shareBadgeToX(\''+text+'\')" style="margin-left:8px;background:#000;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent;">𝕏 シェア</span>';
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),3200);
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+
+function shareBadgeToX(badgeName){
+  const name=Store.get('user_name','')||'あなた';
+  const text=encodeURIComponent('Habio でバッジ「'+badgeName+'」を解放しました🌿\nまた行きたい場所へ、少しずつ整えています。\n#Habio #健康習慣');
+  window.open('https://twitter.com/intent/tweet?text='+text,'_blank','noopener');
 }
 
 function renderPointsCard(){
@@ -11507,8 +11580,10 @@ async function handleNotifToggle(key, enabled) {
     return;
   }
 
-  // 通知許可リクエスト
-  const perm = await Notification.requestPermission();
+  // 通知許可リクエスト（説明モーダルを先に表示）
+  const perm = await new Promise(resolve => {
+    showNotifExplainModal(() => Notification.requestPermission().then(resolve));
+  });
   if (perm !== 'granted') {
     showToast('通知を許可すると声かけを受け取れます');
     revertNotifToggle(key);
@@ -11530,6 +11605,27 @@ async function handleNotifToggle(key, enabled) {
   }
 
   renderNotifStatus();
+}
+
+let _notifExplainCb = null;
+function showNotifExplainModal(cb) {
+  _notifExplainCb = cb;
+  const el = document.getElementById('notifExplainOverlay');
+  if (!el) { cb(); return; }
+  el.style.display = 'flex';
+  document.getElementById('notifExplainOkBtn').onclick = () => closeNotifExplainModal(true);
+}
+function closeNotifExplainModal(proceed) {
+  const el = document.getElementById('notifExplainOverlay');
+  if (el) el.style.display = 'none';
+  if (proceed && _notifExplainCb) _notifExplainCb();
+  else if (!proceed) {
+    // キャンセル時は 'denied' と同等に扱う
+    if (_notifExplainCb) _notifExplainCb = null;
+    ['notif','sleep'].forEach(k => revertNotifToggle(k));
+    renderNotifStatus();
+  }
+  _notifExplainCb = null;
 }
 
 function revertNotifToggle(key) {
