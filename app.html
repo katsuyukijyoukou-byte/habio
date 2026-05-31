@@ -3742,59 +3742,95 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <div class="upgrade-modal" style="position:relative;">
         <button class="modal-close-btn" onclick="closeUpgradeModal(null,true)">×</button>
         <div class="modal-handle"></div>
-        <div class="modal-hero">
-          <div class="modal-em">💎</div>
-          <div class="modal-title">プレミアムプランで<br>もっと寄り添います</div>
-          <div class="modal-sub">7日間、完全無料でお試しいただけます。<br>気に入らなければいつでもキャンセルOK。</div>
+
+        <!-- ヘッダー -->
+        <div style="padding:4px 22px 16px;text-align:center;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#F5E070,#E8A030);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:999px;letter-spacing:.08em;margin-bottom:10px;">💎 PREMIUM</div>
+          <div style="font-size:20px;font-weight:700;color:var(--t);line-height:1.5;margin-bottom:6px;">続けるほど、<br>もっと深く寄り添います。</div>
+          <div style="font-size:13px;color:var(--t-m);line-height:1.7;">1日あたり約33円。旅に行ける体に近づく投資。</div>
         </div>
-        <div class="modal-features">
-          <div class="modal-feat">
-            <div class="modal-feat-em">🤖</div>
-            <div>
-              <div class="modal-feat-name">パーソナライズAIコーチング</div>
-              <div class="modal-feat-desc">あなたの習慣履歴・気分・生活リズムを学習して、より的確なアドバイスをお届けします。</div>
+
+        <!-- Before / After 比較 -->
+        <div style="margin:0 16px 16px;background:var(--bg);border-radius:16px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;">
+            <div style="padding:12px 14px;border-right:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;color:var(--t-l);letter-spacing:.08em;margin-bottom:8px;">無料プラン</div>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--t-m);">
+                <div>😐 AIチャット <strong style="color:var(--t);">5回/日</strong></div>
+                <div>😐 ポイント <strong style="color:var(--t);">×1</strong></div>
+                <div>😐 習慣グラフ <strong style="color:var(--t);">7日間</strong></div>
+                <div>😐 声かけスタイル <strong style="color:var(--t);">1種類</strong></div>
+                <div style="opacity:.4;">── 週次レポートなし</div>
+                <div style="opacity:.4;">── 目標達成予測なし</div>
+              </div>
             </div>
-          </div>
-          <div class="modal-feat">
-            <div class="modal-feat-em">📊</div>
-            <div>
-              <div class="modal-feat-name">習慣ふりかえりレポート</div>
-              <div class="modal-feat-desc">週次・月次で継続状況を可視化。どの習慣が定着しているか一目でわかります。</div>
-            </div>
-          </div>
-          <div class="modal-feat">
-            <div class="modal-feat-em">🔔</div>
-            <div>
-              <div class="modal-feat-name">インテリジェント声かけ</div>
-              <div class="modal-feat-desc">挫折しそうなタイミングを先読みして、ベストなタイミングで声をかけます。</div>
-            </div>
-          </div>
-          <div class="modal-feat">
-            <div class="modal-feat-em">🥗</div>
-            <div>
-              <div class="modal-feat-name">詳細な食事・栄養アドバイス</div>
-              <div class="modal-feat-desc">食事記録をもとに、あなたに合ったより具体的な食事の提案ができるようになります。</div>
+            <div style="padding:12px 14px;background:linear-gradient(135deg,#F0FBF5,#E8F8EE);">
+              <div style="font-size:10px;font-weight:700;color:var(--t-g);letter-spacing:.08em;margin-bottom:8px;">💎 プレミアム</div>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--t-m);">
+                <div>✨ AIチャット <strong style="color:var(--t-g);">無制限</strong></div>
+                <div>✨ ポイント <strong style="color:var(--t-g);">×2倍</strong></div>
+                <div>✨ 習慣グラフ <strong style="color:var(--t-g);">30日間</strong></div>
+                <div>✨ 声かけスタイル <strong style="color:var(--t-g);">5種類</strong></div>
+                <div>✨ <strong style="color:var(--t-g);">週次レポート</strong></div>
+                <div>✨ <strong style="color:var(--t-g);">目標達成予測</strong></div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="modal-price">
-          <span class="modal-price-num">¥980</span><span class="modal-price-per"> / 月</span>
-          <div><span class="modal-price-trial">🎁 7日間は完全無料</span></div>
+
+        <!-- 4大特典（感情訴求） -->
+        <div style="margin:0 16px 16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="background:var(--g-p);border-radius:14px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:22px;flex-shrink:0;">💬</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:2px;">AIと何度でも話せる</div>
+              <div style="font-size:11.5px;color:var(--t-m);line-height:1.6;">「今日しんどい」「なんか続かない」気になったときに制限なく話せます。</div>
+            </div>
+          </div>
+          <div style="background:var(--blue-p);border-radius:14px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:22px;flex-shrink:0;">📊</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:2px;">毎週「先週の自分」がわかる</div>
+              <div style="font-size:11.5px;color:var(--t-m);line-height:1.6;">週次レポートで「何曜日に崩れやすいか」「どの習慣が定着したか」が一目瞭然。</div>
+            </div>
+          </div>
+          <div style="background:var(--beige-l);border-radius:14px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:22px;flex-shrink:0;">🎯</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:2px;">目標達成まであと何日？</div>
+              <div style="font-size:11.5px;color:var(--t-m);line-height:1.6;">今のペースなら「あと○日で旅に行ける体になれます」と予測して表示します。</div>
+            </div>
+          </div>
+          <div style="background:#FFF5F5;border-radius:14px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:22px;flex-shrink:0;">🌿</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:2px;">ポイントが2倍・バッジが早く貯まる</div>
+              <div style="font-size:11.5px;color:var(--t-m);line-height:1.6;">同じ習慣でも得られる達成感が2倍。続けるモチベーションが上がります。</div>
+            </div>
+          </div>
         </div>
-        <div style="padding:0 20px 8px;">
+
+        <!-- 価格 -->
+        <div style="margin:0 16px 12px;background:linear-gradient(135deg,#FFFBF0,#FFF5E0);border:1.5px solid #F0D080;border-radius:14px;padding:14px 16px;text-align:center;">
+          <div style="font-size:11px;color:#A07820;font-weight:700;letter-spacing:.08em;margin-bottom:6px;">🎁 7日間は完全無料</div>
+          <div style="font-size:28px;font-weight:700;color:var(--t);"><span style="font-size:16px;">¥</span>980<span style="font-size:14px;color:var(--t-m);font-weight:400;"> / 月</span></div>
+          <div style="font-size:11px;color:var(--t-l);margin-top:4px;">1日あたり約33円 · クレジットカード不要</div>
+        </div>
+
+        <!-- メール入力 -->
+        <div style="padding:0 16px 8px;">
           <input id="upgradeEmail" type="email" placeholder="メールアドレスを入力"
             style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd;font-size:15px;font-family:inherit;outline:none;box-sizing:border-box;"
             autocomplete="email" inputmode="email">
           <div id="upgradeEmailErr" style="color:#e05;font-size:12px;margin-top:4px;min-height:16px;"></div>
         </div>
         <div class="modal-cta-wrap">
-          <button class="modal-cta" id="upgradeCtaBtn" onclick="handleUpgradeCta()">7日間、無料で試してみる</button>
+          <button class="modal-cta" id="upgradeCtaBtn" onclick="handleUpgradeCta()">7日間、無料で試してみる →</button>
         </div>
-        <div class="modal-foot">
-          クレジットカード不要・いつでも解約可能<br>
-          ※ 解約後も無料プランでご利用いただけます
+        <div style="text-align:center;font-size:11.5px;color:var(--t-l);padding:10px 20px 20px;line-height:1.8;">
+          いつでも解約可能 · 解約後も無料プランで利用できます<br>
+          ※ 解約はアプリ内設定から可能です
         </div>
-        <div style="height:20px;"></div>
       </div>
     </div>
   </div>
@@ -5687,13 +5723,13 @@ function renderChatLimit(){
 
   if(remaining<=0){
     banner.style.display='block';
-    if(limitText) limitText.innerHTML='今日はここまでです🌱<br>プレミアム会員は無制限で利用できます。';
+    if(limitText) limitText.innerHTML=`今日の無料チャットは終了です 🌱<br><span style="font-size:11px;color:var(--t-l);">プレミアムなら <strong style="color:var(--t-g);">何度でも</strong> 話せます · 1日33円</span>`;
     if(inp){ inp.disabled=true; inp.placeholder='プレミアムで無制限に話せます'; }
     if(sendBtn) sendBtn.disabled=true;
   } else {
     if (remaining <= 3) {
       banner.style.display='block';
-      if(limitText) limitText.textContent=`今日はあと${remaining}回お話しできます`;
+      if(limitText) limitText.innerHTML=`今日はあと<strong>${remaining}回</strong>お話しできます<span style="margin-left:8px;font-size:11px;color:var(--t-l);">プレミアムは無制限</span>`;
     } else {
       banner.style.display='none';
     }

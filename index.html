@@ -770,6 +770,19 @@ header{
 
 .p-foot{font-size:12px;color:var(--t-l);text-align:center;margin-top:22px;line-height:1.9;}
 
+/* 比較テーブル */
+.p-compare{margin:32px 0 0;overflow-x:auto;}
+.p-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.p-tbl thead th{padding:10px 12px;font-weight:700;font-size:12px;letter-spacing:.04em;}
+.p-tbl-feat{text-align:left;color:var(--t-l);}
+.p-tbl-free{text-align:center;color:var(--t-m);background:var(--bg);border-radius:12px 12px 0 0;}
+.p-tbl-prem{text-align:center;color:var(--t-g);background:var(--g-p);border-radius:12px 12px 0 0;}
+.p-tbl tbody tr:nth-child(even){background:rgba(0,0,0,.02);}
+.p-tbl tbody td{padding:10px 12px;color:var(--t-m);text-align:center;border-top:1px solid var(--beige-d);}
+.p-tbl tbody td:first-child{text-align:left;color:var(--t);font-weight:500;}
+.p-tbl tbody td.hi{color:var(--t-g);font-weight:700;background:var(--g-p);}
+.p-tbl tbody td.no{color:var(--t-l);}
+
 /* ================================================================
    APP PREVIEW TEASER
    ================================================================ */
@@ -2008,8 +2021,30 @@ footer{
   <div class="ww">
     <div class="rv">
       <div class="tag">料金プラン</div>
-      <h2 class="stitle">まずは無料で、<br>気軽に試してください。</h2>
-      <p class="ssub">プランはいつでも変えられます。合わなければやめていい。</p>
+      <h2 class="stitle">1日33円で、<br><span class="ac">旅に行ける体</span>に近づく。</h2>
+      <p class="ssub">まずは無料で始めて、続けたくなったらプレミアムへ。<br>いつでも解約でき、解約後も無料で使い続けられます。</p>
+    </div>
+
+    <!-- 比較テーブル -->
+    <div class="p-compare rv">
+      <table class="p-tbl">
+        <thead>
+          <tr>
+            <th class="p-tbl-feat"></th>
+            <th class="p-tbl-free">無料</th>
+            <th class="p-tbl-prem">💎 プレミアム</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>AIチャット</td><td>5回/日</td><td class="hi">無制限</td></tr>
+          <tr><td>整いポイント</td><td>×1</td><td class="hi">×2倍</td></tr>
+          <tr><td>習慣グラフ</td><td>7日間</td><td class="hi">30日間</td></tr>
+          <tr><td>AIの話し方</td><td>1種類</td><td class="hi">5種類</td></tr>
+          <tr><td>週次レポート</td><td class="no">—</td><td class="hi">✓</td></tr>
+          <tr><td>目標達成予測</td><td class="no">—</td><td class="hi">✓</td></tr>
+          <tr><td>カラーテーマ</td><td class="no">—</td><td class="hi">✓ カスタマイズ</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="p-grid rv">
@@ -2022,32 +2057,34 @@ footer{
           <div class="p-trial">期間制限なし、ずっと無料</div>
         </div>
         <ul class="p-list">
-          <li><span class="ck">✓</span> 毎日のAI声かけ（1日3回）</li>
-          <li><span class="ck">✓</span> 食事アドバイス（基本）</li>
-          <li><span class="ck">✓</span> 軽い運動提案</li>
-          <li><span class="ck">✓</span> 継続記録の確認</li>
-          <li><span class="ck">✓</span> 習慣チェックリスト</li>
+          <li><span class="ck">✓</span> AIチャット <strong>5回/日</strong></li>
+          <li><span class="ck">✓</span> 毎日の習慣チェックリスト</li>
+          <li><span class="ck">✓</span> 食事・運動・睡眠アドバイス</li>
+          <li><span class="ck">✓</span> 整いポイント獲得（×1）</li>
+          <li><span class="ck">✓</span> 7日間の習慣グラフ</li>
         </ul>
         <a class="btn btn-o" href="app.html">無料ではじめる</a>
       </div>
 
       <div class="p-c paid">
-        <div class="p-rec">おすすめ</div>
-        <div class="p-tier">もっと深く、自分のリズムを知りたい方へ。</div>
+        <div class="p-rec">✨ 7日間無料</div>
+        <div class="p-tier">本気で続けたい方へ。</div>
         <div class="p-name">プレミアムプラン</div>
         <div class="p-row">
           <div><span class="p-num">¥980</span><span class="p-per"> / 月</span></div>
-          <div class="p-trial">7日間、無料でお試しできます</div>
+          <div class="p-trial">1日あたり約33円</div>
         </div>
         <ul class="p-list">
-          <li><span class="ck">✓</span> 無料プランのすべて</li>
-          <li><span class="ck">✓</span> 整いポイント 2倍獲得</li>
-          <li><span class="ck">✓</span> 継続バッジ複数枚獲得</li>
-          <li><span class="ck">✓</span> AIトーク スタイル全解放</li>
+          <li><span class="ck">✓</span> AIチャット <strong>無制限</strong></li>
+          <li><span class="ck">✓</span> 整いポイント <strong>2倍獲得</strong></li>
+          <li><span class="ck">✓</span> <strong>週次レポート</strong>（継続パターン分析）</li>
+          <li><span class="ck">✓</span> <strong>目標達成予測</strong>（あと○日で達成）</li>
+          <li><span class="ck">✓</span> 30日間の習慣グラフ</li>
+          <li><span class="ck">✓</span> AIの話し方 5スタイル解放</li>
           <li><span class="ck">✓</span> カラーテーマ カスタマイズ</li>
-          <li><span class="ck">✓</span> 取り組み期間の詳細設定</li>
         </ul>
         <a class="btn btn-p" href="app.html">7日間、無料で試してみる →</a>
+        <p style="font-size:11px;color:var(--t-l);text-align:center;margin-top:10px;">クレジットカード不要</p>
       </div>
 
     </div>
