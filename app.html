@@ -1063,6 +1063,108 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
   transition:all var(--trans-dur);
 }
 
+/* ── PREMIUM HEALTH FEATURES ── */
+/* 栄養バランスメーター */
+.nutrition-meter{
+  margin:0 16px 14px;background:var(--card);border-radius:var(--r-l);
+  padding:16px 18px;box-shadow:var(--sh1);
+}
+.nutrition-meter-title{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.08em;margin-bottom:12px;}
+.nutrition-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.nutrition-row:last-child{margin-bottom:0;}
+.nutrition-em{font-size:16px;flex-shrink:0;width:24px;}
+.nutrition-label{font-size:12px;color:var(--t-m);width:56px;flex-shrink:0;}
+.nutrition-bar-bg{flex:1;height:7px;background:var(--bg);border-radius:9999px;overflow:hidden;}
+.nutrition-bar-fg{height:100%;border-radius:9999px;transition:width .6s cubic-bezier(.34,1.2,.64,1);}
+.nutrition-bar-fg.ok{background:var(--g);}
+.nutrition-bar-fg.warn{background:#F0B040;}
+.nutrition-bar-fg.low{background:#E07070;}
+.nutrition-status{font-size:10px;font-weight:700;width:32px;text-align:right;flex-shrink:0;}
+.nutrition-status.ok{color:var(--t-g);}
+.nutrition-status.warn{color:#C08000;}
+.nutrition-status.low{color:#C04040;}
+
+/* 昨日の不足→今日のアドバイス */
+.yesterday-advice{
+  margin:0 16px 14px;
+  background:linear-gradient(135deg,#FFF8EC,#FFF3DC);
+  border:1.5px solid #F0D080;border-radius:var(--r-l);
+  padding:16px 18px;
+}
+.yesterday-advice-label{font-size:10px;font-weight:700;color:#A07820;letter-spacing:.08em;margin-bottom:8px;}
+.yesterday-advice-msg{font-size:13.5px;color:var(--t);line-height:1.8;font-weight:500;}
+.yesterday-advice-sub{font-size:12px;color:var(--t-m);margin-top:6px;line-height:1.7;}
+.yesterday-advice-prem-lock{
+  margin:0 16px 14px;background:var(--bg);border-radius:var(--r-l);
+  padding:16px 18px;text-align:center;cursor:pointer;border:1.5px dashed var(--border);
+}
+
+/* 体重記録 */
+.weight-section{margin:0 16px 14px;}
+.weight-input-row{
+  background:var(--card);border-radius:var(--r-l);
+  padding:16px 18px;box-shadow:var(--sh1);
+  display:flex;align-items:center;gap:12px;
+}
+.weight-input{
+  width:90px;padding:8px 12px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:20px;font-weight:700;color:var(--t);
+  font-family:inherit;text-align:center;
+  background:var(--bg);outline:none;
+  transition:border-color var(--trans-dur);
+}
+.weight-input:focus{border-color:var(--g);}
+.weight-input-unit{font-size:14px;color:var(--t-m);}
+.weight-save-btn{
+  flex:1;padding:10px 0;
+  background:var(--g);color:#fff;
+  border:none;border-radius:10px;
+  font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;
+  transition:opacity var(--trans-dur);
+}
+.weight-save-btn:active{opacity:.8;}
+.weight-chart-wrap{margin-top:12px;}
+.weight-chart-title{font-size:11px;font-weight:700;color:var(--t-l);letter-spacing:.06em;margin-bottom:8px;}
+.weight-chart{display:flex;align-items:flex-end;gap:4px;height:60px;}
+.weight-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.weight-bar{width:100%;border-radius:4px 4px 0 0;background:var(--g-l);transition:height .5s ease;min-height:4px;position:relative;}
+.weight-bar.today{background:var(--g);}
+.weight-bar-val{font-size:9px;color:var(--t-l);margin-top:2px;}
+.weight-bar-day{font-size:9px;color:var(--t-l);}
+.weight-diff{margin-top:8px;font-size:12px;color:var(--t-m);text-align:right;}
+.weight-diff .up{color:#E07070;}
+.weight-diff .down{color:var(--t-g);}
+.weight-prem-lock{
+  background:var(--bg);border-radius:var(--r-l);
+  padding:20px;text-align:center;border:1.5px dashed var(--border);
+  cursor:pointer;
+}
+
+/* 週次レポート強化 */
+.wk-premium-section{
+  margin:16px 20px 0;padding:14px 16px;
+  background:linear-gradient(135deg,#F0FBF5,#E8F8EE);
+  border-radius:var(--r-m);
+}
+.wk-prem-title{font-size:11px;font-weight:700;color:var(--t-g);letter-spacing:.08em;margin-bottom:10px;}
+.wk-food-bars{display:flex;flex-direction:column;gap:7px;}
+.wk-food-row{display:flex;align-items:center;gap:8px;}
+.wk-food-label{font-size:11px;color:var(--t-m);width:60px;flex-shrink:0;}
+.wk-food-bar-bg{flex:1;height:6px;background:rgba(0,0,0,.06);border-radius:9999px;overflow:hidden;}
+.wk-food-bar-fg{height:100%;border-radius:9999px;background:var(--g);transition:width .6s ease;}
+.wk-food-score{font-size:10px;color:var(--t-g);font-weight:700;width:28px;text-align:right;}
+.wk-weight-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--g-l);}
+.wk-weight-label{font-size:12px;color:var(--t-m);}
+.wk-weight-val{font-size:18px;font-weight:700;color:var(--t);}
+.wk-advice-box{
+  margin:12px 20px 0;padding:14px 16px;
+  background:var(--card);border-radius:var(--r-m);
+  border-left:3px solid var(--g);
+}
+.wk-advice-label{font-size:10px;font-weight:700;color:var(--t-g);letter-spacing:.08em;margin-bottom:6px;}
+.wk-advice-text{font-size:13px;color:var(--t-m);line-height:1.8;}
+
 /* ── SETTINGS SCREEN ── */
 .settings-profile{
   background:linear-gradient(160deg,var(--bg-w),var(--g-pp));
@@ -2634,6 +2736,12 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       </div>
     </div>
 
+    <!-- [PRO] 昨日の栄養不足→今日のアドバイス -->
+    <div id="yesterdayAdviceWrap"></div>
+
+    <!-- [PRO] 今日の栄養バランスメーター -->
+    <div id="nutritionMeterWrap"></div>
+
     <p class="sec-lbl">Habio より</p>
     <div class="food-ai-card mb14">
       <div class="habio-av">🌱</div>
@@ -2681,6 +2789,10 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       <p class="sec-lbl">最近の食事メモ</p>
       <div id="foodHistoryList"></div>
     </div>
+
+    <!-- [PRO] 体重記録 -->
+    <p class="sec-lbl">体重管理</p>
+    <div class="weight-section" id="weightSection"></div>
 
     <div style="height:24px;"></div>
 
@@ -3197,6 +3309,41 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
           <div class="wk-bar-bg"><div class="wk-bar dim" id="wkBarLast"></div></div>
         </div>
       </div>
+      <!-- プレミアム：食事バランス週間サマリー -->
+      <div id="wkPremFoodSection" style="display:none;">
+        <div class="wk-premium-section">
+          <div class="wk-prem-title">🥗 今週の食事バランス</div>
+          <div class="wk-food-bars" id="wkFoodBars"></div>
+        </div>
+      </div>
+
+      <!-- プレミアム：体重変化 -->
+      <div id="wkPremWeightSection" style="display:none;">
+        <div style="margin:10px 20px 0;background:var(--card);border-radius:var(--r-m);padding:14px 16px;box-shadow:var(--sh1);">
+          <div class="wk-prem-title" style="margin-bottom:8px;">⚖️ 今週の体重変化</div>
+          <div class="wk-weight-row">
+            <span class="wk-weight-label">今週の平均</span>
+            <span class="wk-weight-val" id="wkWeightAvg">— kg</span>
+          </div>
+          <div style="margin-top:6px;font-size:12px;color:var(--t-m);" id="wkWeightDiff"></div>
+        </div>
+      </div>
+
+      <!-- プレミアム：来週への具体的アドバイス -->
+      <div id="wkPremAdviceSection" style="display:none;">
+        <div class="wk-advice-box">
+          <div class="wk-advice-label">🌿 来週への Habio アドバイス</div>
+          <div class="wk-advice-text" id="wkAdviceText"></div>
+        </div>
+      </div>
+
+      <!-- 無料ユーザー：プレミアム訴求 -->
+      <div id="wkFreeLock" style="display:none;margin:14px 20px 0;background:var(--bg);border-radius:var(--r-m);padding:16px;text-align:center;border:1.5px dashed var(--border);cursor:pointer;" onclick="showUpgradeModal()">
+        <div style="font-size:20px;margin-bottom:6px;">💎</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:4px;">プレミアムでもっと深く分析</div>
+        <div style="font-size:12px;color:var(--t-m);line-height:1.7;">食事バランス・体重変化・来週の<br>具体的アドバイスが届きます。</div>
+      </div>
+
       <div class="wk-habio">
         <div class="habio-av" style="width:36px;height:36px;font-size:18px;flex-shrink:0;">🌱</div>
         <div>
@@ -4383,7 +4530,7 @@ function goTab(name){
   if(tab) tab.classList.add('active');
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
   if(name==='wins') renderWins();
-  if(name==='food'){ renderFoodLog(); renderFoodHistory(); }
+  if(name==='food'){ renderFoodLog(); renderFoodHistory(); renderNutritionMeter(); renderYesterdayAdvice(); renderWeightSection(); }
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); checkDueCalendarTasks(); trackHabioEvent('habio_home_view'); }
   if(name==='habits') renderHabitCal();
   if(name==='settings'){ renderProfile(); loadPointsReferral(); if(USE_X_API_POST) loadXStatus(); else renderXShareCount(); renderNotifStatus(); renderAdminPanel('adminPanelSettings'); renderAyumiSection(); }
@@ -5523,6 +5670,7 @@ function logFoodItem(id,em,name){
   }
   updateMealPtBadges();
   maybeShowFoodTrendRec();
+  renderNutritionMeter();
 }
 
 function deleteFoodItem(idx){
@@ -5567,6 +5715,279 @@ function renderFoodLog(){
   const foodAiEl=document.getElementById('foodAiMsg');
   if(foodAiEl) foodAiEl.textContent=generateFoodAiComment(logs);
   updateMealPtBadges();
+}
+
+/* ══════════════════════════════════════════
+   PREMIUM HEALTH FEATURES
+   ══════════════════════════════════════════ */
+
+// ── 食事ログから栄養スコアを算出（0〜4）
+function calcNutritionScores(logs){
+  const ids=logs.map(l=>l.id).filter(Boolean);
+  const photoTags=logs.filter(l=>l.method==='photo').flatMap(l=>l.tags||[]);
+  const has=id=>ids.includes(id);
+  const hasTag=t=>photoTags.includes(t);
+  return {
+    protein: has('protein')||has('fish')||has('egg')||hasTag('タンパク質')?Math.min(2+ids.filter(id=>['protein','fish','egg'].includes(id)).length,4):0,
+    veg:     has('veg')||hasTag('野菜')?Math.min(1+logs.filter(l=>l.id==='veg'||l.tags?.includes('野菜')).length*1.2,4):0,
+    carb:    has('rice')||hasTag('主食')?Math.min(1+ids.filter(id=>id==='rice').length*1.5,4):0,
+    water:   has('water')||hasTag('水分')?Math.min(1+ids.filter(id=>id==='water').length*1.5,4):0,
+  };
+}
+
+// ── 今日の栄養バランスメーター描画
+function renderNutritionMeter(){
+  const wrap=document.getElementById('nutritionMeterWrap');
+  if(!wrap) return;
+  const isPrem=Store.get('is_premium',false);
+  if(!isPrem){ wrap.innerHTML=''; return; }
+  const logs=Store.get('food_log_'+today(),[]);
+  if(!logs.length){ wrap.innerHTML=''; return; }
+  const sc=calcNutritionScores(logs);
+  const MAX=4;
+  function row(em,label,val){
+    const pct=Math.round(val/MAX*100);
+    const cls=pct>=75?'ok':pct>=40?'warn':'low';
+    const statusMap={ok:'良好',warn:'少なめ',low:'不足'};
+    return `<div class="nutrition-row">
+      <div class="nutrition-em">${em}</div>
+      <div class="nutrition-label">${label}</div>
+      <div class="nutrition-bar-bg"><div class="nutrition-bar-fg ${cls}" style="width:${pct}%"></div></div>
+      <div class="nutrition-status ${cls}">${statusMap[cls]}</div>
+    </div>`;
+  }
+  wrap.innerHTML=`<div class="nutrition-meter">
+    <div class="nutrition-meter-title">💎 今日の栄養バランス</div>
+    ${row('💪','タンパク質',sc.protein)}
+    ${row('🥗','野菜',sc.veg)}
+    ${row('🍚','主食',sc.carb)}
+    ${row('💧','水分',sc.water)}
+  </div>`;
+}
+
+// ── 昨日の不足栄養 → 今日のアドバイス
+const NUTRITION_ADVICE={
+  protein:[
+    {lack:'タンパク質が少なかった',today:'今日のランチに卵1個か鶏むね肉を加えてみましょう。疲労回復に効きます 💪'},
+    {lack:'タンパク質が不足気味',today:'朝食にヨーグルトや納豆を足すだけで、1日の代謝が変わりますよ。'},
+  ],
+  veg:[
+    {lack:'野菜が足りなかった',today:'今日は1食にサラダか温野菜を1品追加してみてください 🥗 コンビニのカップスープでもOK。'},
+    {lack:'緑黄色野菜が少なめ',today:'ブロッコリーやほうれん草など、色の濃い野菜を1日1回意識してみましょう。'},
+  ],
+  water:[
+    {lack:'水分が少なかった',today:'今日は起きてすぐコップ1杯の水から始めましょう 💧 体の目覚めが違います。'},
+    {lack:'水分補給が不足気味',today:'デスクに水を置いて、1時間に1口ずつ飲む習慣を試してみては。'},
+  ],
+  carb:[
+    {lack:'主食のバランスが気になる',today:'3食とも主食を摂っているなら少し減らして、その分タンパク質か野菜に置き換えてみましょう。'},
+  ],
+};
+
+function getYesterdayAdvice(){
+  const yest=yesterday();
+  const logs=Store.get('food_log_'+yest,[]);
+  if(!logs.length) return null;
+  const sc=calcNutritionScores(logs);
+  const lacks=[];
+  if(sc.protein<2) lacks.push('protein');
+  if(sc.veg<1)     lacks.push('veg');
+  if(sc.water<1)   lacks.push('water');
+  if(!lacks.length) return null;
+  const pick=lacks[0];
+  const list=NUTRITION_ADVICE[pick];
+  if(!list) return null;
+  const adv=list[new Date().getDate()%list.length];
+  return adv;
+}
+
+function renderYesterdayAdvice(){
+  const wrap=document.getElementById('yesterdayAdviceWrap');
+  if(!wrap) return;
+  const isPrem=Store.get('is_premium',false);
+  if(!isPrem){
+    wrap.innerHTML=`<div class="yesterday-advice-prem-lock" onclick="showUpgradeModal()">
+      <div style="font-size:22px;margin-bottom:6px;">💎</div>
+      <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:3px;">昨日の食事から今日のアドバイス</div>
+      <div style="font-size:12px;color:var(--t-m);">プレミアム限定 — 何が足りなかったか分析します</div>
+    </div>`;
+    return;
+  }
+  const adv=getYesterdayAdvice();
+  if(!adv){ wrap.innerHTML=''; return; }
+  wrap.innerHTML=`<div class="yesterday-advice">
+    <div class="yesterday-advice-label">💎 昨日の記録から · 今日のアドバイス</div>
+    <div class="yesterday-advice-msg">⚠️ 昨日は${adv.lack}ようです。</div>
+    <div class="yesterday-advice-sub">→ ${adv.today}</div>
+  </div>`;
+}
+
+// ── 体重記録機能
+function saveWeight(){
+  const inp=document.getElementById('weightInput');
+  if(!inp) return;
+  const val=parseFloat(inp.value);
+  if(isNaN(val)||val<20||val>300){ showToast('正しい体重を入力してください'); return; }
+  const log=Store.get('weight_log',{});
+  log[today()]=val;
+  Store.set('weight_log',log);
+  showToast('体重を記録しました ⚖️');
+  renderWeightSection();
+}
+
+function renderWeightSection(){
+  const wrap=document.getElementById('weightSection');
+  if(!wrap) return;
+  const isPrem=Store.get('is_premium',false);
+  if(!isPrem){
+    wrap.innerHTML=`<div class="weight-prem-lock" onclick="showUpgradeModal()">
+      <div style="font-size:24px;margin-bottom:8px;">⚖️</div>
+      <div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:4px;">体重管理はプレミアム限定</div>
+      <div style="font-size:12px;color:var(--t-m);line-height:1.7;">毎日の体重を記録して推移グラフで確認。<br>目標体重との差も表示されます。</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--t-g);font-weight:600;">7日間無料で試す →</div>
+    </div>`;
+    return;
+  }
+  const log=Store.get('weight_log',{});
+  const todayVal=log[today()]||'';
+  // 直近7日のデータ
+  const days7=[];
+  for(let i=6;i>=0;i--){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    days7.push({d,v:log[d]||null});
+  }
+  const vals=days7.map(r=>r.v).filter(Boolean);
+  const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10:null;
+  const minV=vals.length?Math.min(...vals):50;
+  const maxV=vals.length?Math.max(...vals):80;
+  const range=Math.max(maxV-minV,2);
+  const DAY_LABELS=['日','月','火','水','木','金','土'];
+
+  const bars=days7.map(({d,v})=>{
+    const dow=new Date(d+'T00:00:00').getDay();
+    const h=v?Math.round((v-minV)/range*48+8):8;
+    const isToday=d===today();
+    return `<div class="weight-bar-wrap">
+      <div class="weight-bar${isToday?' today':''}" style="height:${h}px;" title="${v?v+'kg':'未記録'}"></div>
+      <div class="weight-bar-val">${v||''}</div>
+      <div class="weight-bar-day">${DAY_LABELS[dow]}</div>
+    </div>`;
+  }).join('');
+
+  // 先週比
+  const prevVals=[];
+  for(let i=7;i<14;i++){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    if(log[d]) prevVals.push(log[d]);
+  }
+  const prevAvg=prevVals.length?Math.round(prevVals.reduce((a,b)=>a+b,0)/prevVals.length*10)/10:null;
+  let diffHtml='';
+  if(avg&&prevAvg){
+    const diff=Math.round((avg-prevAvg)*10)/10;
+    if(diff>0) diffHtml=`先週比 <span class="up">+${diff}kg</span>`;
+    else if(diff<0) diffHtml=`先週比 <span class="down">${diff}kg</span>`;
+    else diffHtml='先週と同じペース';
+  }
+
+  wrap.innerHTML=`<div class="weight-input-row">
+    <input type="number" class="weight-input" id="weightInput" value="${todayVal}" placeholder="--" min="30" max="200" step="0.1">
+    <div class="weight-input-unit">kg</div>
+    <button class="weight-save-btn" onclick="saveWeight()">記録する</button>
+  </div>
+  ${vals.length?`<div class="weight-chart-wrap">
+    <div class="weight-chart-title">直近7日間の体重推移</div>
+    <div class="weight-chart">${bars}</div>
+    ${avg?`<div class="weight-diff">週平均 <strong>${avg}kg</strong>${diffHtml?' · '+diffHtml:''}</div>`:''}
+  </div>`:''}`;
+}
+
+// ── 週次レポートにプレミアム情報を追加
+function enrichWeeklyWithPremium(){
+  const isPrem=Store.get('is_premium',false);
+  const freeLock=document.getElementById('wkFreeLock');
+  const foodSec=document.getElementById('wkPremFoodSection');
+  const weightSec=document.getElementById('wkPremWeightSection');
+  const adviceSec=document.getElementById('wkPremAdviceSection');
+  if(!freeLock) return;
+
+  if(!isPrem){
+    if(freeLock) freeLock.style.display='block';
+    if(foodSec) foodSec.style.display='none';
+    if(weightSec) weightSec.style.display='none';
+    if(adviceSec) adviceSec.style.display='none';
+    return;
+  }
+  if(freeLock) freeLock.style.display='none';
+
+  // 今週の食事バランス集計
+  const tagSum={protein:0,veg:0,water:0,carb:0};
+  let foodDays=0;
+  for(let i=0;i<7;i++){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    const logs=Store.get('food_log_'+d,[]);
+    if(!logs.length) continue;
+    foodDays++;
+    const sc=calcNutritionScores(logs);
+    tagSum.protein+=sc.protein;
+    tagSum.veg+=sc.veg;
+    tagSum.water+=sc.water;
+    tagSum.carb+=sc.carb;
+  }
+  if(foodSec){
+    foodSec.style.display='block';
+    const MAX_WEEK=foodDays*4||1;
+    function fRow(em,label,val){
+      const pct=Math.round(val/MAX_WEEK*100);
+      return `<div class="wk-food-row">
+        <div class="wk-food-label">${em} ${label}</div>
+        <div class="wk-food-bar-bg"><div class="wk-food-bar-fg" style="width:${pct}%"></div></div>
+        <div class="wk-food-score">${pct}%</div>
+      </div>`;
+    }
+    const barsEl=document.getElementById('wkFoodBars');
+    if(barsEl) barsEl.innerHTML=
+      fRow('💪','タンパク質',tagSum.protein)+
+      fRow('🥗','野菜',tagSum.veg)+
+      fRow('💧','水分',tagSum.water)+
+      fRow('🍚','主食',tagSum.carb);
+  }
+
+  // 体重変化
+  const wlog=Store.get('weight_log',{});
+  const wVals=[];
+  for(let i=0;i<7;i++){
+    const d=toDateStr(new Date(Date.now()-i*864e5));
+    if(wlog[d]) wVals.push(wlog[d]);
+  }
+  if(weightSec){
+    if(wVals.length>=2){
+      weightSec.style.display='block';
+      const avg=Math.round(wVals.reduce((a,b)=>a+b,0)/wVals.length*10)/10;
+      document.getElementById('wkWeightAvg').textContent=avg+' kg';
+      const diff=Math.round((wVals[0]-wVals[wVals.length-1])*10)/10;
+      const diffEl=document.getElementById('wkWeightDiff');
+      if(diffEl) diffEl.textContent=diff>0?`週初から +${diff}kg`:diff<0?`週初から ${diff}kg`:'週中で変化なし';
+    } else {
+      weightSec.style.display='none';
+    }
+  }
+
+  // 来週のアドバイス
+  if(adviceSec){
+    adviceSec.style.display='block';
+    const streak7=document.getElementById('wkActiveDays')?.textContent||'0';
+    const foodAdvice=getYesterdayAdvice();
+    let advice='';
+    const days=parseInt(streak7)||0;
+    if(days>=5) advice='今週は非常によく続きました。来週は水分補給をさらに意識してみましょう。こまめな水分は継続力を高めます 💧';
+    else if(days>=3){
+      if(foodAdvice) advice=`継続できた日が${days}日ありました。来週は食事面も意識してみましょう。${foodAdvice.today}`;
+      else advice=`継続できた日が${days}日ありました。来週は少し難しい日に「1つだけやる」ことを目標にしてみましょう。`;
+    }
+    else advice='記録が少なかった週も、こうしてふりかえれているあなたは前に進んでいます。来週は通知をONにして、Habio の声かけを活用してみてください。';
+    const el=document.getElementById('wkAdviceText');
+    if(el) el.textContent=advice;
+  }
 }
 
 /* ── CHAT ── */
@@ -6768,6 +7189,10 @@ function renderPremiumState(){
   // 習慣タブのプレミアム訴求バナー
   const habitsPremBanner = document.getElementById('habitsPremBanner');
   if (habitsPremBanner) habitsPremBanner.style.display = isPrem ? 'none' : 'block';
+  // 食事タブのプレミアム機能
+  renderNutritionMeter();
+  renderYesterdayAdvice();
+  renderWeightSection();
 }
 
 /* ── PREMIUM FEATURE MODAL ── */
@@ -7141,6 +7566,7 @@ function showWeeklyReview(){
 
   el('weeklyOverlay').classList.add('show');
   Store.set('weekly_review_shown',getWeekId());
+  enrichWeeklyWithPremium();
 
   // Animate bars after modal slides in
   setTimeout(()=>{
