@@ -2374,6 +2374,130 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
 .daily-mission-btn:active{transform:scale(.97);opacity:.9;}
 .daily-mission-btn.done{background:var(--t-l);pointer-events:none;}
 
+/* ── ① 月間カレンダーヒートマップ */
+.monthly-cal-wrap{margin:0 16px 14px;}
+.monthly-cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.monthly-cal-title{font-size:12px;font-weight:700;color:var(--t-m);}
+.monthly-cal-nav{display:flex;gap:4px;}
+.monthly-cal-nav button{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;color:var(--t-m);cursor:pointer;}
+.monthly-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.monthly-cal-daylbl{font-size:9px;font-weight:700;color:var(--t-l);text-align:center;padding:2px 0;}
+.monthly-cal-cell{
+  aspect-ratio:1;border-radius:4px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--t-l);position:relative;
+  cursor:default;transition:transform .12s;
+}
+.monthly-cal-cell.has-win{background:var(--g-l);color:var(--t-g);font-weight:700;}
+.monthly-cal-cell.has-win.many{background:var(--g);color:#fff;}
+.monthly-cal-cell.today{box-shadow:0 0 0 2px var(--g);}
+.monthly-cal-cell.future{opacity:.3;}
+.monthly-cal-cell.empty{background:transparent;}
+.monthly-cal-streak-hint{font-size:11px;color:var(--t-m);text-align:center;margin-top:6px;padding:6px;background:var(--g-p);border-radius:8px;}
+
+/* ── ② ストリーク保護お守り */
+.freeze-banner{
+  margin:0 16px 14px;
+  background:linear-gradient(135deg,#FFF0D8,#FFE8C0);
+  border:1.5px solid #F0C060;border-radius:var(--r-l);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.freeze-em{font-size:28px;flex-shrink:0;}
+.freeze-body{flex:1;}
+.freeze-title{font-size:13px;font-weight:700;color:#8A5000;margin-bottom:2px;}
+.freeze-sub{font-size:11.5px;color:#A06010;line-height:1.6;}
+.freeze-badge{
+  background:linear-gradient(135deg,#F0A020,#E08010);
+  color:#fff;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:999px;flex-shrink:0;
+}
+/* ストリーク危険警告 */
+.streak-danger-bar{
+  margin:0 16px 10px;
+  background:linear-gradient(135deg,#FFF0F0,#FFE8E8);
+  border:1.5px solid #E09090;border-radius:12px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+}
+.streak-danger-em{font-size:20px;}
+.streak-danger-msg{font-size:12px;color:#A04040;font-weight:600;line-height:1.5;}
+
+/* ── ③ 夜の締め・明日への約束 */
+.tonight-card{
+  margin:0 16px 14px;
+  background:linear-gradient(160deg,#1A1F2E,#252A3A);
+  border-radius:var(--r-l);padding:18px 18px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+}
+.tonight-label{font-size:9px;font-weight:700;color:rgba(180,200,255,.7);letter-spacing:.12em;margin-bottom:8px;}
+.tonight-title{font-size:17px;font-weight:700;color:#fff;line-height:1.5;margin-bottom:4px;}
+.tonight-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:14px;}
+.tonight-summary{display:flex;gap:8px;margin-bottom:14px;}
+.tonight-stat{flex:1;background:rgba(255,255,255,.08);border-radius:10px;padding:10px 8px;text-align:center;}
+.tonight-stat-num{font-size:20px;font-weight:700;color:#fff;}
+.tonight-stat-lbl{font-size:9px;color:rgba(255,255,255,.5);margin-top:2px;}
+.tonight-promise-wrap{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.tonight-promise-lbl{font-size:10px;color:rgba(180,200,255,.7);font-weight:700;letter-spacing:.06em;margin-bottom:6px;}
+.tonight-promise-input{
+  width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;padding:9px 12px;color:#fff;font-size:14px;
+  font-family:inherit;outline:none;box-sizing:border-box;
+}
+.tonight-promise-input::placeholder{color:rgba(255,255,255,.35);}
+.tonight-save-btn{
+  width:100%;padding:12px;border-radius:var(--r-f);
+  background:rgba(114,185,148,.4);color:#fff;
+  border:1px solid rgba(114,185,148,.5);
+  font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;
+}
+.tonight-saved-msg{font-size:12px;color:rgba(114,185,148,.9);text-align:center;padding:6px 0;}
+
+/* ── ④ ログインマイルストーンバナー */
+.milestone-banner{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.5);z-index:850;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.milestone-banner.show{opacity:1;pointer-events:all;}
+.milestone-card{
+  background:var(--card);border-radius:28px;
+  padding:32px 28px;width:86%;max-width:340px;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+}
+.milestone-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.milestone-em{font-size:48px;margin-bottom:12px;}
+.milestone-days{font-size:42px;font-weight:700;color:var(--g);line-height:1;}
+.milestone-days-lbl{font-size:14px;color:var(--t-m);margin-bottom:8px;}
+.milestone-msg{font-size:14px;color:var(--t-m);line-height:1.8;margin-bottom:6px;}
+.milestone-pts{
+  display:inline-block;background:var(--g-p);color:var(--t-g);
+  font-size:15px;font-weight:700;padding:6px 18px;border-radius:999px;margin:10px 0;
+}
+.milestone-close{
+  width:100%;padding:13px;border-radius:var(--r-f);
+  background:linear-gradient(135deg,var(--g),var(--g-d));color:#fff;
+  border:none;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
+  margin-top:4px;
+}
+
+/* ── ⑤ バッジ進捗バー（ホームのポイントカード内） */
+.badge-progress-bar{
+  margin:6px 16px 0;background:var(--bg);border-radius:10px;padding:8px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+.bpb-label{font-size:11px;color:var(--t-m);flex-shrink:0;}
+.bpb-bar-bg{flex:1;height:6px;background:var(--border);border-radius:999px;overflow:hidden;}
+.bpb-bar-fg{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--g-l),var(--g));transition:width .6s cubic-bezier(.34,1.2,.64,1);}
+.bpb-next{font-size:11px;color:var(--t-g);font-weight:700;flex-shrink:0;}
+
+@keyframes milestoneFloat{
+  0%{opacity:0;transform:translateY(0) rotate(0deg);}
+  20%{opacity:1;}
+  100%{opacity:0;transform:translateY(-120px) rotate(var(--rot,30deg));}
+}
+
 /* ── 旅目標カード */
 .travel-goal-card{
   margin:0 16px 14px;
@@ -2587,6 +2711,12 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
       </div>
     </div>
 
+    <!-- バッジ進捗バー -->
+    <div id="badgeProgressBar"></div>
+
+    <!-- 夜の締めカード（20時以降） -->
+    <div id="tonightCard"></div>
+
     <!-- ── DAILY CONTENT ── -->
     <p class="sec-lbl">今日のHabio</p>
     <div class="daily-section">
@@ -2632,6 +2762,9 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         <div id="missionCalSuggest" style="display:none;"></div>
       </div>
     </div>
+
+    <!-- ストリーク危機警告（今日まだ何もしていない夕方以降） -->
+    <div id="streakDangerBar" style="display:none;"></div>
 
     <!-- 旅目標カード -->
     <div id="travelGoalCard"></div>
@@ -2987,6 +3120,13 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
         </div>
       </div>
     </div>
+    <!-- ストリーク保護お守り -->
+    <div id="freezeBanner"></div>
+
+    <!-- 月間カレンダーヒートマップ -->
+    <p class="sec-lbl">📅 月間カレンダー</p>
+    <div class="monthly-cal-wrap" id="monthlyCalWrap"></div>
+
     <p class="sec-lbl">今日</p>
     <div id="today-wins-list"></div>
     <div class="wins-close">
@@ -3948,6 +4088,19 @@ body.night-bg    { background: linear-gradient(180deg,#1C2434 0%,#141C28 100%); 
     </div>
   </div>
 
+  <!-- MILESTONE BANNER -->
+  <div class="milestone-banner" id="milestoneBanner">
+    <div class="milestone-card">
+      <div class="milestone-confetti" id="milestoneConfetti"></div>
+      <div class="milestone-em" id="milestoneEm">🎉</div>
+      <div class="milestone-days" id="milestoneDays">7</div>
+      <div class="milestone-days-lbl">日間連続達成</div>
+      <div class="milestone-msg" id="milestoneMsg"></div>
+      <div class="milestone-pts" id="milestonePts">+10pt</div>
+      <button class="milestone-close" onclick="closeMilestoneBanner()">ありがとう、続けます 🌿</button>
+    </div>
+  </div>
+
   <!-- TRAVEL GOAL MODAL -->
   <div class="travel-goal-modal-overlay" id="travelGoalModalOverlay" onclick="onTravelGoalOverlayClick(event)">
     <div class="travel-goal-modal">
@@ -4682,7 +4835,7 @@ function goTab(name){
   if(scr) scr.classList.add('active');
   if(tab) tab.classList.add('active');
   if(name==='chat'){ setTimeout(()=>{const c=document.getElementById('chatMsgs');if(c)c.scrollTop=c.scrollHeight;},80); renderChatLimit(); }
-  if(name==='wins') renderWins();
+  if(name==='wins'){ renderWins(); renderMonthlyCalendar(); renderFreezeBanner(); }
   if(name==='food'){ renderFoodLog(); renderFoodHistory(); renderNutritionMeter(); renderYesterdayAdvice(); renderWeightSection(); }
   if(name==='home'){ updateProgressRing(); renderRecommendCards(); renderHomeTitle(); maybeShowWelcomePopup(); checkDueCalendarTasks(); trackHabioEvent('habio_home_view'); }
   if(name==='habits') renderHabitCal();
@@ -4943,11 +5096,15 @@ function initHome(){
   const pmEl=document.getElementById('profileMeta');
   if(pmEl) pmEl.textContent='Habio を使いはじめて '+diff+'日目';
 
-  // 新機能カードを描画
+  // 継続施策カードを描画
   renderTravelGoalCard();
   renderTotonometerCard();
   renderSleepRecordCard();
   renderMoodInsight();
+  renderBadgeProgressBar();
+  renderTonightCard();
+  renderStreakDangerBar();
+  renderTomorrowPromiseBanner();
 }
 
 /* ── PERSONALIZED MESSAGE (今日のひとこと) ── */
@@ -6421,6 +6578,283 @@ function renderMoodInsight(){
     <div class="mood-insight-label">気分のパターン（直近7日）</div>
     <div class="mood-week-row">${dots}</div>
     <div class="mood-insight-msg">${insight}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   ① 月間カレンダーヒートマップ
+   ══════════════════════════════════════════ */
+let calViewYear=new Date().getFullYear(), calViewMonth=new Date().getMonth();
+
+function renderMonthlyCalendar(){
+  const wrap=document.getElementById('monthlyCalWrap');
+  if(!wrap) return;
+  const wins=Store.get('wins',[]);
+  const y=calViewYear, m=calViewMonth;
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const todayStr=today();
+  const DAY_LBLS=['日','月','火','水','木','金','土'];
+
+  // winsを日付→数でカウント
+  const countByDate={};
+  wins.forEach(w=>{
+    if(w.date&&w.date.startsWith(y+'-'+pad(m+1))) countByDate[w.date]=(countByDate[w.date]||0)+1;
+  });
+
+  const headers=DAY_LBLS.map(d=>`<div class="monthly-cal-daylbl">${d}</div>`).join('');
+  let cells='';
+  for(let i=0;i<firstDay;i++) cells+=`<div class="monthly-cal-cell empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=y+'-'+pad(m+1)+'-'+pad(d);
+    const cnt=countByDate[dateStr]||0;
+    const isToday=dateStr===todayStr;
+    const isFuture=dateStr>todayStr;
+    let cls='monthly-cal-cell';
+    if(cnt>=3) cls+=' has-win many';
+    else if(cnt>0) cls+=' has-win';
+    if(isToday) cls+=' today';
+    if(isFuture) cls+=' future';
+    cells+=`<div class="${cls}" title="${dateStr}">${d}</div>`;
+  }
+
+  const activeDays=Object.keys(countByDate).length;
+  const monthName=(m+1)+'月';
+  const prevM=m===0?{y:y-1,m:11}:{y,m:m-1};
+  const nextM=m===11?{y:y+1,m:0}:{y,m:m+1};
+  const isCurrentMonth=y===new Date().getFullYear()&&m===new Date().getMonth();
+
+  wrap.innerHTML=`
+    <div class="monthly-cal-header">
+      <div class="monthly-cal-title">${y}年 ${monthName} — ${activeDays}日記録</div>
+      <div class="monthly-cal-nav">
+        <button onclick="calNav(${prevM.y},${prevM.m})">‹</button>
+        ${!isCurrentMonth?`<button onclick="calNav(${new Date().getFullYear()},${new Date().getMonth()})">今月</button>`:''}
+        <button onclick="calNav(${nextM.y},${nextM.m})" ${isCurrentMonth?'disabled style="opacity:.3"':''}>›</button>
+      </div>
+    </div>
+    <div class="monthly-cal-grid">${headers}${cells}</div>
+    ${activeDays>0?`<div class="monthly-cal-streak-hint">🌿 ${activeDays}日間記録しています。空白を埋めていきましょう。</div>`:''}
+  `;
+}
+
+function calNav(y,m){
+  calViewYear=y; calViewMonth=m;
+  renderMonthlyCalendar();
+}
+
+/* ══════════════════════════════════════════
+   ② ストリーク保護「お守り」
+   ══════════════════════════════════════════ */
+const FREEZE_COST=30; // 30ptで1回保護
+
+function renderFreezeBanner(){
+  const wrap=document.getElementById('freezeBanner');
+  if(!wrap) return;
+  const streak=calcStreak(Store.get('wins',[]));
+  const freezeCount=Store.get('streak_freeze_count',0);
+  if(streak<3){ wrap.innerHTML=''; return; }
+  const pts=getTotalPts();
+  const canBuy=pts>=FREEZE_COST;
+  wrap.innerHTML=`<div class="freeze-banner" onclick="${canBuy?'buyStreakFreeze()':'showToast(\'ポイントが足りません\')'}">
+    <div class="freeze-em">🧊</div>
+    <div class="freeze-body">
+      <div class="freeze-title">ストリーク保護「お守り」${freezeCount>0?` 残${freezeCount}個`:''}</div>
+      <div class="freeze-sub">${freezeCount>0?`1日サボってもストリークを守れます（残${freezeCount}個）`:`${FREEZE_COST}ptで購入 — 1日休んでもストリークが守られます`}</div>
+    </div>
+    <div class="freeze-badge">${freezeCount>0?'使用可能':'30pt'}</div>
+  </div>`;
+}
+
+function buyStreakFreeze(){
+  const pts=getTotalPts();
+  if(pts<FREEZE_COST){ showToast('ポイントが足りません'); return; }
+  const current=Store.get('streak_freeze_count',0);
+  if(current>=3){ showToast('お守りは最大3個まで持てます'); return; }
+  // ポイントを消費
+  const total=Store.get('pts_total',0)-FREEZE_COST;
+  Store.set('pts_total',Math.max(0,total));
+  Store.set('streak_freeze_count',current+1);
+  renderPointsCard();
+  renderFreezeBanner();
+  showToast(`🧊 ストリーク保護を${current+1}個入手しました！`);
+}
+
+function checkStreakFreezeUse(){
+  // 昨日の記録がない → フリーズがあれば消費してストリークを守る
+  const wins=Store.get('wins',[]);
+  const yest=yesterday();
+  const hadYest=wins.some(w=>w.date===yest);
+  if(hadYest) return false;
+  const streak=calcStreak(wins);
+  if(streak<1) return false;
+  const freezes=Store.get('streak_freeze_count',0);
+  if(freezes<1) return false;
+  const freezeUsedDate=Store.get('streak_freeze_used_date','');
+  if(freezeUsedDate===today()) return false; // 今日既に使用済み
+  // フリーズを自動消費
+  Store.set('streak_freeze_count',freezes-1);
+  Store.set('streak_freeze_used_date',today());
+  // 昨日の日付でダミーwinを追加（ストリーク計算のため）
+  wins.unshift({id:Date.now(),em:'🧊',title:'ストリーク保護発動',note:'お守りを使いました',date:yest,ts:new Date().toISOString()});
+  Store.set('wins',wins.slice(0,60));
+  showToast('🧊 お守りが発動しました！ストリークが守られました。');
+  return true;
+}
+
+/* ══════════════════════════════════════════
+   ③ 夜の締めカード + 明日への約束
+   ══════════════════════════════════════════ */
+function renderTonightCard(){
+  const wrap=document.getElementById('tonightCard');
+  if(!wrap) return;
+  const h=new Date().getHours();
+  if(h<20){ wrap.innerHTML=''; return; } // 20時前は表示しない
+
+  const wins=Store.get('wins',[]);
+  const todayWins=wins.filter(w=>w.date===today());
+  const streak=calcStreak(wins);
+  const todayPts=getTodayPts();
+  const savedPromise=Store.get('tomorrow_promise_'+today(),'');
+
+  wrap.innerHTML=`<div class="tonight-card">
+    <div class="tonight-label">🌙 今日の締め</div>
+    <div class="tonight-title">今日も、お疲れさまでした。</div>
+    <div class="tonight-sub">小さな記録が、確かに積み重なっています。</div>
+    <div class="tonight-summary">
+      <div class="tonight-stat"><div class="tonight-stat-num">${todayWins.length}</div><div class="tonight-stat-lbl">できたこと</div></div>
+      <div class="tonight-stat"><div class="tonight-stat-num">+${todayPts}</div><div class="tonight-stat-lbl">今日のpt</div></div>
+      <div class="tonight-stat"><div class="tonight-stat-num">${streak}</div><div class="tonight-stat-lbl">連続日数</div></div>
+    </div>
+    <div class="tonight-promise-wrap">
+      <div class="tonight-promise-lbl">✏️ 明日、1つだけやること</div>
+      ${savedPromise
+        ? `<div style="color:rgba(255,255,255,.85);font-size:14px;line-height:1.6;">「${savedPromise}」<br><span style="font-size:11px;color:rgba(255,255,255,.45);">明日の朝に表示されます</span></div>`
+        : `<input class="tonight-promise-input" id="tomorrowPromiseInput" placeholder="例：水を3杯飲む、早起きする…" maxlength="30">
+           <button class="tonight-save-btn" onclick="saveTomorrowPromise()" style="margin-top:8px;">明日の約束を決める</button>`
+      }
+    </div>
+  </div>`;
+}
+
+function saveTomorrowPromise(){
+  const val=(document.getElementById('tomorrowPromiseInput')?.value||'').trim();
+  if(!val){ showToast('明日やることを入力してください'); return; }
+  Store.set('tomorrow_promise_'+today(),val);
+  renderTonightCard();
+  showToast('明日の朝に「'+val+'」を表示します 🌱');
+  addPoints(1,'night_reflection','夜の振り返りボーナス');
+}
+
+function renderTomorrowPromiseBanner(){
+  // 朝6〜11時に昨日の約束があれば表示
+  const h=new Date().getHours();
+  if(h<6||h>=12) return;
+  const yest=yesterday();
+  const promise=Store.get('tomorrow_promise_'+yest,'');
+  if(!promise) return;
+  if(Store.get('promise_banner_dismissed_'+today())) return;
+  const banner=document.createElement('div');
+  banner.style.cssText='position:absolute;top:0;left:0;right:0;z-index:200;margin:8px 12px 0;background:linear-gradient(135deg,#1A2F1A,#243024);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:pwaUp .4s ease;';
+  banner.innerHTML=`<div style="font-size:20px;">☀️</div>
+    <div style="flex:1;color:#fff;">
+      <div style="font-size:10px;color:rgba(180,255,180,.7);font-weight:700;letter-spacing:.08em;margin-bottom:3px;">昨日の約束</div>
+      <div style="font-size:14px;font-weight:600;">「${promise}」</div>
+    </div>
+    <button onclick="this.parentElement.remove();Store.set('promise_banner_dismissed_${today()}',true)" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:4px;">×</button>`;
+  document.getElementById('app')?.appendChild(banner);
+  setTimeout(()=>banner?.remove(), 8000);
+}
+
+/* ══════════════════════════════════════════
+   ④ ログインマイルストーンボーナス
+   ══════════════════════════════════════════ */
+const LOGIN_MILESTONES=[
+  {days:3,  pts:5,  em:'🌱', msg:'3日連続！習慣が芽吹いています。'},
+  {days:7,  pts:15, em:'🔥', msg:'1週間！続けることの価値を体で感じています。'},
+  {days:14, pts:25, em:'⭐', msg:'2週間！もう習慣になってきました。'},
+  {days:30, pts:50, em:'🌿', msg:'1ヶ月！旅に行ける体に、確実に近づいています。'},
+  {days:60, pts:80, em:'✨', msg:'2ヶ月！その継続力は本物です。'},
+  {days:100,pts:150,em:'🏅', msg:'100日！あなたはもう、本物の習慣を持っています。'},
+];
+
+function checkLoginMilestone(streak){
+  const milestone=LOGIN_MILESTONES.find(m=>m.days===streak);
+  if(!milestone) return;
+  const key='milestone_shown_'+milestone.days;
+  if(Store.get(key)) return;
+  Store.set(key,true);
+  setTimeout(()=>showMilestoneBanner(milestone), 1500);
+}
+
+function showMilestoneBanner(m){
+  const banner=document.getElementById('milestoneBanner');
+  if(!banner) return;
+  document.getElementById('milestoneEm').textContent=m.em;
+  document.getElementById('milestoneDays').textContent=m.days;
+  document.getElementById('milestoneMsg').textContent=m.msg;
+  document.getElementById('milestonePts').textContent='+'+m.pts+'pt ボーナス';
+  // 紙吹雪
+  const conf=document.getElementById('milestoneConfetti');
+  if(conf){
+    conf.innerHTML='';
+    const ems=['🌿','✨','🌱','💚','⭐','🎉'];
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');
+      p.style.cssText=`position:absolute;font-size:${14+Math.random()*10}px;left:${Math.random()*100}%;top:-10%;animation:milestoneFloat ${2+Math.random()*2}s ease ${Math.random()*0.8}s both;`;
+      p.textContent=ems[i%ems.length];
+      conf.appendChild(p);
+    }
+  }
+  banner.classList.add('show');
+  // ポイント付与
+  const earned=addPoints(m.pts,'milestone_bonus','連続'+m.days+'日ボーナス');
+  syncPointsToServer(earned,'milestone_bonus','連続'+m.days+'日ボーナス','milestone_'+m.days);
+}
+
+function closeMilestoneBanner(){
+  document.getElementById('milestoneBanner')?.classList.remove('show');
+}
+
+/* ══════════════════════════════════════════
+   ⑤ バッジ進捗バー（常時表示）
+   ══════════════════════════════════════════ */
+function renderBadgeProgressBar(){
+  const wrap=document.getElementById('badgeProgressBar');
+  if(!wrap) return;
+  const total=getTotalPts();
+  const earned=Store.get('badges_pts',[]);
+  const next=POINT_BADGES.find(b=>!earned.includes(b.id));
+  if(!next){ wrap.innerHTML=''; return; }
+  const prev=POINT_BADGES[POINT_BADGES.indexOf(next)-1];
+  const base=prev?prev.pts:0;
+  const range=next.pts-base;
+  const progress=Math.max(0,Math.min(100,Math.round((total-base)/range*100)));
+  const left=next.pts-total;
+  wrap.innerHTML=`<div class="badge-progress-bar">
+    <div class="bpb-label">${next.em} あと${left}pt</div>
+    <div class="bpb-bar-bg"><div class="bpb-bar-fg" id="bpbFg" style="width:0%"></div></div>
+    <div class="bpb-next">${next.name}</div>
+  </div>`;
+  setTimeout(()=>{ const el=document.getElementById('bpbFg'); if(el) el.style.width=progress+'%'; },80);
+}
+
+/* ── ストリーク危機警告（今日まだ何もしていない夕方以降） */
+function renderStreakDangerBar(){
+  const wrap=document.getElementById('streakDangerBar');
+  if(!wrap) return;
+  const h=new Date().getHours();
+  if(h<17){ wrap.style.display='none'; return; }
+  const wins=Store.get('wins',[]);
+  const streak=calcStreak(wins);
+  if(streak<2){ wrap.style.display='none'; return; }
+  const todayWins=wins.filter(w=>w.date===today());
+  if(todayWins.length>0){ wrap.style.display='none'; return; }
+  const freezes=Store.get('streak_freeze_count',0);
+  wrap.style.display='block';
+  wrap.innerHTML=`<div class="streak-danger-bar">
+    <div class="streak-danger-em">⚠️</div>
+    <div class="streak-danger-msg">${streak}日連続が今日途切れそうです。<br>1つだけでも習慣を記録しましょう${freezes>0?' (お守り '+freezes+'個あり)':''}。</div>
   </div>`;
 }
 
@@ -10035,6 +10469,7 @@ function addPoints(n, type, description){
   console.log('[addPoints]',{type,n,earned,isPrem,totalBefore,totalAfter:total});
   checkPointBadges(total);
   renderPointsCard();
+  renderBadgeProgressBar();
   return earned;
 }
 
@@ -11708,6 +12143,9 @@ function init(){
   const streak=calcStreak(Store.get('wins',[]));
   if(streak>0) checkStreakBadges(streak);
   checkBirthdayBadge();
+  // ストリーク保護・マイルストーンチェック
+  checkStreakFreezeUse();
+  checkLoginMilestone(streak);
 
   // カレンダータスク: 古いものを削除 → 期限切れを確認
   cleanCalendarTasks();
